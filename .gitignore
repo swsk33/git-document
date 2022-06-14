@@ -1,0 +1,17 @@
+# maven
+/**/target/
+
+# idea
+/**/.idea/
+/**/*.iml
+
+# vite
+/**/node_modules/
+/**/dist/
+
+# draw.io
+/**/.$*.bkp
+/**/.$*.dtmp
+
+# 自定义
+/server-springboot/config/application-dev.properties
