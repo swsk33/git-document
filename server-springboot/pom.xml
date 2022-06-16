@@ -87,18 +87,18 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!-- 雪花ID算法 -->
-		<dependency>
-			<groupId>xyz.downgoon</groupId>
-			<artifactId>snowflake</artifactId>
-			<version>1.0.0</version>
-		</dependency>
-
 		<!-- 读写实用类 -->
 		<dependency>
 			<groupId>com.gitee.swsk33</groupId>
 			<artifactId>read-and-write</artifactId>
 			<version>6.5.1</version>
+		</dependency>
+
+		<!-- 雪花id生成器 -->
+		<dependency>
+			<groupId>com.github.yitter</groupId>
+			<artifactId>yitter-idgenerator</artifactId>
+			<version>1.0.6</version>
 		</dependency>
 
 		<!-- jackson注解 -->
