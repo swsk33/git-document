@@ -27,12 +27,6 @@
 			<artifactId>spring-boot-starter-mail</artifactId>
 		</dependency>
 
-		<!-- Spring Security安全模块 -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-security</artifactId>
-		</dependency>
-
 		<!-- Spring Boot校验 -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -80,11 +74,11 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!-- Spring Boot安全测试 -->
+		<!-- Sa-Token 权限认证 -->
 		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-test</artifactId>
-			<scope>test</scope>
+			<groupId>cn.dev33</groupId>
+			<artifactId>sa-token-spring-boot-starter</artifactId>
+			<version>1.30.0</version>
 		</dependency>
 
 		<!-- 读写实用类 -->
@@ -105,6 +99,13 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-annotations</artifactId>
+		</dependency>
+
+		<!-- fastjson-json工具 -->
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+			<version>1.2.76</version>
 		</dependency>
 
 		<!-- Commons IO -->
