@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gitee.swsk33.gitdocument.dao.RoleDAO">
+	<resultMap id="roleResultMap" type="com.gitee.swsk33.gitdocument.dataobject.Role">
+		<id column="id" property="id"/>
+		<result column="name" property="name"/>
+		<result column="gmt_created" property="gmtCreated"/>
+		<result column="gmt_modified" property="gmtModified"/>
+		<collection property="permissions" ofType="com.gitee.swsk33.gitdocument.dataobject.Permission" fetchType="eager">
+			<id column="permission_id" property="id"/>
+			<result column="permission_name" property="name"/>
+			<result column="permission_gmt_created" property="gmtCreated"/>
+			<result column="permission_gmt_modified" property="gmtModified"/>
+		</collection>
+	</resultMap>
+
+	<select id="getById" resultMap="roleResultMap">
+		select `role`.*,
+			   `permission`.id           as permission_id,
+			   `permission`.name         as permission_name,
+			   `permission`.gmt_created  as permission_gmt_created,
+			   `permission`.gmt_modified as permission_gmt_modified
+		from `role`
+				 inner join `role_permission` on `role`.id = `role_permission`.role_id
+				 inner join `permission` on `role_permission`.permission_id = `permission`.id
+		where `role`.id = #{id}
+	</select>
+</mapper>

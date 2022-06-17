@@ -38,11 +38,11 @@ create table `role_permission`
 create table `user`
 (
 	`id`           int unsigned auto_increment,
-	`username`     varchar(16)   not null,
+	`username`     varchar(16)   not null unique,
 	`password`     varchar(64)   not null,
 	`nickname`     varchar(32)   not null,
 	`avatar`       varchar(1024) not null,
-	`email`        varchar(64)   not null,
+	`email`        varchar(64)   not null unique,
 	`role_id`      int unsigned  not null,
 	`gmt_created`  datetime,
 	`gmt_modified` datetime,
