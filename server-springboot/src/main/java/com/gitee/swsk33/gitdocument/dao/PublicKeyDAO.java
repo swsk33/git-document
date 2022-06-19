@@ -12,6 +12,8 @@ public interface PublicKeyDAO {
 
 	int delete(int id);
 
+	PublicKey getById(int id);
+
 	List<PublicKey> getByUserId(int userId);
 
 }

@@ -20,7 +20,7 @@ public class Article {
 	private long id;
 
 	/**
-	 * 对应文件路径
+	 * 对应文件路径（文章在对应仓库中的路径）
 	 */
 	private String filePath;
 

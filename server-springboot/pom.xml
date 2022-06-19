@@ -81,11 +81,18 @@
 			<version>1.30.0</version>
 		</dependency>
 
+		<!-- Sa-Token整合Spring AOP实现注解鉴权 -->
+		<dependency>
+			<groupId>cn.dev33</groupId>
+			<artifactId>sa-token-spring-aop</artifactId>
+			<version>1.30.0</version>
+		</dependency>
+
 		<!-- 读写实用类 -->
 		<dependency>
-			<groupId>com.gitee.swsk33</groupId>
+			<groupId>io.github.swsk33</groupId>
 			<artifactId>read-and-write</artifactId>
-			<version>6.5.1</version>
+			<version>7.0.1</version>
 		</dependency>
 
 		<!-- 雪花id生成器 -->
@@ -106,6 +113,12 @@
 			<groupId>com.alibaba</groupId>
 			<artifactId>fastjson</artifactId>
 			<version>1.2.76</version>
+		</dependency>
+
+		<!-- commons-lang3 - 实用工具 -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
 		</dependency>
 
 		<!-- Commons IO -->

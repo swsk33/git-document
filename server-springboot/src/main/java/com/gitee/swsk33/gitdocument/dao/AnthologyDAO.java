@@ -10,11 +10,11 @@ public interface AnthologyDAO {
 
 	int add(Anthology anthology);
 
-	int delete(int id);
+	int delete(long id);
 
 	int update(Anthology anthology);
 
-	Anthology getById(int id);
+	Anthology getById(long id);
 
 	List<Anthology> getAll();
 

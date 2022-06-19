@@ -20,6 +20,12 @@
 		where id = #{id}
 	</delete>
 
+	<select id="getById" resultMap="publicKeyResultMap">
+		select *
+		from `public_key`
+		where id = #{id}
+	</select>
+
 	<select id="getByUserId" resultMap="publicKeyResultMap">
 		select *
 		from `public_key`

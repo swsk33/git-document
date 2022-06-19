@@ -42,7 +42,7 @@
 	<select id="getByPath" resultMap="articleResultMap">
 		select *
 		from `article`
-		where repo_path = #{repoPath}
+		where file_path = #{path}
 	</select>
 
 	<select id="getByAnthology" resultMap="articleResultMap">

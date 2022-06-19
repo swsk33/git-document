@@ -26,6 +26,11 @@ public class Anthology implements Serializable {
 	private String name;
 
 	/**
+	 * 显示名
+	 */
+	private String showName;
+
+	/**
 	 * 封面
 	 */
 	private String cover;

@@ -4,6 +4,7 @@
 	<resultMap id="anthologyResultMap" type="com.gitee.swsk33.gitdocument.dataobject.Anthology">
 		<id column="id" property="id"/>
 		<result column="name" property="name"/>
+		<result column="show_name" property="showName"/>
 		<result column="cover" property="cover"/>
 		<result column="repo_path" property="repoPath"/>
 		<result column="latest_commit_id" property="latestCommitId"/>
@@ -13,7 +14,7 @@
 
 	<insert id="add" parameterType="com.gitee.swsk33.gitdocument.dataobject.Anthology">
 		insert into `anthology`
-		values (#{id}, #{name}, #{cover}, #{repoPath}, #{latestCommitId}, now(), now())
+		values (#{id}, #{name}, #{showName}, #{cover}, #{repoPath}, #{latestCommitId}, now(), now())
 	</insert>
 
 	<delete id="delete">
@@ -24,9 +25,8 @@
 
 	<update id="update" parameterType="com.gitee.swsk33.gitdocument.dataobject.Anthology">
 		update `anthology`
-		set name             = #{name},
+		set show_name        = #{showName},
 			cover            = #{cover},
-			repo_path        = #{repoPath},
 			latest_commit_id = #{lastest_commit_id},
 			gmt_modified     = now()
 		where id = #{id}

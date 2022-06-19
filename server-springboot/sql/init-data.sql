@@ -1,5 +1,5 @@
 -- 初始化表
-drop table if exists `user`, `role`, `role_permission`, `permission`, `public_key`, `article`, `anthology`;
+drop table if exists `user`, `role`, `role_permission`, `permission`, `public_key`, `article`, `anthology`, `star`;
 
 -- 角色
 create table `role`
@@ -69,9 +69,10 @@ create table `anthology`
 (
 	`id`               bigint        not null,
 	`name`             varchar(64)   not null,
+	`show_name`        varchar(64)   not null,
 	`cover`            varchar(1024) not null,
 	`repo_path`        varchar(2048) not null,
-	`latest_commit_id` varchar(40)   not null,
+	`latest_commit_id` varchar(40),
 	`gmt_created`      datetime,
 	`gmt_modified`     datetime,
 	primary key (`id`)
@@ -91,6 +92,21 @@ create table `article`
 ) engine InnoDB
   default charset = utf8mb4;
 
+-- 星星（收藏）
+create table `star`
+(
+	`id`           bigint       not null,
+	`user_id`      int unsigned not null,
+	`anthology_id` bigint       not null,
+	`gmt_created`  datetime,
+	`gmt_modified` datetime,
+	primary key (`id`),
+	foreign key (`user_id`) references `user` (`id`) on delete cascade on update cascade,
+	foreign key (`anthology_id`) references `anthology` (`id`) on delete cascade on update cascade
+) engine InnoDB
+  default charset = utf8mb4;
+
+
 -- 初始化一些数据
 insert into `role` (`name`)
 values ('ROLE_ADMIN'), -- id为1，管理员
@@ -104,3 +120,7 @@ insert into `role_permission`
 values (1, 1),
 	   (1, 2),
 	   (2, 2);
+
+-- 初始管理员账户，用户名：admin，密码：789101112
+insert into `user` (`username`, `password`, `nickname`, `avatar`, `email`, `role_id`, `gmt_created`, `gmt_modified`)
+	value ('admin', '$2a$10$DnVDUKyYw77O5VTbQsi7XOktMOGUajGwq1xkoDn2BM6fKvMCtZNtu', 'Administrator', '/static/avatar/default/1.jpg', 'example@example.com', 1, now(), now());
