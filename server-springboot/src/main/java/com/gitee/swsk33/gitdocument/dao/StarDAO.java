@@ -10,13 +10,15 @@ public interface StarDAO {
 
 	int add(Star star);
 
-	int delete(int id);
+	int delete(long id);
+
+	Star getById(long id);
 
 	List<Star> getByUserId(int userId);
 
 	/**
 	 * 获得一个文集的收藏数
 	 */
-	Integer getAnthologyStarCount(int anthologyId);
+	Integer getAnthologyStarCount(long anthologyId);
 
 }

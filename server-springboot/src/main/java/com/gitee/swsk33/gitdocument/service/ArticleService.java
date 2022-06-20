@@ -1,10 +1,9 @@
 package com.gitee.swsk33.gitdocument.service;
 
 import com.gitee.swsk33.gitdocument.dataobject.Article;
+import com.gitee.swsk33.gitdocument.model.ArticleDirectory;
 import com.gitee.swsk33.gitdocument.model.Result;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public interface ArticleService {
@@ -21,6 +20,6 @@ public interface ArticleService {
 	 *
 	 * @param anthologyId 文集的id
 	 */
-	Result<List<Article>> getByAnthology(long anthologyId);
+	Result<ArticleDirectory> getByAnthology(long anthologyId);
 
 }

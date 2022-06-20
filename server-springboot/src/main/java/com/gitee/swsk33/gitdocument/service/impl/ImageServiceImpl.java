@@ -23,17 +23,29 @@ public class ImageServiceImpl implements ImageService {
 			log.info("用户头像存放文件夹不存在！将创建一个新的：" + userAvatar.getAbsolutePath());
 			userAvatar.mkdirs();
 		}
+		File customCover = new File(CommonValue.ResourcePath.CUSTOM_COVER_PATH).getAbsoluteFile();
+		if (!customCover.exists()) {
+			log.info("自定义封面存放文件夹不存在！将创建一个新的：" + customCover.getAbsolutePath());
+			customCover.mkdirs();
+		}
 	}
 
-	@Override
-	public Result<String> upload(MultipartFile file) {
+	/**
+	 * 存放上传的图片文件到硬盘
+	 *
+	 * @param file      文件对象
+	 * @param path      保存到目录下
+	 * @param sizeLimit 大小限制，单位MB
+	 * @return 结果对象，若结果是成功状态，则返回数据体是文件名
+	 */
+	private Result<String> saveFileToDisk(MultipartFile file, String path, int sizeLimit) {
 		Result<String> result = new Result<>();
 		if (file == null) {
 			result.setResultFailed("请上传图片！");
 			return result;
 		}
-		if (file.getSize() > 5242880) {
-			result.setResultFailed("图片大小不能大于5MB！");
+		if (file.getSize() > (long) sizeLimit * 1024 * 1024) {
+			result.setResultFailed("图片大小不能大于" + sizeLimit + "MB！");
 			return result;
 		}
 		String fileFormat = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
@@ -43,27 +55,60 @@ public class ImageServiceImpl implements ImageService {
 		}
 		String fileName = SnowflakeIdGenerator.getSnowflakeId() + fileFormat;
 		try {
-			// 写入到用户头像文件夹下
-			file.transferTo(new File(CommonValue.ResourcePath.USER_AVATAR_PATH + File.separator + fileName).getAbsoluteFile());
+			// 转存文件至硬盘
+			file.transferTo(new File(path + File.separator + fileName).getAbsoluteFile());
 		} catch (Exception e) {
 			e.printStackTrace();
 			result.setResultFailed("图片转存失败！请联系开发者！");
 			return result;
 		}
-		String imageRequestPath = CommonValue.RequestPath.USER_AVATAR_REQUEST_PATH + fileName;
-		result.setResultSuccess("上传头像成功！", imageRequestPath);
+		result.setResultSuccess("上传图片成功！", fileName);
+		return result;
+	}
+
+	/**
+	 * 获取默认随机图片
+	 *
+	 * @param path 从哪个路径获取
+	 * @return 获取到的结果，为文件名
+	 */
+	private String getRandomImage(String path) {
+		// 获取默认文件夹中的头像名
+		String[] imageFileNames = new File(path).getAbsoluteFile().list();
+		// 随机对象
+		Random random = new Random();
+		return imageFileNames[random.nextInt(imageFileNames.length)];
+	}
+
+	@Override
+	public Result<String> uploadAvatar(MultipartFile file) {
+		Result<String> result = saveFileToDisk(file, CommonValue.ResourcePath.USER_AVATAR_PATH, 5);
+		if (result.isSuccess()) {
+			result.setData(CommonValue.RequestPath.USER_AVATAR_REQUEST_PATH + result.getData());
+		}
 		return result;
 	}
 
 	@Override
 	public Result<String> getRandomAvatar() {
-		// 获取默认文件夹中的头像名
-		String[] imageFileNames = new File(CommonValue.ResourcePath.DEFAULT_AVATAR_PATH).getAbsoluteFile().list();
-		// 随机对象
-		Random random = new Random();
-		String getAvatar = CommonValue.RequestPath.DEFAULT_AVATAR_REQUEST_PATH + imageFileNames[random.nextInt(imageFileNames.length)];
 		Result<String> result = new Result<>();
-		result.setResultSuccess("获取随机头像成功！", getAvatar);
+		result.setResultSuccess("获取随机头像成功！", CommonValue.RequestPath.DEFAULT_AVATAR_REQUEST_PATH + getRandomImage(CommonValue.ResourcePath.DEFAULT_AVATAR_PATH));
+		return result;
+	}
+
+	@Override
+	public Result<String> uploadCover(MultipartFile file) {
+		Result<String> result = saveFileToDisk(file, CommonValue.ResourcePath.CUSTOM_COVER_PATH, 8);
+		if (result.isSuccess()) {
+			result.setData(CommonValue.RequestPath.CUSTOM_COVER_REQUEST_PATH + result.getData());
+		}
+		return result;
+	}
+
+	@Override
+	public Result<String> getRandomCover() {
+		Result<String> result = new Result<>();
+		result.setResultSuccess("获取随机封面成功！", CommonValue.RequestPath.DEFAULT_COVER_REQUEST_PATH + getRandomImage(CommonValue.ResourcePath.DEFAULT_COVER_PATH));
 		return result;
 	}
 

@@ -8,9 +8,13 @@ import java.util.List;
 @Mapper
 public interface ArticleDAO {
 
+	int add(Article article);
+
 	int batchAdd(List<Article> articles);
 
-	int batchDelete(List<Long> ids);
+	int delete(long id);
+
+	int deleteByPath(String path);
 
 	int update(Article article);
 

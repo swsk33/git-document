@@ -16,3 +16,4 @@
 # 自定义
 /server-springboot/config/application-dev.properties
 /server-springboot/external-resource/avatar/user/
+/server-springboot/external-resource/cover/custom/

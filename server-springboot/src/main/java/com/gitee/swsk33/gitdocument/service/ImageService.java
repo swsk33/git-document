@@ -11,13 +11,23 @@ import org.springframework.web.multipart.MultipartFile;
 public interface ImageService {
 
 	/**
-	 * 上传图片
+	 * 上传头像
 	 */
-	Result<String> upload(MultipartFile file);
+	Result<String> uploadAvatar(MultipartFile file);
 
 	/**
 	 * 获取一个随机的默认头像
 	 */
 	Result<String> getRandomAvatar();
+
+	/**
+	 * 上传封面
+	 */
+	Result<String> uploadCover(MultipartFile file);
+
+	/**
+	 * 获取一个随机的默认封面
+	 */
+	Result<String> getRandomCover();
 
 }

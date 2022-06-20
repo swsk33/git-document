@@ -2,36 +2,61 @@ package com.gitee.swsk33.gitdocument.service.impl;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckRole;
-import com.gitee.swsk33.gitdocument.config.GitDocConfigProperties;
+import com.gitee.swsk33.gitdocument.context.GitTaskContext;
 import com.gitee.swsk33.gitdocument.dao.AnthologyDAO;
 import com.gitee.swsk33.gitdocument.dataobject.Anthology;
 import com.gitee.swsk33.gitdocument.model.Result;
 import com.gitee.swsk33.gitdocument.param.CommonValue;
 import com.gitee.swsk33.gitdocument.service.AnthologyService;
-import com.gitee.swsk33.gitdocument.util.GitFileListenerUtils;
+import com.gitee.swsk33.gitdocument.context.GitFileListenerContext;
+import com.gitee.swsk33.gitdocument.service.ImageService;
 import com.gitee.swsk33.gitdocument.util.GitRepositoryUtils;
 import com.gitee.swsk33.gitdocument.util.SnowflakeIdGenerator;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 import java.util.List;
 
+@Slf4j
 @Component
 public class AnthologyServiceImpl implements AnthologyService {
 
 	@Autowired
-	private GitDocConfigProperties configProperties;
+	private AnthologyDAO anthologyDAO;
 
 	@Autowired
-	private AnthologyDAO anthologyDAO;
+	private ImageService imageService;
+
+	@Autowired
+	private GitFileListenerContext listenerContext;
+
+	/**
+	 * 启动时，开始监听现有的每个仓库，并开启文件更新任务队列
+	 */
+	@PostConstruct
+	private void startRepositoryUpdateTask() throws Exception {
+		// 打开任务队列
+		GitTaskContext.getInstance().start();
+		List<Anthology> anthologies = anthologyDAO.getAll();
+		log.info("共获取到：" + anthologies.size() + "个文集仓库！");
+		// 开始监听每个仓库
+		for (Anthology anthology : anthologies) {
+			listenerContext.addObserver(anthology.getId(), anthology.getRepoPath());
+		}
+		// 开启监听者
+		listenerContext.start();
+		log.info("所有仓库位于：" + CommonValue.ResourcePath.GIT_REPO_PATH);
+	}
 
 	@SaCheckRole(CommonValue.Role.ADMIN)
 	@Override
 	public Result<Anthology> add(Anthology anthology) {
 		Result<Anthology> result = new Result<>();
 		// 先去创建一个Git仓库，并加入到监听列表
-		String repoPath = configProperties.getGitRepoPath() + File.separator + anthology.getName() + ".git";
+		String repoPath = CommonValue.ResourcePath.GIT_REPO_PATH + File.separator + anthology.getName() + ".git";
 		if (!GitRepositoryUtils.initGitBareRepository(repoPath)) {
 			result.setResultFailed("创建文集仓库失败！请联系开发者！");
 			return result;
@@ -39,8 +64,9 @@ public class AnthologyServiceImpl implements AnthologyService {
 		// 补充信息
 		anthology.setId(SnowflakeIdGenerator.getSnowflakeId());
 		anthology.setRepoPath(repoPath);
+		anthology.setCover(imageService.getRandomCover().getData());
 		// 加入监听
-		GitFileListenerUtils.addObserver(anthology.getId(), repoPath);
+		listenerContext.addObserver(anthology.getId(), repoPath);
 		// 存入数据库
 		anthologyDAO.add(anthology);
 		result.setResultSuccess("创建文集仓库成功！");
@@ -58,7 +84,7 @@ public class AnthologyServiceImpl implements AnthologyService {
 			return result;
 		}
 		// 停止文件监听
-		GitFileListenerUtils.removeObserver(id);
+		listenerContext.removeObserver(id);
 		// 删除仓库文件夹
 		if (!new File(getAnthology.getRepoPath()).delete()) {
 			result.setResultFailed("删除文集仓库失败！请联系开发者！");

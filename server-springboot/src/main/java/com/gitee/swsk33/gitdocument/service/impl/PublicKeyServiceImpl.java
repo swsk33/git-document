@@ -4,7 +4,9 @@ import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.stp.StpUtil;
 import com.gitee.swsk33.gitdocument.dao.PublicKeyDAO;
 import com.gitee.swsk33.gitdocument.dataobject.PublicKey;
+import com.gitee.swsk33.gitdocument.dataobject.User;
 import com.gitee.swsk33.gitdocument.model.Result;
+import com.gitee.swsk33.gitdocument.param.CommonValue;
 import com.gitee.swsk33.gitdocument.service.PublicKeyService;
 import com.gitee.swsk33.readandwrite.LineScanner;
 import com.gitee.swsk33.readandwrite.StringComparer;
@@ -51,11 +53,6 @@ public class PublicKeyServiceImpl implements PublicKeyService {
 			result.setResultFailed("待添加的公钥已存在！无需重复添加！");
 			return result;
 		}
-		// 判断当前用户是否是自身
-		if (StpUtil.getLoginId(0) != publicKey.getUser().getId()) {
-			result.setResultFailed("请勿为其他用户添加公钥！");
-			return result;
-		}
 		// 写入公钥到文件中
 		if (!TextFileWriter.appendText(publicKeyFilePath, publicKey.getContent(), CharSetValue.UTF_8)) {
 			result.setResultFailed("写入公钥失败！请联系开发者！");
@@ -63,6 +60,8 @@ public class PublicKeyServiceImpl implements PublicKeyService {
 		}
 		// 得到行数
 		publicKey.setLine(LineScanner.getTextAtLine(publicKeyFilePath, publicKey.getContent()));
+		// 填充用户
+		publicKey.setUser((User) StpUtil.getExtra(CommonValue.SA_EXTRA_USER_INFO_KEY));
 		// 存入数据库
 		publicKeyDAO.add(publicKey);
 		result.setResultSuccess("添加公钥成功！");
@@ -79,7 +78,7 @@ public class PublicKeyServiceImpl implements PublicKeyService {
 			return result;
 		}
 		// 判断当前用户是否是自身
-		if (StpUtil.getLoginId(0) != getKey.getUser().getId()) {
+		if (StpUtil.getLoginId(0) != getKey.getUser().getId().intValue()) {
 			result.setResultFailed("请勿删除其他用户的公钥！");
 			return result;
 		}

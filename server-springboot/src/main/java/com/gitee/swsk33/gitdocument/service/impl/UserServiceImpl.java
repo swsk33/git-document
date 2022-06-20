@@ -8,6 +8,7 @@ import com.gitee.swsk33.gitdocument.dao.UserDAO;
 import com.gitee.swsk33.gitdocument.dataobject.User;
 import com.gitee.swsk33.gitdocument.model.Result;
 import com.gitee.swsk33.gitdocument.param.CommonValue;
+import com.gitee.swsk33.gitdocument.service.ImageService;
 import com.gitee.swsk33.gitdocument.service.UserService;
 import com.gitee.swsk33.gitdocument.util.BCryptEncoder;
 import com.gitee.swsk33.gitdocument.util.ClassExamine;
@@ -24,6 +25,9 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private UserDAO userDAO;
+
+	@Autowired
+	private ImageService imageService;
 
 	@Override
 	public Result<User> register(User user) {
@@ -47,6 +51,8 @@ public class UserServiceImpl implements UserService {
 		}
 		// 加密密码，存入数据库
 		user.setPassword(BCryptEncoder.encode(user.getPassword()));
+		// 设定默认头像
+		user.setAvatar(imageService.getRandomAvatar().getData());
 		userDAO.add(user);
 		result.setResultSuccess("注册用户成功！");
 		return result;
@@ -75,7 +81,7 @@ public class UserServiceImpl implements UserService {
 		}
 		// 权限对比
 		if (!StpUtil.hasRole(CommonValue.Role.ADMIN)) {
-			if (StpUtil.getLoginId(0) != user.getId()) {
+			if (StpUtil.getLoginId(0) != user.getId().intValue()) {
 				result.setResultFailed("非管理员不可以修改其它用户的信息！");
 				return result;
 			}

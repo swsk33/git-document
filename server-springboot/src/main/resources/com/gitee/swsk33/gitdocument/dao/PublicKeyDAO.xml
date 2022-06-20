@@ -10,8 +10,8 @@
 	</resultMap>
 
 	<insert id="add" parameterType="com.gitee.swsk33.gitdocument.dataobject.PublicKey">
-		insert into `public_key` (line, gmt_created, gmt_modified)
-		values (#{line}, now(), now())
+		insert into `public_key` (line, user_id, gmt_created, gmt_modified)
+		values (#{line}, #{user.id}, now(), now())
 	</insert>
 
 	<delete id="delete">

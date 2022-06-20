@@ -11,7 +11,7 @@ import java.util.Queue;
 @Slf4j
 public class GitTaskContext extends Thread {
 
-	private static GitTaskContext instance = new GitTaskContext();
+	private static final GitTaskContext instance = new GitTaskContext();
 
 	/**
 	 * 存放任务的队列
@@ -24,7 +24,7 @@ public class GitTaskContext extends Thread {
 	private static Thread currentTask;
 
 	private GitTaskContext() {
-
+		this.setName("fileUpdateTaskContext");
 	}
 
 	/**
@@ -45,12 +45,12 @@ public class GitTaskContext extends Thread {
 				Thread.sleep(2000);
 				// 空闲时或者有任务正在执行时，不进行任何操作
 				if (taskQueue.isEmpty() || (currentTask != null && currentTask.isAlive())) {
-					log.info("当前不需要编排任务！");
 					continue;
 				}
 				// 否则，从任务队列取出下一个任务并执行
 				log.info("从任务队列取出一个任务！");
 				currentTask = new Thread(taskQueue.poll());
+				currentTask.setName("fileUpdateTask");
 				currentTask.start();
 			} catch (Exception e) {
 				e.printStackTrace();

@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -28,6 +29,7 @@ public class PublicKey implements Serializable {
 	/**
 	 * 内容
 	 */
+	@NotEmpty(message = "公钥内容不能为空！")
 	private String content;
 
 	/**

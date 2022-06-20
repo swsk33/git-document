@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,7 +20,8 @@ public class Role implements Serializable {
 	/**
 	 * 主键id
 	 */
-	private int id;
+	@NotNull(message = "角色id不能为空！")
+	private Integer id;
 
 	/**
 	 * 名字

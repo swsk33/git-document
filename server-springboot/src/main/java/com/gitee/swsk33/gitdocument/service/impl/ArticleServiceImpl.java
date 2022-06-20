@@ -2,6 +2,8 @@ package com.gitee.swsk33.gitdocument.service.impl;
 
 import com.gitee.swsk33.gitdocument.dao.ArticleDAO;
 import com.gitee.swsk33.gitdocument.dataobject.Article;
+import com.gitee.swsk33.gitdocument.model.ArticleDirectory;
+import com.gitee.swsk33.gitdocument.model.ArticleFile;
 import com.gitee.swsk33.gitdocument.model.Result;
 import com.gitee.swsk33.gitdocument.service.ArticleService;
 import com.gitee.swsk33.gitdocument.util.GitFileUtils;
@@ -15,6 +17,38 @@ public class ArticleServiceImpl implements ArticleService {
 
 	@Autowired
 	private ArticleDAO articleDAO;
+
+	/**
+	 * 扁平字符串路径转为树状结构
+	 *
+	 * @param articles 传入文章对象列表
+	 * @return 转换后的树状结构
+	 */
+	private ArticleDirectory parseDirectory(List<Article> articles) {
+		ArticleDirectory root = new ArticleDirectory();
+		for (Article article : articles) {
+			String[] paths = article.getFilePath().split("/");
+			// 目录指针，用于标识当前遍历的时候进入到了哪个目录中
+			ArticleDirectory pointer = root;
+			for (int i = 0; i < paths.length; i++) {
+				if (i == paths.length - 1) {
+					ArticleFile file = new ArticleFile();
+					file.setId(article.getId());
+					file.setName(paths[i]);
+					pointer.getArticles().add(file);
+					break;
+				}
+				if (pointer.getDirectoryByName(paths[i]) == null) {
+					ArticleDirectory directory = new ArticleDirectory();
+					directory.setName(paths[i]);
+					pointer.getDirectories().add(directory);
+				}
+				// 指针指向下一级目录
+				pointer = pointer.getDirectoryByName(paths[i]);
+			}
+		}
+		return root;
+	}
 
 	@Override
 	public Result<Article> getById(long id) throws Exception {
@@ -31,11 +65,11 @@ public class ArticleServiceImpl implements ArticleService {
 	}
 
 	@Override
-	public Result<List<Article>> getByAnthology(long anthologyId) {
-		Result<List<Article>> result = new Result<>();
+	public Result<ArticleDirectory> getByAnthology(long anthologyId) {
+		Result<ArticleDirectory> result = new Result<>();
 		List<Article> articles = articleDAO.getByAnthology(anthologyId);
-		// 这里仅仅返回仓库的文章列表，不返回每个文章的内容
-		result.setResultSuccess("查询文章成功！", articles);
+		result.setResultSuccess("查找成功！", parseDirectory(articles));
+		// 仅仅返回文章列表，不返回每个文章本身
 		return result;
 	}
 

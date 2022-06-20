@@ -9,21 +9,29 @@
 		<association property="anthology" select="com.gitee.swsk33.gitdocument.dao.AnthologyDAO.getById" column="anthology_id" fetchType="eager"/>
 	</resultMap>
 
+	<insert id="add" parameterType="com.gitee.swsk33.gitdocument.dataobject.Article">
+		insert into `article`
+		values (#{id}, #{filePath}, #{anthology.id}, now(), now())
+	</insert>
+
 	<insert id="batchAdd" parameterType="java.util.List">
 		insert into `article`
 		values
 		<foreach collection="articles" item="it" separator=",">
-			(#{it.id}, #{it.filePath}, now(), now())
+			(#{it.id}, #{it.filePath}, #{it.anthology.id}, now(), now())
 		</foreach>
 	</insert>
 
-	<delete id="batchDelete" parameterMap="java.util.List">
+	<delete id="delete">
 		delete
 		from `article`
-		where id in
-		<foreach collection="ids" item="id" open="(" separator="," close=")">
-			#{id}
-		</foreach>
+		where id = #{id}
+	</delete>
+
+	<delete id="deleteByPath">
+		delete
+		from `article`
+		where file_path = #{path}
 	</delete>
 
 	<update id="update" parameterType="com.gitee.swsk33.gitdocument.dataobject.Article">

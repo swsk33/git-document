@@ -1,10 +1,12 @@
 package com.gitee.swsk33.gitdocument.dataobject;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.gitee.swsk33.gitdocument.param.ValidationRules;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.constraints.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -20,21 +22,28 @@ public class User implements Serializable {
 	/**
 	 * 主键id
 	 */
-	private int id;
+	@NotNull(groups = ValidationRules.DataUpdate.class, message = "用户id不能为空！")
+	private Integer id;
 
 	/**
 	 * 用户名
 	 */
+	@NotEmpty(groups = ValidationRules.DataAdd.class, message = "用户名不能为空！")
+	@Size(groups = {ValidationRules.DataAdd.class, ValidationRules.DataUpdate.class}, max = 16, message = "用户名长度不能大于32！")
+	@Pattern(groups = {ValidationRules.DataAdd.class, ValidationRules.DataUpdate.class}, regexp = "^[\\u4E00-\\u9FA5A-Za-z0-9_]+$", message = "用户名只能是由中文、英文、数字或者下划线组成！")
 	private String username;
 
 	/**
 	 * 密码
 	 */
+	@NotEmpty(groups = ValidationRules.DataAdd.class, message = "密码不能为空！")
 	private String password;
 
 	/**
 	 * 昵称
 	 */
+	@NotEmpty(groups = ValidationRules.DataAdd.class, message = "昵称不能为空！")
+	@Size(groups = {ValidationRules.DataAdd.class, ValidationRules.DataUpdate.class}, max = 32, message = "昵称长度不能超过32！")
 	private String nickname;
 
 	/**
@@ -45,11 +54,14 @@ public class User implements Serializable {
 	/**
 	 * 邮箱
 	 */
+	@Email(groups = {ValidationRules.DataAdd.class, ValidationRules.DataUpdate.class}, message = "邮箱格式不正确！")
+	@NotEmpty(groups = ValidationRules.DataAdd.class, message = "邮箱不能为空！")
 	private String email;
 
 	/**
 	 * 角色
 	 */
+	@NotEmpty(groups = ValidationRules.DataAdd.class, message = "角色不能为空！")
 	private Role role;
 
 	/**

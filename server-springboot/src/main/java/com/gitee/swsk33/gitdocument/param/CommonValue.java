@@ -54,6 +54,16 @@ public class CommonValue {
 		 */
 		public static final String DEFAULT_AVATAR_REQUEST_PATH = EXTERNAL_REQUEST_PATH + "/avatar/default/";
 
+		/**
+		 * 自定义封面外部访问路径
+		 */
+		public static final String CUSTOM_COVER_REQUEST_PATH = EXTERNAL_REQUEST_PATH + "/cover/custom/";
+
+		/**
+		 * 默认封面外部访问路径
+		 */
+		public static final String DEFAULT_COVER_REQUEST_PATH = EXTERNAL_REQUEST_PATH + "/cover/default/";
+
 	}
 
 	/**
@@ -70,6 +80,21 @@ public class CommonValue {
 		 * 默认头像存放路径
 		 */
 		public static final String DEFAULT_AVATAR_PATH = "external-resource" + File.separator + "avatar" + File.separator + "default";
+
+		/**
+		 * 自定义封面存放路径
+		 */
+		public static final String CUSTOM_COVER_PATH = "external-resource" + File.separator + "cover" + File.separator + "custom";
+
+		/**
+		 * 默认封面存放路径
+		 */
+		public static final String DEFAULT_COVER_PATH = "external-resource" + File.separator + "cover" + File.separator + "default";
+
+		/**
+		 * 默认仓库存放位置
+		 */
+		public static final String GIT_REPO_PATH = System.getProperty("user.home") + File.separator + "git-doc-repos";
 
 	}
 

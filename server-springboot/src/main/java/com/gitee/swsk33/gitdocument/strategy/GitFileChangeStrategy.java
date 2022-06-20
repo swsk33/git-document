@@ -1,10 +1,12 @@
 package com.gitee.swsk33.gitdocument.strategy;
 
 import org.eclipse.jgit.diff.DiffEntry;
+import org.springframework.stereotype.Service;
 
 /**
  * Git文件改变策略
  */
+@Service
 public interface GitFileChangeStrategy {
 
 	/**
