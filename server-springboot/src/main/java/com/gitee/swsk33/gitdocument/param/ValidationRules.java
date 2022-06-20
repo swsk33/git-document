@@ -19,4 +19,11 @@ public class ValidationRules {
 
 	}
 
+	/**
+	 * 用户登录校验
+	 */
+	public interface UserLogin {
+
+	}
+
 }

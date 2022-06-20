@@ -28,7 +28,7 @@ public class User implements Serializable {
 	/**
 	 * 用户名
 	 */
-	@NotEmpty(groups = ValidationRules.DataAdd.class, message = "用户名不能为空！")
+	@NotEmpty(groups = {ValidationRules.DataAdd.class, ValidationRules.UserLogin.class}, message = "用户名不能为空！")
 	@Size(groups = {ValidationRules.DataAdd.class, ValidationRules.DataUpdate.class}, max = 16, message = "用户名长度不能大于32！")
 	@Pattern(groups = {ValidationRules.DataAdd.class, ValidationRules.DataUpdate.class}, regexp = "^[\\u4E00-\\u9FA5A-Za-z0-9_]+$", message = "用户名只能是由中文、英文、数字或者下划线组成！")
 	private String username;
@@ -36,7 +36,7 @@ public class User implements Serializable {
 	/**
 	 * 密码
 	 */
-	@NotEmpty(groups = ValidationRules.DataAdd.class, message = "密码不能为空！")
+	@NotEmpty(groups = {ValidationRules.DataAdd.class, ValidationRules.UserLogin.class}, message = "密码不能为空！")
 	private String password;
 
 	/**
