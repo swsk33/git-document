@@ -68,7 +68,7 @@ public class UserAPI {
 			result.setResultFailed("用户没有登录！");
 			return result;
 		}
-		result.setResultSuccess("用户已登录！", (User) StpUtil.getExtra(CommonValue.SA_USER_SESSION_INFO_KEY));
+		result.setResultSuccess("用户已登录！", (User) StpUtil.getSession().get(CommonValue.SA_USER_SESSION_INFO_KEY));
 		return result;
 	}
 
