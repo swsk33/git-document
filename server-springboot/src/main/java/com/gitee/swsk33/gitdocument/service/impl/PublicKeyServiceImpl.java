@@ -83,7 +83,7 @@ public class PublicKeyServiceImpl implements PublicKeyService {
 			return result;
 		}
 		publicKeyDAO.delete(id);
-		TextFileWriter.removeLine(publicKeyFilePath, getKey.getLine(), CharSetValue.UTF_8);
+		TextFileWriter.replaceLine(publicKeyFilePath, getKey.getLine(), "", CharSetValue.UTF_8);
 		result.setResultSuccess("移除公钥完成！");
 		return result;
 	}

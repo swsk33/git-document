@@ -61,7 +61,7 @@ public class User implements Serializable {
 	/**
 	 * 角色
 	 */
-	@NotEmpty(groups = ValidationRules.DataAdd.class, message = "角色不能为空！")
+	@NotNull(groups = ValidationRules.DataAdd.class, message = "角色不能为空！")
 	private Role role;
 
 	/**
