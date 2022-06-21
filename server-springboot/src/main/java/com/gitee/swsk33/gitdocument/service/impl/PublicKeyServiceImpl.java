@@ -61,7 +61,7 @@ public class PublicKeyServiceImpl implements PublicKeyService {
 		// 得到行数
 		publicKey.setLine(LineScanner.getTextAtLine(publicKeyFilePath, publicKey.getContent()));
 		// 填充用户
-		publicKey.setUser((User) StpUtil.getExtra(CommonValue.SA_EXTRA_USER_INFO_KEY));
+		publicKey.setUser((User) StpUtil.getSession().get(CommonValue.SA_USER_SESSION_INFO_KEY));
 		// 存入数据库
 		publicKeyDAO.add(publicKey);
 		result.setResultSuccess("添加公钥成功！");
@@ -90,9 +90,11 @@ public class PublicKeyServiceImpl implements PublicKeyService {
 
 	@SaCheckLogin
 	@Override
-	public Result<List<PublicKey>> getByUser(int userId) throws Exception {
+	public Result<List<PublicKey>> getByUser() throws Exception {
 		Result<List<PublicKey>> result = new Result<>();
-		List<PublicKey> publicKeys = publicKeyDAO.getByUserId(userId);
+		// 从登录session中获得用户信息
+		User getUser = (User) StpUtil.getSession().get(CommonValue.SA_USER_SESSION_INFO_KEY);
+		List<PublicKey> publicKeys = publicKeyDAO.getByUserId(getUser.getId());
 		for (PublicKey publicKey : publicKeys) {
 			publicKey.setContent(TextFileReader.readLine(publicKeyFilePath, publicKey.getLine(), CharSetValue.UTF_8));
 		}

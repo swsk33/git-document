@@ -1,5 +1,6 @@
 package com.gitee.swsk33.gitdocument.service.impl;
 
+import cn.dev33.satoken.annotation.SaCheckLogin;
 import com.gitee.swsk33.gitdocument.model.Result;
 import com.gitee.swsk33.gitdocument.param.CommonValue;
 import com.gitee.swsk33.gitdocument.service.ImageService;
@@ -80,6 +81,7 @@ public class ImageServiceImpl implements ImageService {
 		return imageFileNames[random.nextInt(imageFileNames.length)];
 	}
 
+	@SaCheckLogin
 	@Override
 	public Result<String> uploadAvatar(MultipartFile file) {
 		Result<String> result = saveFileToDisk(file, CommonValue.ResourcePath.USER_AVATAR_PATH, 5);
@@ -96,6 +98,7 @@ public class ImageServiceImpl implements ImageService {
 		return result;
 	}
 
+	@SaCheckLogin
 	@Override
 	public Result<String> uploadCover(MultipartFile file) {
 		Result<String> result = saveFileToDisk(file, CommonValue.ResourcePath.CUSTOM_COVER_PATH, 8);

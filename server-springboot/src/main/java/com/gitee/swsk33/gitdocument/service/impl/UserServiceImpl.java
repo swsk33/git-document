@@ -2,7 +2,6 @@ package com.gitee.swsk33.gitdocument.service.impl;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckRole;
-import cn.dev33.satoken.stp.SaLoginConfig;
 import cn.dev33.satoken.stp.StpUtil;
 import com.gitee.swsk33.gitdocument.dao.UserDAO;
 import com.gitee.swsk33.gitdocument.dataobject.User;
@@ -107,9 +106,9 @@ public class UserServiceImpl implements UserService {
 			user.setPassword(BCryptEncoder.encode(user.getPassword()));
 		}
 		userDAO.update(user);
-		// 修改信息后需要重新登录
-		StpUtil.logout(user.getId());
-		result.setResultSuccess("修改用户成功！被修改的用户需要重新登录！");
+		// 刷新用户session数据
+		StpUtil.getSessionByLoginId(user.getId()).set(CommonValue.SA_USER_SESSION_INFO_KEY, user);
+		result.setResultSuccess("修改用户成功！");
 		return result;
 	}
 
@@ -128,7 +127,9 @@ public class UserServiceImpl implements UserService {
 			return result;
 		}
 		// 执行登录
-		StpUtil.login(getUser.getId(), SaLoginConfig.setExtra(CommonValue.SA_EXTRA_USER_INFO_KEY, getUser));
+		StpUtil.login(getUser.getId());
+		// 登录后，把信息存入用户session
+		StpUtil.getSession().set(CommonValue.SA_USER_SESSION_INFO_KEY, getUser);
 		result.setResultSuccess("登录成功！");
 		return result;
 	}

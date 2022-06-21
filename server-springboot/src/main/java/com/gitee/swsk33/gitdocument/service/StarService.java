@@ -28,10 +28,8 @@ public interface StarService {
 
 	/**
 	 * 查询一个用户所有的收藏
-	 *
-	 * @param userId 用户id
 	 */
-	Result<List<Star>> getByUser(int userId);
+	Result<List<Star>> getByUser();
 
 	/**
 	 * 查询一个文集的被收藏数

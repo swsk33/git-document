@@ -1,5 +1,6 @@
 package com.gitee.swsk33.gitdocument.service.impl;
 
+import cn.dev33.satoken.annotation.SaCheckLogin;
 import com.gitee.swsk33.gitdocument.dao.ArticleDAO;
 import com.gitee.swsk33.gitdocument.dataobject.Article;
 import com.gitee.swsk33.gitdocument.model.ArticleDirectory;
@@ -50,6 +51,7 @@ public class ArticleServiceImpl implements ArticleService {
 		return root;
 	}
 
+	@SaCheckLogin
 	@Override
 	public Result<Article> getById(long id) throws Exception {
 		Result<Article> result = new Result<>();
@@ -64,6 +66,7 @@ public class ArticleServiceImpl implements ArticleService {
 		return result;
 	}
 
+	@SaCheckLogin
 	@Override
 	public Result<ArticleDirectory> getByAnthology(long anthologyId) {
 		Result<ArticleDirectory> result = new Result<>();

@@ -25,9 +25,7 @@ public interface PublicKeyService {
 
 	/**
 	 * 获取一个用户的公钥
-	 *
-	 * @param userId 用户id
 	 */
-	Result<List<PublicKey>> getByUser(int userId) throws Exception;
+	Result<List<PublicKey>> getByUser() throws Exception;
 
 }

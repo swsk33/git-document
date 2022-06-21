@@ -25,7 +25,7 @@ public class StpInterFaceImpl implements StpInterface {
 	 */
 	@Override
 	public List<String> getPermissionList(Object loginId, String loginType) {
-		User getUser = (User) StpUtil.getExtra(CommonValue.SA_EXTRA_USER_INFO_KEY);
+		User getUser = (User) StpUtil.getSession().get(CommonValue.SA_USER_SESSION_INFO_KEY);
 		List<Permission> permissions = getUser.getRole().getPermissions();
 		List<String> result = new ArrayList<>();
 		for (Permission permission : permissions) {
@@ -43,7 +43,7 @@ public class StpInterFaceImpl implements StpInterface {
 	 */
 	@Override
 	public List<String> getRoleList(Object loginId, String loginType) {
-		User getUser = (User) StpUtil.getExtra(CommonValue.SA_EXTRA_USER_INFO_KEY);
+		User getUser = (User) StpUtil.getSession().get(CommonValue.SA_USER_SESSION_INFO_KEY);
 		List<String> result = new ArrayList<>();
 		result.add(getUser.getRole().getName());
 		return result;

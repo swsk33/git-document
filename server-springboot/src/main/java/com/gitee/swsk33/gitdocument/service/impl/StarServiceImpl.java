@@ -25,7 +25,7 @@ public class StarServiceImpl implements StarService {
 	public Result<Star> add(Star star) {
 		Result<Star> result = new Result<>();
 		star.setId(SnowflakeIdGenerator.getSnowflakeId());
-		star.setUser((User) StpUtil.getExtra(CommonValue.SA_EXTRA_USER_INFO_KEY));
+		star.setUser((User) StpUtil.getSession().get(CommonValue.SA_USER_SESSION_INFO_KEY));
 		if (starDAO.add(star) < 1) {
 			result.setResultFailed("收藏失败！请联系开发者！");
 			return result;
@@ -44,7 +44,7 @@ public class StarServiceImpl implements StarService {
 			return result;
 		}
 		// 校验是否是操作者本人
-		User loginUser = (User) StpUtil.getExtra(CommonValue.SA_EXTRA_USER_INFO_KEY);
+		User loginUser = (User) StpUtil.getSession().get(CommonValue.SA_USER_SESSION_INFO_KEY);
 		if (loginUser.getId() != getStar.getUser().getId().intValue()) {
 			result.setResultFailed("不可以替别人取消收藏！");
 			return result;
@@ -54,14 +54,18 @@ public class StarServiceImpl implements StarService {
 		return result;
 	}
 
+	@SaCheckLogin
 	@Override
-	public Result<List<Star>> getByUser(int userId) {
+	public Result<List<Star>> getByUser() {
 		Result<List<Star>> result = new Result<>();
-		List<Star> stars = starDAO.getByUserId(userId);
+		// 获取当前登录用户的session缓存信息
+		User getUser = (User) StpUtil.getSession().get(CommonValue.SA_USER_SESSION_INFO_KEY);
+		List<Star> stars = starDAO.getByUserId(getUser.getId());
 		result.setResultSuccess("获取用户收藏成功！", stars);
 		return result;
 	}
 
+	@SaCheckLogin
 	@Override
 	public Result<Integer> getAnthologyStarCount(long anthologyId) {
 		Result<Integer> result = new Result<>();

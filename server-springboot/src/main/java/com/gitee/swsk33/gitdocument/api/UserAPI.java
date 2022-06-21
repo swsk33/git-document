@@ -56,19 +56,19 @@ public class UserAPI {
 		return userService.login(user);
 	}
 
-	@GetMapping("/getall")
+	@GetMapping("/get-all")
 	public Result<List<User>> getAll() {
 		return userService.getAll();
 	}
 
-	@GetMapping("/islogin")
+	@GetMapping("/is-login")
 	public Result<User> isLogin() {
 		Result<User> result = new Result<>();
 		if (!StpUtil.isLogin()) {
 			result.setResultFailed("用户没有登录！");
 			return result;
 		}
-		result.setResultSuccess("用户已登录！", (User) StpUtil.getExtra(CommonValue.SA_EXTRA_USER_INFO_KEY));
+		result.setResultSuccess("用户已登录！", (User) StpUtil.getExtra(CommonValue.SA_USER_SESSION_INFO_KEY));
 		return result;
 	}
 

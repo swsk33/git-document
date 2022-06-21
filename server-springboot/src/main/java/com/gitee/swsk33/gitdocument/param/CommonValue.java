@@ -10,7 +10,7 @@ public class CommonValue {
 	/**
 	 * sa-token的用户登录缓存额外信息键
 	 */
-	public static final String SA_EXTRA_USER_INFO_KEY = "userInfo";
+	public static final String SA_USER_SESSION_INFO_KEY = "userSession";
 
 	/**
 	 * 角色名

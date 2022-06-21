@@ -26,7 +26,6 @@ public class Star implements Serializable {
 	/**
 	 * 收藏的用户
 	 */
-	@NotEmpty(groups = ValidationRules.DataUpdate.class, message = "收藏用户不能为空！")
 	private User user;
 
 	/**
