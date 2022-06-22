@@ -1,0 +1,117 @@
+// 页面白天绿色主题
+.page-green {
+	.main-body {
+		.menu {
+			a {
+				&:active {
+					background-color: #96ff91;
+				}
+			}
+		}
+
+		.content {
+			// 定义二号标题颜色
+			h2 {
+				border-bottom-color: #55c493;
+			}
+
+			// 定义代码块颜色
+			pre {
+				border: #40b683 1.5px solid;
+				background-color: #fffbff;
+			}
+
+			// 定义文字行内代码样式
+			p, h2, h3, h4, h5, h6, li, blockquote {
+				code {
+					color: #067545;
+					background-color: #e8fff0;
+				}
+			}
+
+			// 定义引用块
+			blockquote {
+				border-left: #42b983 5px solid;
+				background-color: #d7ffe9;
+			}
+
+			// 定义列表
+			table {
+				th {
+					background-color: #00b068;
+				}
+			}
+
+			// 定义超链接
+			a {
+				color: #35a473;
+			}
+
+			// 定义分割线
+			hr {
+				border-color: #1e965c;
+			}
+		}
+	}
+}
+
+// 页面夜晚样式
+.page-night.page-green {
+	.top-bar {
+		.show-menu-button {
+			border-color: #b0ff96;
+
+			div {
+				background-color: #b0ff96;
+			}
+		}
+	}
+
+	.main-body {
+		.menu, .content, .content pre {
+			// 设定滚动条滑块
+			&::-webkit-scrollbar-thumb {
+				background: #cfffae;
+			}
+		}
+
+		.content {
+			// 定义超链接
+			a {
+				color: #8cffad;
+			}
+
+			// 定义代码块样式
+			pre {
+				background-color: #262727;
+				box-shadow: #aaffae 0 0 10px;
+			}
+
+			// 定义文字行内代码样式
+			p, h2, h3, h4, h5, h6, li, blockquote {
+				code {
+					color: #acffa4;
+					background-color: rgba(193, 255, 191, 0.12);
+				}
+			}
+
+			// 定义引用块
+			blockquote {
+				background-color: rgba(147, 255, 155, 0.1);
+			}
+
+			// 定义列表
+			table {
+				th {
+					background-color: #018c4e;
+				}
+
+				tr {
+					&:nth-child(even) {
+						background-color: rgba(133, 255, 181, 0.05);
+					}
+				}
+			}
+		}
+	}
+}
