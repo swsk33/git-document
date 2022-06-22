@@ -1022,7 +1022,7 @@ export default {
 			left: 17vw;
 			height: 100%;
 			box-sizing: border-box;
-			padding: 1vh 2vw;
+			padding: 1vh 8vw;
 
 			// 定义二号标题样式
 			h2 {
@@ -1230,12 +1230,12 @@ export default {
 }
 
 // 引入代码样式
-@import "../../assets/scss/code/github";
-@import "../../assets/scss/code/github-dark";
+@import "../../assets/scss/code/github.scss";
+@import "../../assets/scss/code/github-dark.scss";
 // 引入颜色主题
-@import "../../assets/scss/color/pink";
-@import "../../assets/scss/color/blue";
-@import "../../assets/scss/color/orange";
-@import "../../assets/scss/color/green";
-@import "../../assets/scss/color/gray";
+@import "../../assets/scss/color/pink.scss";
+@import "../../assets/scss/color/blue.scss";
+@import "../../assets/scss/color/orange.scss";
+@import "../../assets/scss/color/green.scss";
+@import "../../assets/scss/color/gray.scss";
 </style>
