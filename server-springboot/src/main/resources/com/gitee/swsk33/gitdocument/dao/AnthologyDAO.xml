@@ -38,6 +38,12 @@
 		where id = #{id}
 	</select>
 
+	<select id="getByName" resultMap="anthologyResultMap">
+		select *
+		from `anthology`
+		where name = #{name}
+	</select>
+
 	<select id="getAll" resultMap="anthologyResultMap">
 		select *
 		from `anthology`

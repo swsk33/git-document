@@ -58,6 +58,11 @@ public class AnthologyServiceImpl implements AnthologyService {
 	@Override
 	public Result<Anthology> add(Anthology anthology) {
 		Result<Anthology> result = new Result<>();
+		Anthology getAnthology = anthologyDAO.getByName(anthology.getName());
+		if (getAnthology != null) {
+			result.setResultFailed("该文集名已被使用！");
+			return result;
+		}
 		// 先去创建一个Git仓库，并加入到监听列表
 		String repoPath = CommonValue.ResourcePath.GIT_REPO_PATH + File.separator + anthology.getName() + ".git";
 		if (!GitRepositoryUtils.initGitBareRepository(repoPath)) {

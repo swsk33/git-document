@@ -43,7 +43,7 @@ create table `user`
 	`nickname`     varchar(32)   not null,
 	`avatar`       varchar(1024) not null,
 	`email`        varchar(64)   not null unique,
-	`role_id`      int unsigned not null,
+	`role_id`      int unsigned  not null,
 	`gmt_created`  datetime,
 	`gmt_modified` datetime,
 	primary key (`id`),
@@ -55,7 +55,7 @@ create table `user`
 create table `public_key`
 (
 	`id`           int unsigned auto_increment,
-	`line`         int not null,
+	`line`         int          not null,
 	`user_id`      int unsigned not null,
 	`gmt_created`  datetime,
 	`gmt_modified` datetime,
@@ -67,11 +67,11 @@ create table `public_key`
 -- 文集
 create table `anthology`
 (
-	`id`               bigint        not null,
-	`name`             varchar(64)   not null,
-	`show_name`        varchar(64)   not null,
-	`cover`            varchar(1024) not null,
-	`repo_path`        varchar(2048) not null,
+	`id`               bigint             not null,
+	`name`             varchar(64) unique not null,
+	`show_name`        varchar(64)        not null,
+	`cover`            varchar(1024)      not null,
+	`repo_path`        varchar(2048)      not null,
 	`latest_commit_id` varchar(40),
 	`gmt_created`      datetime,
 	`gmt_modified`     datetime,
@@ -95,9 +95,9 @@ create table `article`
 -- 星星（收藏）
 create table `star`
 (
-	`id`           bigint not null,
+	`id`           bigint       not null,
 	`user_id`      int unsigned not null,
-	`anthology_id` bigint not null,
+	`anthology_id` bigint       not null,
 	`gmt_created`  datetime,
 	`gmt_modified` datetime,
 	primary key (`id`),

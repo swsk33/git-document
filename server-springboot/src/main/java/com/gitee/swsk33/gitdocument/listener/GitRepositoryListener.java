@@ -77,6 +77,7 @@ public class GitRepositoryListener extends FileAlterationListenerAdaptor {
 			task.setRepositoryId(id);
 			task.setFileList(GitFileUtils.getLatestFileList(path));
 			task.setCommitId(GitRepositoryUtils.getHeadCommitId(path));
+			GitTaskContext.taskQueue.offer(task);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

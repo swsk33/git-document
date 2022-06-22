@@ -16,6 +16,8 @@ public interface AnthologyDAO {
 
 	Anthology getById(long id);
 
+	Anthology getByName(String name);
+
 	List<Anthology> getAll();
 
 }
