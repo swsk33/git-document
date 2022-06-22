@@ -1,6 +1,6 @@
 package com.gitee.swsk33.gitdocument.service.impl;
 
-import cn.dev33.satoken.annotation.SaCheckLogin;
+import cn.dev33.satoken.annotation.SaCheckRole;
 import cn.dev33.satoken.stp.StpUtil;
 import com.gitee.swsk33.gitdocument.dao.PublicKeyDAO;
 import com.gitee.swsk33.gitdocument.dataobject.PublicKey;
@@ -45,7 +45,7 @@ public class PublicKeyServiceImpl implements PublicKeyService {
 		log.info("已找到公钥文件位置：" + publicKeyFilePath);
 	}
 
-	@SaCheckLogin
+	@SaCheckRole(CommonValue.Role.ADMIN)
 	@Override
 	public Result<PublicKey> add(PublicKey publicKey) throws Exception {
 		Result<PublicKey> result = new Result<>();
@@ -58,6 +58,7 @@ public class PublicKeyServiceImpl implements PublicKeyService {
 			result.setResultFailed("写入公钥失败！请联系开发者！");
 			return result;
 		}
+		log.info("成功写入公钥至文件：" + publicKeyFilePath);
 		// 得到行数
 		publicKey.setLine(LineScanner.getTextAtLine(publicKeyFilePath, publicKey.getContent()));
 		// 填充用户
@@ -68,7 +69,7 @@ public class PublicKeyServiceImpl implements PublicKeyService {
 		return result;
 	}
 
-	@SaCheckLogin
+	@SaCheckRole(CommonValue.Role.ADMIN)
 	@Override
 	public Result<PublicKey> delete(int id) throws Exception {
 		Result<PublicKey> result = new Result<>();
@@ -82,13 +83,14 @@ public class PublicKeyServiceImpl implements PublicKeyService {
 			result.setResultFailed("请勿删除其他用户的公钥！");
 			return result;
 		}
-		publicKeyDAO.delete(id);
 		TextFileWriter.replaceLine(publicKeyFilePath, getKey.getLine(), "", CharSetValue.UTF_8);
+		log.info("移除公钥内容从文件：" + publicKeyFilePath);
+		publicKeyDAO.delete(id);
 		result.setResultSuccess("移除公钥完成！");
 		return result;
 	}
 
-	@SaCheckLogin
+	@SaCheckRole(CommonValue.Role.ADMIN)
 	@Override
 	public Result<List<PublicKey>> getByUser() throws Exception {
 		Result<List<PublicKey>> result = new Result<>();

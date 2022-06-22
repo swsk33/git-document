@@ -13,11 +13,14 @@ import com.gitee.swsk33.gitdocument.service.ImageService;
 import com.gitee.swsk33.gitdocument.util.GitRepositoryUtils;
 import com.gitee.swsk33.gitdocument.util.SnowflakeIdGenerator;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 @Slf4j
@@ -61,6 +64,7 @@ public class AnthologyServiceImpl implements AnthologyService {
 			result.setResultFailed("创建文集仓库失败！请联系开发者！");
 			return result;
 		}
+		log.info("成功创建文集仓库！位于：" + repoPath);
 		// 补充信息
 		anthology.setId(SnowflakeIdGenerator.getSnowflakeId());
 		anthology.setRepoPath(repoPath);
@@ -75,7 +79,7 @@ public class AnthologyServiceImpl implements AnthologyService {
 
 	@SaCheckRole(CommonValue.Role.ADMIN)
 	@Override
-	public Result<Anthology> delete(long id) {
+	public Result<Anthology> delete(long id) throws IOException {
 		Result<Anthology> result = new Result<>();
 		// 查找仓库
 		Anthology getAnthology = anthologyDAO.getById(id);
@@ -86,10 +90,12 @@ public class AnthologyServiceImpl implements AnthologyService {
 		// 停止文件监听
 		listenerContext.removeObserver(id);
 		// 删除仓库文件夹
-		if (!new File(getAnthology.getRepoPath()).delete()) {
+		FileUtils.deleteDirectory(new File(getAnthology.getRepoPath()));
+		if (new File(getAnthology.getRepoPath()).exists()) {
 			result.setResultFailed("删除文集仓库失败！请联系开发者！");
 			return result;
 		}
+		log.info("成功删除文集仓库：" + getAnthology.getRepoPath());
 		// 从数据库移除
 		anthologyDAO.delete(id);
 		result.setResultSuccess("删除文集成功！");
@@ -100,10 +106,11 @@ public class AnthologyServiceImpl implements AnthologyService {
 	@Override
 	public Result<Anthology> update(Anthology anthology) {
 		Result<Anthology> result = new Result<>();
-		if (anthologyDAO.update(anthology) < 1) {
-			result.setResultFailed("修改文集信息失败！");
+		if (!StringUtils.isEmpty(anthology.getLatestCommitId())) {
+			result.setResultFailed("不允许手动修改commit id！");
 			return result;
 		}
+		anthologyDAO.update(anthology);
 		result.setResultSuccess("修改文集信息成功！");
 		return result;
 	}

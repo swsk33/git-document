@@ -8,6 +8,7 @@ import lombok.Setter;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * 星星（收藏）
@@ -33,5 +34,15 @@ public class Star implements Serializable {
 	 */
 	@NotEmpty(groups = ValidationRules.DataAdd.class, message = "收藏的文集不能为空！")
 	private Anthology anthology;
+
+	/**
+	 * 创建时间
+	 */
+	private LocalDateTime gmtCreated;
+
+	/**
+	 * 修改时间
+	 */
+	private LocalDateTime gmtModified;
 
 }

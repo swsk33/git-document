@@ -34,7 +34,7 @@ public class GlobalException {
 		}
 		// 如果是角色异常
 		if (e instanceof NotRoleException) {
-			result.setResultFailed("用户没有这个角色！");
+			result.setResultFailed("用户角色权限不足！");
 			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
 			return result;
 		}

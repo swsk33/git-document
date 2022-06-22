@@ -27,7 +27,7 @@
 		update `anthology`
 		set show_name        = #{showName},
 			cover            = #{cover},
-			latest_commit_id = #{lastest_commit_id},
+			latest_commit_id = #{latestCommitId},
 			gmt_modified     = now()
 		where id = #{id}
 	</update>

@@ -9,6 +9,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -29,7 +30,7 @@ public class AnthologyAPI {
 	}
 
 	@DeleteMapping("/delete/{id}")
-	public Result<Anthology> delete(@PathVariable long id) {
+	public Result<Anthology> delete(@PathVariable long id) throws IOException {
 		return anthologyService.delete(id);
 	}
 

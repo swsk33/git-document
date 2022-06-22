@@ -53,4 +53,10 @@
 		select *
 		from `user`
 	</select>
+
+	<select id="getAllAdmin" resultMap="userResultMap">
+		select *
+		from `user`
+		where role_id = (select `id` from `role` where name = 'ROLE_ADMIN')
+	</select>
 </mapper>

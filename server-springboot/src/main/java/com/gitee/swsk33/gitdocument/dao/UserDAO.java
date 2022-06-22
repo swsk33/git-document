@@ -26,4 +26,6 @@ public interface UserDAO {
 
 	List<User> getAll();
 
+	List<User> getAllAdmin();
+
 }

@@ -4,6 +4,7 @@ import com.gitee.swsk33.gitdocument.dataobject.Anthology;
 import com.gitee.swsk33.gitdocument.model.Result;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -24,7 +25,7 @@ public interface AnthologyService {
 	 *
 	 * @param id 文集id
 	 */
-	Result<Anthology> delete(long id);
+	Result<Anthology> delete(long id) throws IOException;
 
 	/**
 	 * 修改一个文集
