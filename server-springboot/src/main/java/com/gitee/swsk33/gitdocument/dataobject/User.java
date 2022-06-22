@@ -37,6 +37,7 @@ public class User implements Serializable {
 	 * 密码
 	 */
 	@NotEmpty(groups = {ValidationRules.DataAdd.class, ValidationRules.UserLogin.class}, message = "密码不能为空！")
+	@Size(groups = {ValidationRules.DataAdd.class, ValidationRules.DataUpdate.class}, min = 8, message = "密码长度不能小于8位！")
 	private String password;
 
 	/**

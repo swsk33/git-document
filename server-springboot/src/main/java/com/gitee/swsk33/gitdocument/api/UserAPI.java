@@ -56,6 +56,14 @@ public class UserAPI {
 		return userService.login(user);
 	}
 
+	@GetMapping("/logout")
+	public Result<User> logout() {
+		StpUtil.logout();
+		Result<User> result = new Result<>();
+		result.setResultSuccess("退出登录成功！");
+		return result;
+	}
+
 	@GetMapping("/get-all")
 	public Result<List<User>> getAll() {
 		return userService.getAll();

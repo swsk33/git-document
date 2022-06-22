@@ -61,6 +61,10 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public Result<User> delete(int id) {
 		Result<User> result = new Result<>();
+		if (id == 1) {
+			result.setResultFailed("预留管理员账户不可以删除！");
+			return result;
+		}
 		if (userDAO.delete(id) < 1) {
 			result.setResultFailed("删除用户失败！");
 			return result;

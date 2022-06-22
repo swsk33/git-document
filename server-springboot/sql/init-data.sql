@@ -43,7 +43,7 @@ create table `user`
 	`nickname`     varchar(32)   not null,
 	`avatar`       varchar(1024) not null,
 	`email`        varchar(64)   not null unique,
-	`role_id`      int unsigned  not null,
+	`role_id`      int unsigned not null,
 	`gmt_created`  datetime,
 	`gmt_modified` datetime,
 	primary key (`id`),
@@ -55,7 +55,7 @@ create table `user`
 create table `public_key`
 (
 	`id`           int unsigned auto_increment,
-	`line`         int          not null,
+	`line`         int not null,
 	`user_id`      int unsigned not null,
 	`gmt_created`  datetime,
 	`gmt_modified` datetime,
@@ -95,9 +95,9 @@ create table `article`
 -- 星星（收藏）
 create table `star`
 (
-	`id`           bigint       not null,
+	`id`           bigint not null,
 	`user_id`      int unsigned not null,
-	`anthology_id` bigint       not null,
+	`anthology_id` bigint not null,
 	`gmt_created`  datetime,
 	`gmt_modified` datetime,
 	primary key (`id`),
@@ -123,4 +123,4 @@ values (1, 1),
 
 -- 初始管理员账户，用户名：admin，密码：789101112
 insert into `user` (`username`, `password`, `nickname`, `avatar`, `email`, `role_id`, `gmt_created`, `gmt_modified`)
-	value ('admin', '$2a$10$DnVDUKyYw77O5VTbQsi7XOktMOGUajGwq1xkoDn2BM6fKvMCtZNtu', 'Administrator', '/static/avatar/default/1.jpg', 'example@example.com', 1, now(), now());
+	value ('admin', '$2a$10$DnVDUKyYw77O5VTbQsi7XOktMOGUajGwq1xkoDn2BM6fKvMCtZNtu', 'Administrator', '/static/avatar/default/1.png', 'example@example.com', 1, now(), now());
