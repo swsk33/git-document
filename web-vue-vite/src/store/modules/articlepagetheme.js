@@ -92,7 +92,7 @@ export default {
 		 * @param payload 布尔值，表示菜单是否显示
 		 */
 		setMenuShow(context, payload) {
-			if (!context.state.isMobile && payload == false) {
+			if (!context.state.isMobile && payload === false) {
 				return;
 			}
 			context.commit('setMenuShow', payload);

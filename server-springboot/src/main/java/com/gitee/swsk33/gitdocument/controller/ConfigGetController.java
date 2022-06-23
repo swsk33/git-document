@@ -1,5 +1,6 @@
 package com.gitee.swsk33.gitdocument.controller;
 
+import cn.dev33.satoken.annotation.SaCheckLogin;
 import com.gitee.swsk33.gitdocument.config.GitDocConfigProperties;
 import com.gitee.swsk33.gitdocument.model.Result;
 import com.gitee.swsk33.gitdocument.param.CommonValue;
@@ -27,6 +28,7 @@ public class ConfigGetController {
 		return result;
 	}
 
+	@SaCheckLogin
 	@GetMapping("/background")
 	public String getBackground() {
 		// 若自定义图片文件不存在，则根据季节返回背景图片
@@ -44,6 +46,15 @@ public class ConfigGetController {
 			return CommonValue.RequestPath.DEFAULT_BACKGROUND_REQUEST_PATH + "autumn.jpg";
 		}
 		return CommonValue.RequestPath.DEFAULT_BACKGROUND_REQUEST_PATH + "winter.jpg";
+	}
+
+	@GetMapping("/login-background")
+	public String getLoginBackground() {
+		// 若自定义图片不存在则返回默认
+		if (new File(CommonValue.ResourcePath.CUSTOM_LOGIN_BACKGROUND).exists()) {
+			return CommonValue.RequestPath.CUSTOM_LOGIN_BACKGROUND_PATH;
+		}
+		return CommonValue.RequestPath.DEFAULT_LOGIN_BACKGROUND_PATH;
 	}
 
 }
