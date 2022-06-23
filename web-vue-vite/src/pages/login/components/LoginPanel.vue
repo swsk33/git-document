@@ -7,7 +7,7 @@
 		</div>
 		<div class="button-box">
 			<el-button class="button" type="primary" size="large">登录</el-button>
-			<el-button class="button" type="success" size="large">注册</el-button>
+			<el-button class="button" type="success" size="large" @click="$emit('showRegister')">注册</el-button>
 		</div>
 	</div>
 </template>
@@ -19,7 +19,7 @@ import { shallowRef } from 'vue';
 import { Avatar, Lock } from '@element-plus/icons-vue';
 
 // vuex
-const { mapState: userState, mapActions: userActions } = createNamespacedHelpers('user');
+const { mapActions: userActions } = createNamespacedHelpers('user');
 
 export default {
 	data() {
@@ -42,25 +42,26 @@ export default {
 
 <style lang="scss" scoped>
 .login-panel {
-	position: absolute;
+	position: relative;
 	display: flex;
 	flex-direction: column;
 	justify-content: flex-start;
 	align-items: center;
-	width: 35%;
+	width: 30%;
 	height: 50%;
-	border: 1px gray solid;
+	border-radius: 8px;
+	box-shadow: white 1px 1px 7px;
 	background: rgba(255, 255, 255, 0.42);
 
 	.text {
-		margin-top: 10%;
+		margin-top: 7%;
 		position: relative;
 		font-size: 32px;
 	}
 
 	.input-box {
 		position: relative;
-		margin-top: 12px;
+		margin-top: 16px;
 		width: 100%;
 		height: 45%;
 		display: flex;
@@ -69,7 +70,7 @@ export default {
 
 		.text-input {
 			width: 75%;
-			margin-top: 24px;
+			margin-top: 28px;
 		}
 	}
 
@@ -80,6 +81,7 @@ export default {
 		display: flex;
 		justify-content: space-evenly;
 		align-items: center;
+		margin-top: 10px;
 
 		.button {
 			width: 72px;

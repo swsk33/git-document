@@ -54,7 +54,14 @@ public class ConfigGetController {
 		if (new File(CommonValue.ResourcePath.CUSTOM_LOGIN_BACKGROUND).exists()) {
 			return CommonValue.RequestPath.CUSTOM_LOGIN_BACKGROUND_PATH;
 		}
-		return CommonValue.RequestPath.DEFAULT_LOGIN_BACKGROUND_PATH;
+		int time = LocalDateTime.now().getHour();
+		if (time >= 7 && time < 18) {
+			return CommonValue.RequestPath.DEFAULT_LOGIN_BACKGROUND_PATH + "daytime.jpg";
+		}
+		if (time >= 18 && time <= 20) {
+			return CommonValue.RequestPath.DEFAULT_LOGIN_BACKGROUND_PATH + "evening.jpg";
+		}
+		return CommonValue.RequestPath.DEFAULT_LOGIN_BACKGROUND_PATH + "night.jpg";
 	}
 
 }

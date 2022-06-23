@@ -77,7 +77,7 @@ public class CommonValue {
 		/**
 		 * 默认登录背景图
 		 */
-		public static final String DEFAULT_LOGIN_BACKGROUND_PATH = EXTERNAL_REQUEST_PATH + "/login-background/default.jpg";
+		public static final String DEFAULT_LOGIN_BACKGROUND_PATH = EXTERNAL_REQUEST_PATH + "/login-background/";
 
 		/**
 		 * 自定义登录背景图
@@ -117,19 +117,9 @@ public class CommonValue {
 		public static final String BACKGROUND_IMAGE = "external-resource" + File.separator + "background" + File.separator;
 
 		/**
-		 * 默认背景图片位置
-		 */
-		public static final String DEFAULT_BACKGROUND = BACKGROUND_IMAGE + "default" + File.separator;
-
-		/**
 		 * 自定义背景图片位置
 		 */
 		public static final String CUSTOM_BACKGROUND = BACKGROUND_IMAGE + "custom.jpg";
-
-		/**
-		 * 默认登录背景图
-		 */
-		public static final String DEFAULT_LOGIN_BACKGROUND = "external-resource" + File.separator + "login-background" + File.separator + "default.jpg";
 
 		/**
 		 * 自定义登录背景图
