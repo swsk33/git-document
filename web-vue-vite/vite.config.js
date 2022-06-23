@@ -9,12 +9,12 @@ export default defineConfig({
 		proxy: {
 			// 请求代理
 			'/api': {
-				target: 'http://127.0.0.1:8801/',
+				target: 'http://10.15.120.205:8801/',
 				changeOrigin: true
 			},
 			// 静态资源代理
 			'/static': {
-				target: 'http://127.0.0.1:8801/',
+				target: 'http://10.15.120.205:8801/',
 				changeOrigin: true
 			}
 		}

@@ -1,7 +1,7 @@
 <template>
 	<div :class="{page: true, 'page-night': isNight, 'page-pink': pageColor.pink, 'page-blue': pageColor.blue, 'page-green': pageColor.green, 'page-orange': pageColor.orange, 'page-gray': pageColor.gray}">
 		<top-bar ref="topBar"></top-bar>
-		<main-body></main-body>
+		<router-view></router-view>
 	</div>
 </template>
 
@@ -12,17 +12,14 @@ import { createNamespacedHelpers } from 'vuex';
 
 // 引入组件
 import topBar from './components/TopBar.vue';
-import mainBody from './components/MainBody.vue';
 
 // vuex模块
 const { mapState: themeState, mapActions: themeActions } = createNamespacedHelpers('articlepagetheme');
 
-
 export default {
 	components: {
 		'el-tooltip': ElTooltip,
-		'top-bar': topBar,
-		'main-body': mainBody
+		'top-bar': topBar
 	},
 	computed: {
 		...themeState(['menuShow', 'isNight', 'isMobile', 'pageColor'])
@@ -48,6 +45,8 @@ export default {
 			this.setIsMobile(true);
 			this.setMenuShow(!this.isMobile);
 		}
+		// 路由跳转
+		this.$router.push('/article/302342179344909');
 	}
 };
 </script>
@@ -67,6 +66,8 @@ export default {
 
 	.main-body {
 		.menu {
+			border-right: 1px solid #ffffff;
+
 			a {
 				color: white;
 			}

@@ -4,7 +4,8 @@ import {
 
 const routes = [
 	{
-
+		path: '/article/:id',
+		component: () => import('../pages/article/components/MainBody.vue')
 	}
 ];
 

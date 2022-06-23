@@ -64,6 +64,16 @@ public class CommonValue {
 		 */
 		public static final String DEFAULT_COVER_REQUEST_PATH = EXTERNAL_REQUEST_PATH + "/cover/default/";
 
+		/**
+		 * 默认背景图片请求路径
+		 */
+		public static final String DEFAULT_BACKGROUND_REQUEST_PATH = EXTERNAL_REQUEST_PATH + "/background/default/";
+
+		/**
+		 * 自定义背景图片请求路径
+		 */
+		public static final String CUSTOM_BACKGROUND_REQUEST_PATH = EXTERNAL_REQUEST_PATH + "/background/custom.jpg";
+
 	}
 
 	/**
@@ -90,6 +100,21 @@ public class CommonValue {
 		 * 默认封面存放路径
 		 */
 		public static final String DEFAULT_COVER_PATH = "external-resource" + File.separator + "cover" + File.separator + "default";
+
+		/**
+		 * 背景图片位置
+		 */
+		public static final String BACKGROUND_IMAGE = "external-resource" + File.separator + "background" + File.separator;
+
+		/**
+		 * 默认背景图片位置
+		 */
+		public static final String DEFAULT_BACKGROUND = BACKGROUND_IMAGE + "default" + File.separator;
+
+		/**
+		 * 自定义背景图片位置
+		 */
+		public static final String CUSTOM_BACKGROUND = BACKGROUND_IMAGE + "custom.jpg";
 
 		/**
 		 * 默认仓库存放位置
