@@ -8,6 +8,9 @@
 <script>
 import { ElNotification } from 'element-plus';
 import { sendRequest, REQUEST_METHOD } from '../../utils/request';
+import { createNamespacedHelpers } from 'vuex';
+
+const { mapActions: userAction } = createNamespacedHelpers('user');
 
 export default {
 	data() {
@@ -17,6 +20,7 @@ export default {
 		};
 	},
 	methods: {
+		...userAction(['checkLogin']),
 		toRegister() {
 			if (!this.allowPublic) {
 				ElNotification(
@@ -36,8 +40,14 @@ export default {
 		}
 	},
 	async mounted() {
+		// 若已登录则跳转到主面板
+		if (await this.checkLogin()) {
+			location.href = '/';
+			return;
+		}
 		const getOrganization = await sendRequest('/api/config-get/organization', REQUEST_METHOD.GET);
 		this.organization = getOrganization.data;
+		document.title = this.organization + ' | GitDocument - 用户登录';
 		const getAllowPublic = await sendRequest('/api/config-get/allow-public', REQUEST_METHOD.GET);
 		this.allowPublic = getAllowPublic.data;
 	}

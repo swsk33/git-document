@@ -1,3 +1,4 @@
+// 页面主题
 export default {
 	namespaced: true,
 	state: {

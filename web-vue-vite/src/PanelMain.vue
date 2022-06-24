@@ -3,13 +3,26 @@
 </template>
 
 <script>
+import { createNamespacedHelpers } from 'vuex';
+
+const { mapState: userState, mapActions: userActions } = createNamespacedHelpers('user');
+
 export default {
 	data() {
-		return {
-
-		}
+		return {};
 	},
-	mounted() {
+	computed: {
+		...userState(['userData'])
+	},
+	methods: {
+		...userActions(['checkLogin'])
+	},
+	async mounted() {
+		// 若未登录则跳转到登录页
+		if (!await this.checkLogin()) {
+			location.href = '/login';
+			return;
+		}
 	}
 };
 </script>

@@ -1,10 +1,10 @@
+// 用户
 import { sendRequest, REQUEST_METHOD } from '../../utils/request.js';
 
 export default {
 	namespaced: true,
 	state: {
-		userData: undefined,
-		isLogin: false
+		userData: undefined
 	},
 	mutations: {
 		/**
@@ -14,14 +14,6 @@ export default {
 		 */
 		setUserData(state, payload) {
 			state.userData = payload;
-		},
-		/**
-		 * 设定是否登录
-		 * @param state 数据
-		 * @param payload 布尔值，表示用户是否登录
-		 */
-		setLogin(state, payload) {
-			state.isLogin = payload;
 		}
 	},
 	actions: {
@@ -31,12 +23,11 @@ export default {
 		 */
 		async checkLogin(context) {
 			let response = await sendRequest('/api/user/is-login', REQUEST_METHOD.GET);
-			// 设定登录状态
-			context.commit('setLogin', response.success);
 			// 若登录，则设定用户数据
 			if (context.state.isLogin) {
 				context.commit('setUserData', response.data);
 			}
+			return response.success;
 		}
 	}
 };
