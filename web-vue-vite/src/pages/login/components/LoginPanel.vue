@@ -6,7 +6,7 @@
 			<el-input size="large" class="text-input" v-model="userData.password" show-password placeholder="密码" :prefix-icon="icons.lock"/>
 		</div>
 		<div class="button-box">
-			<el-button class="button" type="primary" size="large">登录</el-button>
+			<el-button class="button" type="primary" size="large" @click="login(userData)">登录</el-button>
 			<el-button class="button" type="success" size="large" @click="$emit('showRegister')">注册</el-button>
 		</div>
 	</div>
@@ -17,6 +17,8 @@ import { createNamespacedHelpers } from 'vuex';
 import { shallowRef } from 'vue';
 
 import { Avatar, Lock } from '@element-plus/icons-vue';
+import { REQUEST_METHOD, sendRequest } from '../../../utils/request';
+import { ElNotification } from 'element-plus';
 
 // vuex
 const { mapActions: userActions } = createNamespacedHelpers('user');
@@ -35,7 +37,33 @@ export default {
 		};
 	},
 	methods: {
-		...userActions(['login', 'checkLogin'])
+		...userActions(['checkLogin']),
+		/**
+		 * 登录方法
+		 */
+		async login() {
+			let response = await sendRequest('/api/user/login', REQUEST_METHOD.POST, this.userData);
+			if (!response.success) {
+				ElNotification({
+					title: '错误！',
+					message: response.message,
+					type: 'error',
+					duration: 1000
+				});
+				return;
+			}
+			ElNotification({
+				title: '成功！',
+				message: '登录成功！1s后跳转...',
+				type: 'success',
+				duration: 750
+			});
+			// 获取用户信息
+			await this.checkLogin();
+			setTimeout(() => {
+				location.href = '/';
+			}, 1000);
+		}
 	}
 };
 </script>

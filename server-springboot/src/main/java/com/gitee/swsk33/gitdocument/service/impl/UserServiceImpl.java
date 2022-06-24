@@ -3,6 +3,7 @@ package com.gitee.swsk33.gitdocument.service.impl;
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckRole;
 import cn.dev33.satoken.stp.StpUtil;
+import com.gitee.swsk33.gitdocument.config.GitDocConfigProperties;
 import com.gitee.swsk33.gitdocument.dao.UserDAO;
 import com.gitee.swsk33.gitdocument.dataobject.User;
 import com.gitee.swsk33.gitdocument.model.Result;
@@ -28,9 +29,16 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	private ImageService imageService;
 
+	@Autowired
+	private GitDocConfigProperties configProperties;
+
 	@Override
 	public Result<User> register(User user) {
 		Result<User> result = new Result<>();
+		if (!configProperties.isAllowPublic()) {
+			result.setResultFailed("本站不允许访客注册！请联系管理员。");
+			return result;
+		}
 		// 先检查用户是否已存在
 		User getUser = userDAO.getByUsernameOrEmail(user.getUsername());
 		if (getUser != null) {

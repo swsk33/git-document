@@ -70,7 +70,7 @@ public class EmailServiceImpl implements EmailService {
 		content.append("- 用户邮箱：").append(errorReport.getUser().getEmail());
 		List<User> admins = userDAO.getAllAdmin();
 		for (User user : admins) {
-			sendNotifyMail(user.getEmail(), "GitDocument - " + configProperties.getOrgName() + " - 错误报告", content.toString());
+			sendNotifyMail(user.getEmail(), "GitDocument - " + configProperties.getOrganizationName() + " - 错误报告", content.toString());
 			log.info("已向管理员：" + user.getNickname() + " 发送了错误报告通知邮件！");
 		}
 	}

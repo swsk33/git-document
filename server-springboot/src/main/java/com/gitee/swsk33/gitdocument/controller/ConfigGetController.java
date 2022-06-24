@@ -20,11 +20,19 @@ public class ConfigGetController {
 	@Autowired
 	private GitDocConfigProperties configProperties;
 
-	@GetMapping("/org")
+	@GetMapping("/organization")
 	@ResponseBody
 	public Result<String> getOrg() {
 		Result<String> result = new Result<>();
-		result.setResultSuccess("获取成功！", configProperties.getOrgName());
+		result.setResultSuccess("获取成功！", configProperties.getOrganizationName());
+		return result;
+	}
+
+	@GetMapping("/allow-public")
+	@ResponseBody
+	public Result<Boolean> allowPublic() {
+		Result<Boolean> result = new Result<>();
+		result.setResultSuccess("获取成功！", configProperties.isAllowPublic());
 		return result;
 	}
 

@@ -1,30 +1,45 @@
 <template>
 	<div class="login-page">
-		<div class="welcome-text">Welcome Back! 来自{{ org }}的成员</div>
+		<div class="welcome-text">Welcome Back! 来自{{ organization }}的成员</div>
 		<router-view class="panel" @showRegister="toRegister" @showLogin="toLogin"/>
 	</div>
 </template>
 
 <script>
+import { ElNotification } from 'element-plus';
 import { sendRequest, REQUEST_METHOD } from '../../utils/request';
 
 export default {
 	data() {
 		return {
-			org: undefined
+			organization: undefined,
+			allowPublic: false
 		};
 	},
 	methods: {
 		toRegister() {
+			if (!this.allowPublic) {
+				ElNotification(
+						{
+							title: '错误！',
+							message: '本站不允许访客注册！请联系管理员！',
+							type: 'error',
+							duration: 1000
+						}
+				);
+				return;
+			}
 			this.$router.push('/login/register');
 		},
-		toLogin(){
+		toLogin() {
 			this.$router.push('/login');
 		}
 	},
 	async mounted() {
-		const response = await sendRequest('/api/config-get/org', REQUEST_METHOD.GET);
-		this.org = response.data;
+		const getOrganization = await sendRequest('/api/config-get/organization', REQUEST_METHOD.GET);
+		this.organization = getOrganization.data;
+		const getAllowPublic = await sendRequest('/api/config-get/allow-public', REQUEST_METHOD.GET);
+		this.allowPublic = getAllowPublic.data;
 	}
 };
 </script>

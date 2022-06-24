@@ -14,6 +14,11 @@ public class GitDocConfigProperties {
 	/**
 	 * 组织名
 	 */
-	private String orgName = "git-doc-org";
+	private String organizationName = "git-doc-org";
+
+	/**
+	 * 允许访客注册
+	 */
+	private boolean allowPublic = true;
 
 }
