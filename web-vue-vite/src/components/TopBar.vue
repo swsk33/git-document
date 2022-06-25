@@ -43,7 +43,7 @@ export default {
 			const response = await sendRequest('/api/user/logout', REQUEST_METHOD.GET);
 			await this.checkLogin();
 			ElNotification({
-						title: '成功！',
+						title: '成功',
 						message: '已退出登录！',
 						type: 'success',
 						duration: 750
@@ -98,6 +98,7 @@ export default {
 		animation: menuLayout;
 		animation-duration: 0.3s;
 		animation-timing-function: ease-out;
+		z-index: 10;
 
 		.info {
 			height: 72px;

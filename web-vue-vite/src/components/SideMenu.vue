@@ -41,6 +41,7 @@ export default {
 		display: flex;
 		align-items: center;
 		height: 6vh;
+		font-weight: bold;
 		background-color: rgba(196, 192, 255, 0.65);
 
 		.icon {

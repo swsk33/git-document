@@ -2,7 +2,7 @@
 	<div class="main-panel">
 		<top-bar ref="topBar"></top-bar>
 		<side-menu></side-menu>
-		<router-view class="panel-content" />
+		<router-view class="panel-content"/>
 	</div>
 </template>
 
@@ -20,7 +20,9 @@ export default {
 		'top-bar': topBar
 	},
 	data() {
-		return {};
+		return {
+			currentSelect: 0
+		};
 	},
 	computed: {
 		...userState(['userData'])
@@ -48,6 +50,7 @@ export default {
 		} else {
 			this.$refs.topBar.role = '团队成员';
 		}
+
 	}
 };
 </script>
@@ -61,10 +64,30 @@ export default {
 
 	.panel-content {
 		position: absolute;
-		left: 16vw;
-		top: 6vh;
-		width: 84vw;
-		height: 94vh;
+		left: 18vw;
+		top: 8vh;
+		width: 80vw;
+		height: 90vh;
+		background-color: rgba(255, 255, 255, 0.45);
+		border-radius: 6px;
+		overflow-y: scroll;
+
+		// 设定滚动条整体
+		&::-webkit-scrollbar {
+			width: 5px;
+		}
+
+		// 设定滚动条滑块
+		&::-webkit-scrollbar-thumb {
+			border-radius: 10px;
+			background: rgba(0, 0, 0, 0.2);
+		}
+
+		// 设定外层轨道滚动槽
+		&::-webkit-scrollbar-track {
+			border-radius: 5px;
+			background: rgba(0, 0, 0, 0.1);
+		}
 	}
 }
 </style>

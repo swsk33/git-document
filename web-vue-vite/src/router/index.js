@@ -2,7 +2,7 @@ import {
 	createRouter, createWebHistory
 } from 'vue-router';
 
-import anthologyPanel from '../views/AnthologyPanel.vue';
+import anthologyList from '../views/AnthologyList.vue';
 
 const routes = [
 	{
@@ -19,11 +19,11 @@ const routes = [
 	},
 	{
 		path: '/',
-		component: anthologyPanel
+		component: anthologyList
 	},
 	{
 		path: '/interior-anthology',
-		component: anthologyPanel
+		component: anthologyList
 	}
 ];
 
