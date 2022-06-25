@@ -18,14 +18,16 @@ export default {
 	},
 	actions: {
 		/**
-		 * 检查用户是否登录，若已登录，则将用户数据保存到state
+		 * 检查用户是否登录，若已登录，则将用户数据保存到state，否则置为undefined
 		 * @param context 上下文
 		 */
 		async checkLogin(context) {
 			let response = await sendRequest('/api/user/is-login', REQUEST_METHOD.GET);
 			// 若登录，则设定用户数据
-			if (context.state.isLogin) {
+			if (response.success) {
 				context.commit('setUserData', response.data);
+			} else {
+				context.commit('setUserData', undefined);
 			}
 			return response.success;
 		}
