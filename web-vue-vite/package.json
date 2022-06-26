@@ -1,26 +1,26 @@
 {
-  "name": "marked-demo",
-  "private": true,
-  "version": "1.0.0",
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "@element-plus/icons-vue": "^2.0.4",
-    "axios": "^0.27.2",
-    "clipboard": "^2.0.11",
-    "element-plus": "^2.2.5",
-    "highlight.js": "^11.5.1",
-    "marked": "^4.0.16",
-    "sass": "^1.52.1",
-    "vue": "^3.2.25",
-    "vue-router": "^4.0.16",
-    "vuex": "^4.0.2"
-  },
-  "devDependencies": {
-    "@vitejs/plugin-vue": "^2.3.3",
-    "vite": "^2.9.9"
-  }
+	"name": "marked-demo",
+	"private": true,
+	"version": "1.0.0",
+	"scripts": {
+		"dev": "vite",
+		"build": "vite build --base=/web/",
+		"preview": "vite preview"
+	},
+	"dependencies": {
+		"@element-plus/icons-vue": "^2.0.4",
+		"axios": "^0.27.2",
+		"clipboard": "^2.0.11",
+		"element-plus": "^2.2.5",
+		"highlight.js": "^11.5.1",
+		"marked": "^4.0.16",
+		"sass": "^1.52.1",
+		"vue": "^3.2.25",
+		"vue-router": "^4.0.16",
+		"vuex": "^4.0.2"
+	},
+	"devDependencies": {
+		"@vitejs/plugin-vue": "^2.3.3",
+		"vite": "^2.9.9"
+	}
 }

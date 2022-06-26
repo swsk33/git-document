@@ -11,6 +11,7 @@ import { createNamespacedHelpers } from 'vuex';
 
 import topBar from './components/TopBar.vue';
 import sideMenu from './components/SideMenu.vue';
+import { REQUEST_METHOD, sendRequest } from './utils/request';
 
 const { mapState: userState, mapActions: userActions } = createNamespacedHelpers('user');
 
@@ -20,9 +21,7 @@ export default {
 		'top-bar': topBar
 	},
 	data() {
-		return {
-			currentSelect: 0
-		};
+		return {};
 	},
 	computed: {
 		...userState(['userData'])
@@ -42,17 +41,9 @@ export default {
 			location.href = '/login';
 			return;
 		}
-		// 传递信息给子组件
-		this.$refs.topBar.nickname = this.userData.nickname;
-		this.$refs.topBar.avatar = this.userData.avatar;
-		if (this.userData.role.id === 1) {
-			this.$refs.topBar.role = '管理员';
-		} else {
-			this.$refs.topBar.role = '团队成员';
-		}
-		// 传递权限
-		this.$refs.sideMenu.roleId = this.userData.role.id;
-		this.$refs.controlPanel.roleId = this.userData.role.id;
+		// 设定标题
+		const getOrganization = await sendRequest('/api/config-get/organization', REQUEST_METHOD.GET);
+		document.title = getOrganization.data + ' | GitDocument';
 	}
 };
 </script>

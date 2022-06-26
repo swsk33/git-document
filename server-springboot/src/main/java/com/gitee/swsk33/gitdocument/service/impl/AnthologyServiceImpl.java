@@ -129,6 +129,8 @@ public class AnthologyServiceImpl implements AnthologyService {
 			result.setResultFailed("该文集不存在！");
 			return result;
 		}
+		// 填充信息
+		getAnthology.setSystemUser(CommonValue.RUN_USER_NAME);
 		result.setResultSuccess("查找成功！", getAnthology);
 		return result;
 	}
@@ -138,6 +140,10 @@ public class AnthologyServiceImpl implements AnthologyService {
 	public Result<List<Anthology>> getAll() {
 		Result<List<Anthology>> result = new Result<>();
 		List<Anthology> anthologies = anthologyDAO.getAll();
+		// 填充信息
+		anthologies.forEach(item -> {
+			item.setSystemUser(CommonValue.RUN_USER_NAME);
+		});
 		result.setResultSuccess("查询成功！", anthologies);
 		return result;
 	}

@@ -1,8 +1,8 @@
 <template>
 	<div class="top-bar">
-		<el-avatar class="avatar" :src="avatar" @click.stop="menuControl(true)"></el-avatar>
+		<el-avatar class="avatar" :src="getAvatar" @click.stop="menuControl(true)"></el-avatar>
 		<div class="menu" v-if="menuShow">
-			<div class="info">{{ nickname }} <br> <span class="role-name">{{ role }}</span></div>
+			<div class="info">{{ getNickname }} <br> <span class="role-name">{{ getRole }}</span></div>
 			<ul class="menu-body">
 				<li>个人设置</li>
 				<li @click="userLogout">退出登录</li>
@@ -16,16 +16,16 @@ import { createNamespacedHelpers } from 'vuex';
 import { sendRequest, REQUEST_METHOD } from '../utils/request.js';
 import { ElNotification } from 'element-plus';
 
-const { mapActions: userActions } = createNamespacedHelpers('user');
+const { mapActions: userActions, mapGetters: userGetters } = createNamespacedHelpers('user');
 
 export default {
 	data() {
 		return {
-			nickname: undefined,
-			avatar: undefined,
-			role: undefined,
 			menuShow: false
 		};
+	},
+	computed: {
+		...userGetters(['getNickname', 'getRole', 'getAvatar'])
 	},
 	methods: {
 		...userActions(['checkLogin']),

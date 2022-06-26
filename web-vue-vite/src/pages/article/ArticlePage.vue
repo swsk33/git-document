@@ -12,9 +12,11 @@ import { createNamespacedHelpers } from 'vuex';
 
 // 引入组件
 import topBar from './components/TopBar.vue';
+import { REQUEST_METHOD, sendRequest } from '../../utils/request.js';
 
 // vuex模块
 const { mapState: themeState, mapActions: themeActions } = createNamespacedHelpers('articlepagetheme');
+const { mapActions: userActions } = createNamespacedHelpers('user');
 
 export default {
 	components: {
@@ -25,9 +27,18 @@ export default {
 		...themeState(['menuShow', 'isNight', 'isMobile', 'pageColor'])
 	},
 	methods: {
-		...themeActions(['setMenuShow', 'setIsNight', 'setIsMobile', 'setPageColor'])
+		...themeActions(['setMenuShow', 'setIsNight', 'setIsMobile', 'setPageColor']),
+		...userActions(['checkLogin'])
 	},
-	mounted() {
+	async mounted() {
+		// 若未登录则跳转到登录页
+		if (!await this.checkLogin()) {
+			location.href = '/login';
+			return;
+		}
+		// 设定标签页标题
+		const getOrganization = await sendRequest('/api/config-get/organization', REQUEST_METHOD.GET);
+		document.title = getOrganization.data + ' | GitDocument - 文档阅读';
 		// 读取本地缓存记录的主题并切换
 		this.setPageColor(window.localStorage.getItem('color'));
 		// 若没有读取到夜晚模式储存，则读取时间判断是否是晚上
@@ -45,8 +56,6 @@ export default {
 			this.setIsMobile(true);
 			this.setMenuShow(!this.isMobile);
 		}
-		// 路由跳转
-		this.$router.push('/article/302342179344909');
 	}
 };
 </script>

@@ -165,11 +165,9 @@ export default {
 		}
 	},
 	async mounted() {
-		// 先模拟登录
-		await sendRequest('/api/user/login', REQUEST_METHOD.POST, {username:'admin', password: '789101112'});
 		// 初始化文本内容
-		let response = await sendRequest('/api/article/get/' + this.$route.params.id, REQUEST_METHOD.GET);
-		this.text = marked(response.data.content);
+		const getText = await sendRequest('/api/article/get/' + this.$route.params.id, REQUEST_METHOD.GET);
+		this.text = marked(getText.data.content);
 	},
 	updated() {
 		if (!this.menuParsed) {

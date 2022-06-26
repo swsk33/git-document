@@ -1,12 +1,11 @@
 <template>
 	<div class="login-page">
 		<div class="welcome-text">Welcome Back! 来自{{ organization }}的成员</div>
-		<router-view class="panel" @showRegister="toRegister" @showLogin="toLogin"/>
+		<router-view class="panel"/>
 	</div>
 </template>
 
 <script>
-import { ElNotification } from 'element-plus';
 import { sendRequest, REQUEST_METHOD } from '../../utils/request';
 import { createNamespacedHelpers } from 'vuex';
 
@@ -15,29 +14,11 @@ const { mapActions: userAction } = createNamespacedHelpers('user');
 export default {
 	data() {
 		return {
-			organization: undefined,
-			allowPublic: false
+			organization: undefined
 		};
 	},
 	methods: {
-		...userAction(['checkLogin']),
-		toRegister() {
-			if (!this.allowPublic) {
-				ElNotification(
-						{
-							title: '错误！',
-							message: '本站不允许访客注册！请联系管理员！',
-							type: 'error',
-							duration: 1000
-						}
-				);
-				return;
-			}
-			this.$router.push('/login/register');
-		},
-		toLogin() {
-			this.$router.push('/login');
-		}
+		...userAction(['checkLogin'])
 	},
 	async mounted() {
 		// 若已登录则跳转到主面板
@@ -48,8 +29,6 @@ export default {
 		const getOrganization = await sendRequest('/api/config-get/organization', REQUEST_METHOD.GET);
 		this.organization = getOrganization.data;
 		document.title = this.organization + ' | GitDocument - 用户登录';
-		const getAllowPublic = await sendRequest('/api/config-get/allow-public', REQUEST_METHOD.GET);
-		this.allowPublic = getAllowPublic.data;
 	}
 };
 </script>

@@ -3,7 +3,7 @@ import PanelMain from './MainPanel.vue';
 import ElementPlus from 'element-plus';
 import 'element-plus/dist/index.css';
 import store from './store';
-import router from './router';
+import router from './router/index.js';
 
 // 创建实例
 const app = createApp(PanelMain);

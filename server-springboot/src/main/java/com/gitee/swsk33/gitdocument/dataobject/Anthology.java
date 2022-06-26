@@ -46,6 +46,11 @@ public class Anthology implements Serializable {
 	private String cover;
 
 	/**
+	 * 当前运行用户的用户名（用于拼接克隆文集仓库地址）
+	 */
+	private String systemUser;
+
+	/**
 	 * 对应仓库地址
 	 */
 	private String repoPath;

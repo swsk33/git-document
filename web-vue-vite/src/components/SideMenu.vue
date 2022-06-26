@@ -5,11 +5,11 @@
 			<div class="title">Navigator</div>
 		</div>
 		<ul class="content">
-			<li v-if="hasPermission('browse_article')">
+			<li v-if="hasPermission('browse_article')" @click="this.$router.push('/interior-anthology')">
 				<Box class="icon"/>
 				<div class="text">内部文章集</div>
 			</li>
-			<li v-if="hasPermission('edit_user')">
+			<li v-if="hasPermission('edit_user')" @click="this.$router.push('/user-manage')">
 				<User class="icon"/>
 				<div class="text">用户管理</div>
 			</li>
@@ -80,6 +80,9 @@ export default {
 			box-sizing: border-box;
 			user-select: none;
 			cursor: pointer;
+			transition-property: background-color, color;
+			transition-duration: 1s;
+			transition-timing-function: linear;
 
 			.icon {
 				height: 3.5vh;
@@ -87,6 +90,12 @@ export default {
 
 			.text {
 				margin-left: 1.3vw;
+			}
+
+			&:active {
+				color: white;
+				background-color: #515bff;
+				transition-duration: 0s;
 			}
 		}
 	}

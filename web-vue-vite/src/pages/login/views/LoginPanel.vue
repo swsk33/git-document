@@ -7,7 +7,7 @@
 		</div>
 		<div class="button-box">
 			<el-button class="button" type="primary" size="large" @click="login(userData)">登录</el-button>
-			<el-button class="button" type="success" size="large" @click="$emit('showRegister')">注册</el-button>
+			<el-button class="button" type="success" size="large" @click="toRegister">注册</el-button>
 		</div>
 	</div>
 </template>
@@ -33,11 +33,29 @@ export default {
 			icons: {
 				avatar: shallowRef(Avatar),
 				lock: shallowRef(Lock)
-			}
+			},
+			allowPublic: false
 		};
 	},
 	methods: {
 		...userActions(['checkLogin']),
+		/**
+		 * 跳转至注册页视图
+		 */
+		toRegister() {
+			if (!this.allowPublic) {
+				ElNotification(
+						{
+							title: '错误！',
+							message: '本站不允许访客注册！请联系管理员！',
+							type: 'error',
+							duration: 1000
+						}
+				);
+				return;
+			}
+			this.$router.push('/login/register');
+		},
 		/**
 		 * 登录方法
 		 */
@@ -64,6 +82,10 @@ export default {
 				location.href = '/';
 			}, 1000);
 		}
+	},
+	async mounted() {
+		const getAllowPublic = await sendRequest('/api/config-get/allow-public', REQUEST_METHOD.GET);
+		this.allowPublic = getAllowPublic.data;
 	}
 };
 </script>

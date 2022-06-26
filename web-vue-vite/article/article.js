@@ -3,7 +3,7 @@ import App from '../src/pages/article/ArticlePage.vue';
 import ElementPlus from 'element-plus';
 import 'element-plus/dist/index.css';
 import store from '../src/store';
-import router from '../src/router';
+import router from '../src/router/article.js';
 
 // 创建实例
 const app = createApp(App);

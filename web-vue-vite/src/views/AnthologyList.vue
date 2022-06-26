@@ -11,9 +11,9 @@
 				</div>
 				<div class="text">{{ item.showName }}</div>
 				<div class="button-box">
-					<el-button type="primary" plain class="copy-ssh" v-if="hasPermission('edit_anthology')">复制Git SSH地址</el-button>
+					<el-button type="primary" plain class="copy-ssh" :id="'copy-ssh-' + item.id" v-if="hasPermission('edit_anthology')" @click="copySSH(item.id, item.systemUser, item.repoPath)">复制Git SSH地址</el-button>
 					<el-button type="warning" plain class="edit" v-if="hasPermission('edit_anthology')">编辑</el-button>
-					<el-button type="success" plain class="go-to-read">去阅读</el-button>
+					<el-button type="success" plain class="go-to-read" @click="this.$router.push('/anthology-menu/' + item.id)">去阅读</el-button>
 				</div>
 			</li>
 		</ul>
@@ -21,6 +21,7 @@
 </template>
 
 <script>
+import ClipBoard from 'clipboard';
 import { sendRequest, REQUEST_METHOD } from '../utils/request.js';
 import { ElNotification } from 'element-plus';
 import { createNamespacedHelpers } from 'vuex';
@@ -38,11 +39,26 @@ export default {
 	},
 	methods: {
 		/**
-		 * 获取仓库SSH地址
+		 * 复制文集Git SSH克隆地址
+		 * @param id 传入文集id
+		 * @param systemUser 传入后台运行用户
 		 * @param repoPath 传入仓库路径
 		 */
-		copySSH(repoPath) {
-
+		copySSH(id, systemUser, repoPath) {
+			const clipBoard = new ClipBoard('#copy-ssh-' + id, {
+				text() {
+					return systemUser + '@' + location.hostname + ':' + repoPath;
+				}
+			});
+			clipBoard.on('success', () => {
+				ElNotification({
+					title: '成功',
+					message: '复制成功！',
+					type: 'success',
+					duration: 1000
+				});
+				clipBoard.destroy();
+			});
 		}
 	},
 	async mounted() {

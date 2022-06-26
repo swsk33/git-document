@@ -9,7 +9,7 @@
 		</div>
 		<div class="button-box">
 			<el-button class="button" type="primary" size="large" @click="register">注册</el-button>
-			<el-button class="button" type="success" size="large" @click="$emit('showLogin')">返回</el-button>
+			<el-button class="button" type="success" size="large" @click="this.$router.push('/login')">返回</el-button>
 		</div>
 	</div>
 </template>
