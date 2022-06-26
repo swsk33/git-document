@@ -1,8 +1,8 @@
 <template>
 	<div class="main-panel">
 		<top-bar ref="topBar"></top-bar>
-		<side-menu></side-menu>
-		<router-view class="panel-content"/>
+		<side-menu ref="sideMenu" @closeAvatarMenu="closeAvatarMenu"></side-menu>
+		<router-view ref="controlPanel" @click="closeAvatarMenu" class="panel-content"/>
 	</div>
 </template>
 
@@ -50,7 +50,9 @@ export default {
 		} else {
 			this.$refs.topBar.role = '团队成员';
 		}
-
+		// 传递权限
+		this.$refs.sideMenu.roleId = this.userData.role.id;
+		this.$refs.controlPanel.roleId = this.userData.role.id;
 	}
 };
 </script>

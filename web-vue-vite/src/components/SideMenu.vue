@@ -1,15 +1,15 @@
 <template>
-	<div class="side-menu">
+	<div class="side-menu" @click="$emit('closeAvatarMenu')">
 		<div class="head">
 			<Guide class="icon"/>
 			<div class="title">Navigator</div>
 		</div>
 		<ul class="content">
-			<li>
+			<li v-if="hasPermission('browse_article')">
 				<Box class="icon"/>
 				<div class="text">内部文章集</div>
 			</li>
-			<li>
+			<li v-if="hasPermission('edit_user')">
 				<User class="icon"/>
 				<div class="text">用户管理</div>
 			</li>
@@ -18,14 +18,25 @@
 </template>
 
 <script>
+import { createNamespacedHelpers } from 'vuex';
+
 import { Guide, Box, User } from '@element-plus/icons-vue';
+
+const { mapGetters: userGetters } = createNamespacedHelpers('user');
 
 export default {
 	components: {
 		Guide,
 		Box,
 		User
-	}
+	},
+	data() {
+		return {};
+	},
+	computed: {
+		...userGetters(['hasPermission'])
+	},
+	methods: {}
 };
 </script>
 

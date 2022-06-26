@@ -108,18 +108,20 @@ create table `star`
 
 
 -- 初始化一些数据
-insert into `role` (`name`)
-values ('ROLE_ADMIN'), -- id为1，管理员
-	   ('ROLE_MEMBER'); -- id为2，团队成员
+insert into `role` (`name`, `gmt_created`, `gmt_modified`)
+values ('ROLE_ADMIN', now(), now()), -- id为1，管理员
+	   ('ROLE_MEMBER', now(), now()); -- id为2，团队成员
 
-insert into `permission`(`name`)
-values ('edit_user'), -- id为1，增加或者编辑用户
-	   ('browse_article'); -- id为2，浏览文章
+insert into `permission`(`name`, `gmt_created`, `gmt_modified`)
+values ('edit_user', now(), now()),      -- id为1，增加或者编辑用户
+	   ('edit_anthology', now(), now()), -- id为2，增加或者修改或者删除文集
+	   ('browse_article', now(), now()); -- id为3，浏览内部文章
 
 insert into `role_permission`
 values (1, 1),
 	   (1, 2),
-	   (2, 2);
+	   (1, 3),
+	   (2, 3);
 
 -- 初始管理员账户，用户名：admin，密码：789101112
 insert into `user` (`username`, `password`, `nickname`, `avatar`, `email`, `role_id`, `gmt_created`, `gmt_modified`)

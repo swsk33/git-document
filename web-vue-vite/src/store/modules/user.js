@@ -31,5 +31,19 @@ export default {
 			}
 			return response.success;
 		}
+	},
+	getters: {
+		hasPermission: (state) => (permission) => {
+			if (state.userData === undefined) {
+				return false;
+			}
+			const permissions = state.userData.role.permissions;
+			for (let item of permissions) {
+				if (permission === item.name) {
+					return true;
+				}
+			}
+			return false;
+		}
 	}
 };

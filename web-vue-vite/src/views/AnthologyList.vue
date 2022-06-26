@@ -1,6 +1,9 @@
 <template>
 	<div class="anthology-panel">
-		<div class="title">文集列表</div>
+		<div class="top-box">
+			<div class="title">文集列表</div>
+			<el-button type="primary" plain class="add" size="small" v-if="hasPermission('edit_anthology')">增加文集</el-button>
+		</div>
 		<ul class="anthology-list">
 			<li v-for="item in list" :key="item.id">
 				<div class="image">
@@ -8,8 +11,8 @@
 				</div>
 				<div class="text">{{ item.showName }}</div>
 				<div class="button-box">
-					<el-button type="primary" plain class="copy-ssh">复制Git SSH地址</el-button>
-					<el-button type="warning" plain class="edit">编辑</el-button>
+					<el-button type="primary" plain class="copy-ssh" v-if="hasPermission('edit_anthology')">复制Git SSH地址</el-button>
+					<el-button type="warning" plain class="edit" v-if="hasPermission('edit_anthology')">编辑</el-button>
 					<el-button type="success" plain class="go-to-read">去阅读</el-button>
 				</div>
 			</li>
@@ -20,12 +23,27 @@
 <script>
 import { sendRequest, REQUEST_METHOD } from '../utils/request.js';
 import { ElNotification } from 'element-plus';
+import { createNamespacedHelpers } from 'vuex';
+
+const { mapGetters: userGetters } = createNamespacedHelpers('user');
 
 export default {
 	data() {
 		return {
 			list: []
 		};
+	},
+	computed: {
+		...userGetters(['hasPermission'])
+	},
+	methods: {
+		/**
+		 * 获取仓库SSH地址
+		 * @param repoPath 传入仓库路径
+		 */
+		copySSH(repoPath) {
+
+		}
 	},
 	async mounted() {
 		// 获取文集列表
@@ -46,12 +64,24 @@ export default {
 
 <style lang="scss" scoped>
 .anthology-panel {
-	.title {
+	.top-box {
 		height: 36px;
 		line-height: 36px;
-		padding-left: 2%;
 		font-size: 18px;
 		border-bottom: 1px solid #a1a1a1;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+
+		.title {
+			position: relative;
+			padding-left: 3%;
+		}
+
+		.add {
+			position: relative;
+			right: 4%;
+		}
 	}
 
 	.anthology-list {

@@ -94,7 +94,7 @@ export default {
 		right: 1vw;
 		border: 1px #dcdcdc solid;
 		border-radius: 5px;
-		background-color: rgba(255, 255, 255, 0.5);
+		background-color: rgba(255, 255, 255, 0.65);
 		animation: menuLayout;
 		animation-duration: 0.3s;
 		animation-timing-function: ease-out;
