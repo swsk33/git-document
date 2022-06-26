@@ -23,6 +23,7 @@
 				<div class="text">{{ item.name }}</div>
 			</li>
 		</ul>
+		<div class="empty-text" v-if="isEmpty">该文集为空！</div>
 	</div>
 </template>
 
@@ -120,6 +121,12 @@ export default {
 				}
 				this.currentPathHandler = path;
 			}
+		},
+		/**
+		 * 控制空仓库提示字的显示
+		 */
+		isEmpty() {
+			return this.total.directories.length === 0 && this.total.articles.length === 0;
 		}
 	},
 	watch: {
@@ -154,7 +161,7 @@ export default {
 		 */
 		goToLast() {
 			if (this.depth === -1) {
-				return;
+				this.$router.push('/interior-anthology');
 			}
 			this.depth--;
 		}
@@ -295,6 +302,14 @@ export default {
 				color: #0e8151;
 			}
 		}
+	}
+
+	.empty-text {
+		position: relative;
+		font-size: 32px;
+		color: gray;
+		text-align: center;
+		top: 15%;
 	}
 }
 </style>
