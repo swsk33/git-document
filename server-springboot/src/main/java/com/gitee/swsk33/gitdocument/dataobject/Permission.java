@@ -29,6 +29,11 @@ public class Permission implements Serializable {
 	private String name;
 
 	/**
+	 * 显示名
+	 */
+	private String showName;
+
+	/**
 	 * 拥有该权限的角色
 	 */
 	private List<Role> roles;

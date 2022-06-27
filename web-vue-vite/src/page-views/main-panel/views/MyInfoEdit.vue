@@ -11,7 +11,7 @@
 			</div>
 			<div class="password">
 				<div class="text">密码</div>
-				<el-input class="input" v-model="editUserdata.password" placeholder="不修改则留空"/>
+				<el-input class="input" v-model="editUserdata.password" show-password placeholder="不修改则留空"/>
 			</div>
 			<div class="nickname">
 				<div class="text">昵称</div>
@@ -24,9 +24,9 @@
 			<div class="public-key" v-if="hasPermission('edit_anthology')">
 				<div class="text">公钥</div>
 				<el-table class="data" :data="publicKeys" border empty-text="暂无公钥，请添加公钥后再推送文章！">
-					<el-table-column width="50" :resizable="false" label="id" prop="id"/>
+					<el-table-column width="50" :resizable="false" label="id" prop="id" align="center"/>
 					<el-table-column width="750" :resizable="false" show-overflow-tooltip label="公钥内容" prop="content"/>
-					<el-table-column class-name="column-operate" align="right">
+					<el-table-column class-name="column-operate" align="center">
 						<template #header>
 							<el-popover width="750" placement="left" title="添加SSH公钥" v-model:visible="popOverShow.publicKeyAdd">
 								<template #reference>
@@ -143,11 +143,7 @@ export default {
 		 * 发送修改用户信息请求
 		 */
 		async updateUserData() {
-			// 若修改了头像则先上传头像
-			if (this.$refs.imageUpload.beforeUploadCover !== undefined) {
-				await this.$refs.imageUpload.upload();
-			}
-			this.editUserdata.avatar = this.$refs.imageUpload.previewImage;
+			this.editUserdata.avatar = await this.$refs.imageUpload.uploadAndGetUrl();
 			const response = await sendRequest('/api/user/update', REQUEST_METHOD.PUT, this.editUserdata);
 			if (!response.success) {
 				ElNotification({
@@ -165,6 +161,8 @@ export default {
 				duration: 1000
 			});
 			await this.$router.push('/');
+			// 刷新用户信息
+			await this.checkLogin();
 		},
 		/**
 		 * 获取公钥列表
@@ -232,7 +230,7 @@ export default {
 			align-items: center;
 			justify-content: flex-start;
 			height: 48px;
-			width: 100%;
+			width: 75vw;
 
 			.text {
 				width: 8%;
@@ -261,6 +259,9 @@ export default {
 
 			.data {
 				position: relative;
+				border: #2f3aff 1px solid;
+				border-radius: 6px;
+				width: 75vw;
 			}
 		}
 	}

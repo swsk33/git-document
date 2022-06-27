@@ -24,7 +24,7 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .info-dialog {
 	position: absolute;
 	top: 0;
@@ -67,10 +67,13 @@ export default {
 			height: 80px;
 			line-height: 80px;
 			text-align: center;
+			margin-top: 2%;
 		}
 
 		.content {
 			height: 55%;
+			width: 90%;
+			left: 5%;
 			display: flex;
 			flex-direction: column;
 			align-items: center;
@@ -96,7 +99,7 @@ export default {
 		}
 
 		.button-box {
-			height: 18%;
+			height: 10%;
 			display: flex;
 			align-items: center;
 			justify-content: space-evenly;

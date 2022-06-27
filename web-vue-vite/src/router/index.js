@@ -33,6 +33,10 @@ const mainPanelRouter = {
 			component: () => import('../page-views/main-panel/views/ArticleMenu.vue')
 		},
 		{
+			path: 'user-manage',
+			component: () => import('../page-views/main-panel/views/UserManage.vue')
+		},
+		{
 			path: 'my',
 			component: () => import('../page-views/main-panel/views/MyInfoEdit.vue')
 		}

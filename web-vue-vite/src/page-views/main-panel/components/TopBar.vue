@@ -1,8 +1,8 @@
 <template>
 	<div class="top-bar">
-		<el-avatar class="avatar" :src="getAvatar" @click.stop="menuControl(true)"></el-avatar>
+		<el-avatar class="avatar" :src="userAvatar" @click.stop="menuControl(true)"></el-avatar>
 		<div class="menu" v-if="menuShow">
-			<div class="info">{{ getNickname }} <br> <span class="role-name">{{ getRole }}</span></div>
+			<div class="info">{{ userNickname }} <br> <span class="role-name">{{ userRole }}</span></div>
 			<ul class="menu-body">
 				<li @click="toUserInfo">个人设置</li>
 				<li @click="userLogout">退出登录</li>
@@ -25,7 +25,7 @@ export default {
 		};
 	},
 	computed: {
-		...userGetters(['getNickname', 'getRole', 'getAvatar'])
+		...userGetters(['userNickname', 'userRole', 'userAvatar'])
 	},
 	methods: {
 		...userActions(['checkLogin']),
@@ -47,7 +47,7 @@ export default {
 		 * 用户退出
 		 */
 		async userLogout() {
-			const response = await sendRequest('/api/user/logout', REQUEST_METHOD.GET);
+			await sendRequest('/api/user/logout', REQUEST_METHOD.GET);
 			await this.checkLogin();
 			ElNotification({
 						title: '成功',

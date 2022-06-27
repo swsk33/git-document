@@ -64,7 +64,9 @@ public class UserServiceImpl implements UserService {
 		// 加密密码，存入数据库
 		user.setPassword(BCryptEncoder.encode(user.getPassword()));
 		// 设定默认头像
-		user.setAvatar(imageService.getRandomAvatar().getData());
+		if (user.getAvatar() == null) {
+			user.setAvatar(imageService.getRandomAvatar().getData());
+		}
 		userDAO.add(user);
 		result.setResultSuccess("注册用户成功！");
 		return result;
@@ -106,6 +108,11 @@ public class UserServiceImpl implements UserService {
 				return result;
 			}
 		}
+		// 不允许修改保留管理员的权限
+		if (user.getId() == 1 && user.getRole() != null && user.getRole().getId() != 1) {
+			result.setResultFailed("不能修改保留管理员用户的权限！");
+			return result;
+		}
 		// 信息覆盖
 		ClassExamine.objectOverlap(user, getUser);
 		// 检查头像是否修改
@@ -124,7 +131,7 @@ public class UserServiceImpl implements UserService {
 		}
 		userDAO.update(user);
 		// 刷新用户session数据
-		StpUtil.getSessionByLoginId(user.getId()).set(CommonValue.SA_USER_SESSION_INFO_KEY, user);
+		StpUtil.getSessionByLoginId(user.getId()).set(CommonValue.SA_USER_SESSION_INFO_KEY, userDAO.getById(user.getId()));
 		result.setResultSuccess("修改用户成功！");
 		return result;
 	}

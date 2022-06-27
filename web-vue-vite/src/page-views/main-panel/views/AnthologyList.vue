@@ -81,11 +81,7 @@ export default {
 				id: undefined,
 				showName: undefined,
 				cover: undefined
-			},
-			// 预上传图片
-			beforeUploadCover: undefined,
-			// 预览图
-			previewImage: undefined
+			}
 		};
 	},
 	computed: {
@@ -168,11 +164,7 @@ export default {
 		 * 修改文集信息
 		 */
 		async editAnthology() {
-			// 若待上传图片不为空，则上传图片后获取图片
-			if (this.$refs.uploadImage.beforeUploadCover !== undefined) {
-				await this.$refs.uploadImage.upload();
-			}
-			this.editAnthologyInfo.cover = this.$refs.uploadImage.previewImage;
+			this.editAnthologyInfo.cover = await this.$refs.uploadImage.uploadAndGetUrl();
 			// 修改文集数据
 			const response = await sendRequest('/api/anthology/update', REQUEST_METHOD.PUT, this.editAnthologyInfo);
 			if (!response.success) {
@@ -326,13 +318,13 @@ export default {
 				margin-top: 7%;
 
 				.text {
-					width: 25%;
+					width: 128px;
 					text-align: right;
+					margin-right: 2%;
 				}
 
-
 				.input {
-					width: 60%;
+					width: 72%;
 				}
 			}
 		}

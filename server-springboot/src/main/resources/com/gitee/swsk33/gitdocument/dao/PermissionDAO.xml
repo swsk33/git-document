@@ -4,11 +4,13 @@
 	<resultMap id="permissionResultMap" type="com.gitee.swsk33.gitdocument.dataobject.Permission">
 		<id column="id" property="id"/>
 		<result column="name" property="name"/>
+		<result column="show_name" property="showName"/>
 		<result column="gmt_created" property="gmtCreated"/>
 		<result column="gmt_modified" property="gmtModified"/>
 		<collection property="roles" ofType="com.gitee.swsk33.gitdocument.dataobject.Role" fetchType="eager">
 			<id column="role_id" property="id"/>
 			<result column="role_name" property="name"/>
+			<result column="role_show_name" property="showName"/>
 			<result column="role_gmt_created" property="gmtCreated"/>
 			<result column="role_gmt_modified" property="gmtModified"/>
 		</collection>
@@ -18,6 +20,7 @@
 		select `permission`.*,
 			   `role`.id           as role_id,
 			   `role`.name         as role_name,
+			   `role`.show_name    as role_show_name,
 			   `role`.gmt_created  as role_gmt_created,
 			   `role`.gmt_modified as role_gmt_modified
 		from `permission`

@@ -1,11 +1,11 @@
 // 用户
 import { sendRequest, REQUEST_METHOD } from '../../utils/request.js';
-import br from '../../../dist/assets/MainBody.bddc26b9';
 
 export default {
 	namespaced: true,
 	state: {
-		userData: undefined
+		userData: undefined,
+		roleList: []
 	},
 	mutations: {
 		/**
@@ -15,6 +15,14 @@ export default {
 		 */
 		setUserData(state, payload) {
 			state.userData = payload;
+		},
+		/**
+		 * 设定角色列表
+		 * @param state 数据
+		 * @param payload 角色对象数组
+		 */
+		setRoleList(state, payload) {
+			state.roleList = payload;
 		}
 	},
 	actions: {
@@ -31,6 +39,16 @@ export default {
 				context.commit('setUserData', undefined);
 			}
 			return response.success;
+		},
+		/**
+		 * 获取全角色列表
+		 * @param context 上下文
+		 */
+		async getRoleList(context) {
+			let response = await sendRequest('/api/role/get-all', REQUEST_METHOD.GET);
+			if (response.success) {
+				context.commit('setRoleList', response.data);
+			}
 		}
 	},
 	getters: {
@@ -56,7 +74,7 @@ export default {
 		 * @param state 数据
 		 * @returns {undefined|*} 用户昵称
 		 */
-		getNickname(state) {
+		userNickname(state) {
 			if (state.userData === undefined) {
 				return undefined;
 			}
@@ -67,29 +85,29 @@ export default {
 		 * @param state 数据
 		 * @return {undefined|string} 用户角色名
 		 */
-		getRole(state) {
+		userRole(state) {
 			if (state.userData === undefined) {
 				return undefined;
 			}
-			switch (state.userData.role.id) {
-				case 1:
-					return '管理员';
-				case 2:
-					return '团队成员';
-				default:
-					return undefined;
-			}
+			return state.userData.role.showName;
 		},
 		/**
 		 * 获取用户头像
 		 * @param state 数据
 		 * @return {undefined|string} 用户头像url
 		 */
-		getAvatar(state) {
+		userAvatar(state) {
 			if (state.userData === undefined) {
 				return undefined;
 			}
 			return state.userData.avatar;
+		},
+		/**
+		 * 获取角色列表
+		 * @param state 数据
+		 */
+		roleList(state) {
+			return state.roleList;
 		}
 	}
 };

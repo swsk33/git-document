@@ -5,7 +5,8 @@ drop table if exists `user`, `role`, `role_permission`, `permission`, `public_ke
 create table `role`
 (
 	`id`           int unsigned auto_increment,
-	`name`         varchar(32) not null,
+	`name`         varchar(32) unique not null,
+	`show_name`    varchar(32) unique not null,
 	`gmt_created`  datetime,
 	`gmt_modified` datetime,
 	primary key (`id`)
@@ -16,7 +17,8 @@ create table `role`
 create table `permission`
 (
 	`id`           int unsigned auto_increment,
-	`name`         varchar(32) not null,
+	`name`         varchar(32) unique not null,
+	`show_name`    varchar(32) unique not null,
 	`gmt_created`  datetime,
 	`gmt_modified` datetime,
 	primary key (`id`)
@@ -108,14 +110,14 @@ create table `star`
 
 
 -- 初始化一些数据
-insert into `role` (`name`, `gmt_created`, `gmt_modified`)
-values ('ROLE_ADMIN', now(), now()), -- id为1，管理员
-	   ('ROLE_MEMBER', now(), now()); -- id为2，团队成员
+insert into `role` (`name`, `show_name`, `gmt_created`, `gmt_modified`)
+values ('ROLE_ADMIN', '管理员', now(), now()), -- id为1，管理员
+	   ('ROLE_MEMBER', '团队成员', now(), now()); -- id为2，团队成员
 
-insert into `permission`(`name`, `gmt_created`, `gmt_modified`)
-values ('edit_user', now(), now()),      -- id为1，增加或者编辑用户
-	   ('edit_anthology', now(), now()), -- id为2，增加或者修改或者删除文集
-	   ('browse_article', now(), now()); -- id为3，浏览内部文章
+insert into `permission`(`name`, `show_name`, `gmt_created`, `gmt_modified`)
+values ('edit_user', '编辑用户', now(), now()),      -- id为1，增加或者编辑用户
+	   ('edit_anthology', '编辑文集', now(), now()), -- id为2，增加或者修改或者删除文集
+	   ('browse_article', '浏览内部文章', now(), now()); -- id为3，浏览内部文章
 
 insert into `role_permission`
 values (1, 1),

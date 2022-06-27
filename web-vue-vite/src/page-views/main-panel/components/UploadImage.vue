@@ -21,12 +21,12 @@ export default {
 	data() {
 		return {
 			// 预上传图片
-			beforeUploadCover: undefined,
+			beforeUploadImage: undefined,
 			// 预览图
 			previewImage: undefined
 		};
 	},
-	// 分别是：上传API、随机获取API、初始图像、上传表单项名
+	// 分别是：上传API、随机获取API、初始图像、上传表单项名，initImage传入'init-random'时将使用随机获取的图片
 	props: ['uploadUrl', 'randomUrl', 'initImage', 'uploadName'],
 	methods: {
 		/**
@@ -34,43 +34,52 @@ export default {
 		 */
 		getImageFile(e) {
 			// 设定备选上传的文件
-			this.beforeUploadCover = e.target.files[0];
+			this.beforeUploadImage = e.target.files[0];
 			// 读取文件以预览
 			const reader = new FileReader();
 			reader.onload = () => {
 				this.previewImage = reader.result;
 			};
-			reader.readAsDataURL(this.beforeUploadCover);
+			reader.readAsDataURL(this.beforeUploadImage);
 		},
 		/**
-		 * 获取随机封面
+		 * 获取随机图片
+		 * @param showTip 是否显示提示
 		 */
-		async getRandom() {
+		async getRandom(showTip = true) {
+			this.beforeUploadImage = undefined;
 			const response = await sendRequest(this.randomUrl, REQUEST_METHOD.GET);
 			if (!response.success) {
 				ElNotification({
 					title: '错误',
-					message: '无法获取随机封面！请联系后端开发者！',
+					message: '无法获取随机图片！请联系后端开发者！',
 					type: 'error',
 					duration: 1000
 				});
 				return;
 			}
 			this.previewImage = response.data;
-			ElNotification({
-				title: '成功',
-				message: '获取随机封面成功！',
-				type: 'success',
-				duration: 1000
-			});
+			if (showTip) {
+				ElNotification({
+					title: '成功',
+					message: '获取随机图片成功！',
+					type: 'success',
+					duration: 1000
+				});
+			}
+			return this.previewImage;
 		},
 		/**
-		 * 上传图片
+		 * 上传图片并获取图片URL
+		 * @return 若没有选择上传的文件，则返回传入的原有图像地址，否则上传图片并返回地址
 		 */
-		async upload() {
+		async uploadAndGetUrl() {
+			if (this.beforeUploadImage === undefined) {
+				return this.previewImage;
+			}
 			// 创建表单对象
 			let form = new FormData();
-			form.append(this.uploadName, this.beforeUploadCover);
+			form.append(this.uploadName, this.beforeUploadImage);
 			const response = await sendRequest(this.uploadUrl, REQUEST_METHOD.POST, form);
 			if (!response.success) {
 				ElNotification({
@@ -87,11 +96,14 @@ export default {
 				type: 'success',
 				duration: 1000
 			});
-			this.previewImage = response.data;
+			return response.data;
 		}
 	},
-	mounted() {
+	async mounted() {
 		this.previewImage = this.initImage;
+		if (this.initImage === 'init-random') {
+			this.previewImage = await this.getRandom(false);
+		}
 	}
 };
 </script>

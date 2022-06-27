@@ -15,7 +15,8 @@
 
 # 自定义
 /server-springboot/config/application-dev.properties
-/server-springboot/src/main/resources/static/web/
+/server-springboot/src/main/resources/static/**
+!/server-springboot/src/main/resources/static/说明.txt
 /server-springboot/external-resource/avatar/user/
 /server-springboot/external-resource/cover/custom/
 /server-springboot/external-resource/background/custom.jpg

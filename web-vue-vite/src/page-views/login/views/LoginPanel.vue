@@ -9,6 +9,7 @@
 			<el-button class="button" type="primary" size="large" @click="login(userData)">登录</el-button>
 			<el-button class="button" type="success" size="large" @click="toRegister">注册</el-button>
 		</div>
+		<el-button class="forget-password" type="warning" size="small" @click="forgetPassword">忘记密码</el-button>
 	</div>
 </template>
 
@@ -81,6 +82,17 @@ export default {
 			setTimeout(() => {
 				location.href = '/';
 			}, 1000);
+		},
+		/**
+		 * 忘记密码
+		 */
+		forgetPassword() {
+			ElNotification({
+				title: '提示',
+				message: '请联系管理员重置密码！',
+				type: 'warning',
+				duration: 1000
+			});
 		}
 	},
 	async mounted() {
@@ -137,6 +149,12 @@ export default {
 			width: 72px;
 			font-size: 18px;
 		}
+	}
+
+	.forget-password {
+		position: absolute;
+		bottom: 8px;
+		right: 8px;
 	}
 }
 </style>

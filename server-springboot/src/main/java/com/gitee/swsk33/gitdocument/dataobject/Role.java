@@ -29,6 +29,11 @@ public class Role implements Serializable {
 	private String name;
 
 	/**
+	 * 显示名
+	 */
+	private String showName;
+
+	/**
 	 * 该角色的权限
 	 */
 	private List<Permission> permissions;
