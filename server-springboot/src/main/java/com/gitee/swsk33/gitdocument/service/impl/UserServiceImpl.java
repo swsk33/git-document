@@ -40,7 +40,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public Result<User> register(User user) {
 		Result<User> result = new Result<>();
-		if (!configProperties.isAllowPublic()) {
+		if (!StpUtil.hasRole(CommonValue.Role.ADMIN) && !configProperties.isAllowPublic()) {
 			result.setResultFailed("本站不允许访客注册！请联系管理员。");
 			return result;
 		}
