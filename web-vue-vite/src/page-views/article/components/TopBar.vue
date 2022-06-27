@@ -50,7 +50,7 @@ import { createNamespacedHelpers } from 'vuex';
 import { Check, Moon, Sunny } from '@element-plus/icons-vue';
 
 // vuex模块
-const { mapState: themeState, mapActions: themeActions } = createNamespacedHelpers('articlepagetheme');
+const { mapState: themeState, mapActions: themeActions } = createNamespacedHelpers('article-page-theme');
 
 export default {
 	components: {

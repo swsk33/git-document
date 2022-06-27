@@ -54,7 +54,7 @@ public class EmailServiceImpl implements EmailService {
 	}
 
 	@Override
-	public void SendReportToAdmin(ErrorReport errorReport) {
+	public void sendReportToAdmin(ErrorReport errorReport) {
 		StringBuilder content = new StringBuilder();
 		// 内容头
 		content.append("收到错误报告！").append(NewLineCharacter.defaultNewLineChar);
@@ -70,9 +70,16 @@ public class EmailServiceImpl implements EmailService {
 		content.append("- 用户邮箱：").append(errorReport.getUser().getEmail());
 		List<User> admins = userDAO.getAllAdmin();
 		for (User user : admins) {
-			sendNotifyMail(user.getEmail(), "GitDocument - " + configProperties.getOrganizationName() + " - 错误报告", content.toString());
+			sendNotifyMail(user.getEmail(), "GitDocument · " + configProperties.getOrganizationName() + " - 错误报告", content.toString());
 			log.info("已向管理员：" + user.getNickname() + " 发送了错误报告通知邮件！");
 		}
+	}
+
+	@Override
+	public void sendPasswordResetEmail(String email, String password) {
+		String content = "您的密码被重置为：" + password + NewLineCharacter.defaultNewLineChar + "请先用该密码登录，然后尽快登录并修改您的密码！";
+		sendNotifyMail(email, "GitDocument · " + configProperties.getOrganizationName() + " - 密码重置", content);
+		log.info("已向邮箱：" + email + " 发送了密码重置邮件！");
 	}
 
 }

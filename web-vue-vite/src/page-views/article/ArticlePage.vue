@@ -17,7 +17,7 @@ import mainBody from './views/MainBody.vue';
 import { REQUEST_METHOD, sendRequest } from '../../utils/request.js';
 
 // vuex模块
-const { mapState: themeState, mapActions: themeActions } = createNamespacedHelpers('articlepagetheme');
+const { mapState: themeState, mapActions: themeActions } = createNamespacedHelpers('article-page-theme');
 const { mapActions: userActions } = createNamespacedHelpers('user');
 
 export default {

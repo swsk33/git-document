@@ -28,7 +28,7 @@ public class ErrorReportServiceImpl implements ErrorReportService {
 		// 填充信息
 		report.setUser((User) StpUtil.getSession().get(CommonValue.SA_USER_SESSION_INFO_KEY));
 		report.setArticle(articleDAO.getById(report.getArticle().getId()));
-		emailService.SendReportToAdmin(report);
+		emailService.sendReportToAdmin(report);
 		result.setResultSuccess("已提交错误报告！");
 		return result;
 	}

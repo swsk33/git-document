@@ -80,4 +80,9 @@ public class UserAPI {
 		return result;
 	}
 
+	@GetMapping("/admin-reset-password/{id}")
+	public Result<User> adminResetPassword(@PathVariable("id") int id) {
+		return userService.adminResetPassword(id);
+	}
+
 }

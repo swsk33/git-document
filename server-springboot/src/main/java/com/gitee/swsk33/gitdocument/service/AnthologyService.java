@@ -32,7 +32,7 @@ public interface AnthologyService {
 	 *
 	 * @param anthology 文集对象
 	 */
-	Result<Anthology> update(Anthology anthology);
+	Result<Anthology> update(Anthology anthology) throws Exception;
 
 	/**
 	 * 根据id获取文集

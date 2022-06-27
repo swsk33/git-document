@@ -22,7 +22,7 @@ import highlight from 'highlight.js';
 import ClipBoard from 'clipboard';
 
 // vuex模块
-const { mapState: themeState, mapActions: themeActions } = createNamespacedHelpers('articlepagetheme');
+const { mapState: themeState, mapActions: themeActions } = createNamespacedHelpers('article-page-theme');
 
 marked.setOptions({
 			renderer: new marked.Renderer(),

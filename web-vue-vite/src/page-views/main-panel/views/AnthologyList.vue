@@ -13,7 +13,7 @@
 				<div class="button-box">
 					<el-button type="primary" plain class="copy-ssh" :id="'copy-ssh-' + item.id" v-if="hasPermission('edit_anthology')" @click="copySSH(item.id, item.systemUser, item.repoPath)">复制Git SSH地址</el-button>
 					<el-button type="warning" plain class="edit" v-if="hasPermission('edit_anthology')" @click="showEditDialog(item)">编辑</el-button>
-					<el-button type="success" plain class="go-to-read" @click="this.$router.push('/anthology-menu/' + item.id)">去阅读</el-button>
+					<el-button type="success" plain class="go-to-read" @click="this.$router.push('/article-menu/' + item.id)">去阅读</el-button>
 				</div>
 			</li>
 		</ul>

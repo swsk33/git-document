@@ -10,6 +10,7 @@ import com.gitee.swsk33.gitdocument.param.CommonValue;
 import com.gitee.swsk33.gitdocument.service.AnthologyService;
 import com.gitee.swsk33.gitdocument.context.GitFileListenerContext;
 import com.gitee.swsk33.gitdocument.service.ImageService;
+import com.gitee.swsk33.gitdocument.util.ClassExamine;
 import com.gitee.swsk33.gitdocument.util.GitRepositoryUtils;
 import com.gitee.swsk33.gitdocument.util.SnowflakeIdGenerator;
 import lombok.extern.slf4j.Slf4j;
@@ -109,12 +110,15 @@ public class AnthologyServiceImpl implements AnthologyService {
 
 	@SaCheckRole(CommonValue.Role.ADMIN)
 	@Override
-	public Result<Anthology> update(Anthology anthology) {
+	public Result<Anthology> update(Anthology anthology) throws Exception {
 		Result<Anthology> result = new Result<>();
 		if (!StringUtils.isEmpty(anthology.getLatestCommitId())) {
 			result.setResultFailed("不允许手动修改commit id！");
 			return result;
 		}
+		// 补全
+		Anthology getAnthology = anthologyDAO.getById(anthology.getId());
+		ClassExamine.objectOverlap(anthology, getAnthology);
 		anthologyDAO.update(anthology);
 		result.setResultSuccess("修改文集信息成功！");
 		return result;

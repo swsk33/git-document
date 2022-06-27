@@ -5,15 +5,15 @@ import {
 // 登录页路由
 const loginPageRouter = {
 	path: '/login',
-	component: () => import('../pageviews/login/LoginPage.vue'),
+	component: () => import('../page-views/login/LoginPage.vue'),
 	children: [
 		{
 			path: '',
-			component: () => import('../pageviews/login/views/LoginPanel.vue')
+			component: () => import('../page-views/login/views/LoginPanel.vue')
 		},
 		{
 			path: 'register',
-			component: () => import('../pageviews/login/views/RegisterPanel.vue')
+			component: () => import('../page-views/login/views/RegisterPanel.vue')
 		}
 	]
 };
@@ -21,16 +21,20 @@ const loginPageRouter = {
 // 主面板路由
 const mainPanelRouter = {
 	path: '/',
-	component: () => import('../pageviews/mainpanel/MainPanel.vue'),
+	component: () => import('../page-views/main-panel/MainPanel.vue'),
 	redirect: '/interior-anthology',
 	children: [
 		{
 			path: 'interior-anthology',
-			component: () => import('../pageviews/mainpanel/views/AnthologyList.vue')
+			component: () => import('../page-views/main-panel/views/AnthologyList.vue')
 		},
 		{
-			path: 'anthology-menu/:id',
-			component: () => import('../pageviews/mainpanel/views/AnthologyMenu.vue')
+			path: 'article-menu/:id',
+			component: () => import('../page-views/main-panel/views/ArticleMenu.vue')
+		},
+		{
+			path: 'my',
+			component: () => import('../page-views/main-panel/views/MyInfoEdit.vue')
 		}
 	]
 };
@@ -38,7 +42,7 @@ const mainPanelRouter = {
 // 文章页路由
 const articleRouter = {
 	path: '/article/:id',
-	component: () => import('../pageviews/article/ArticlePage.vue')
+	component: () => import('../page-views/article/ArticlePage.vue')
 };
 
 const routes = [loginPageRouter, mainPanelRouter, articleRouter];

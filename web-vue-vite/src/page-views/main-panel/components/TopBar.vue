@@ -4,7 +4,7 @@
 		<div class="menu" v-if="menuShow">
 			<div class="info">{{ getNickname }} <br> <span class="role-name">{{ getRole }}</span></div>
 			<ul class="menu-body">
-				<li>个人设置</li>
+				<li @click="toUserInfo">个人设置</li>
 				<li @click="userLogout">退出登录</li>
 			</ul>
 		</div>
@@ -35,6 +35,13 @@ export default {
 		 */
 		menuControl(show) {
 			this.menuShow = show;
+		},
+		/**
+		 * 进入个人中心页面
+		 */
+		toUserInfo() {
+			this.$router.push('/my');
+			this.menuShow = false;
 		},
 		/**
 		 * 用户退出
@@ -71,8 +78,9 @@ export default {
 		right: 1vw;
 		user-select: none;
 		cursor: pointer;
-		width: 4.5vh;
-		height: 4.5vh;
+		width: 5vh;
+		height: 5vh;
+		border: 1px #ffd888 solid;
 	}
 
 	@keyframes menuLayout {

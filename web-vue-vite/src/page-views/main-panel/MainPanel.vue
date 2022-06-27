@@ -68,6 +68,7 @@ export default {
 		// 设定滚动条整体
 		&::-webkit-scrollbar {
 			width: 5px;
+			height: 5px;
 		}
 
 		// 设定滚动条滑块

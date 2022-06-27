@@ -53,6 +53,10 @@ public class PublicKeyServiceImpl implements PublicKeyService {
 			result.setResultFailed("待添加的公钥已存在！无需重复添加！");
 			return result;
 		}
+		if (publicKey.getContent().contains("\r") || publicKey.getContent().contains("\n")) {
+			result.setResultFailed("公钥内容不合法！");
+			return result;
+		}
 		// 写入公钥到文件中
 		if (!TextFileWriter.appendText(publicKeyFilePath, publicKey.getContent(), CharSetValue.UTF_8)) {
 			result.setResultFailed("写入公钥失败！请联系开发者！");

@@ -26,6 +26,7 @@ export default {
 			previewImage: undefined
 		};
 	},
+	// 分别是：上传API、随机获取API、初始图像、上传表单项名
 	props: ['uploadUrl', 'randomUrl', 'initImage', 'uploadName'],
 	methods: {
 		/**
@@ -95,7 +96,7 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .upload-image {
 	position: relative;
 	width: 90%;

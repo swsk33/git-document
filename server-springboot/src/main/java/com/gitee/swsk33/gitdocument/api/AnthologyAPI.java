@@ -35,7 +35,7 @@ public class AnthologyAPI {
 	}
 
 	@PutMapping("/update")
-	public Result<Anthology> update(@Validated(ValidationRules.DataUpdate.class) @RequestBody Anthology anthology, BindingResult errors) {
+	public Result<Anthology> update(@Validated(ValidationRules.DataUpdate.class) @RequestBody Anthology anthology, BindingResult errors) throws Exception {
 		if (errors.hasErrors()) {
 			Result<Anthology> result = new Result<>();
 			result.setResultFailed(errors.getFieldError().getDefaultMessage());

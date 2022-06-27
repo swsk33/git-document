@@ -42,4 +42,9 @@ public interface UserService {
 	 */
 	Result<List<User>> getAll();
 
+	/**
+	 * 管理员重置用户密码
+	 */
+	Result<User> adminResetPassword(int id);
+
 }
