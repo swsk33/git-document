@@ -13,7 +13,7 @@
 
 <script>
 import { createNamespacedHelpers } from 'vuex';
-import { sendRequest, REQUEST_METHOD } from '../utils/request.js';
+import { sendRequest, REQUEST_METHOD } from '../../../utils/request.js';
 import { ElNotification } from 'element-plus';
 
 const { mapActions: userActions, mapGetters: userGetters } = createNamespacedHelpers('user');

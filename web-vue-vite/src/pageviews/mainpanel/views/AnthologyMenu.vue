@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import { sendRequest, REQUEST_METHOD } from '../utils/request.js';
+import { sendRequest, REQUEST_METHOD } from '../../../utils/request.js';
 import { ElNotification } from 'element-plus';
 import { Folder, Document, Top } from '@element-plus/icons-vue';
 import { shallowRef } from 'vue';

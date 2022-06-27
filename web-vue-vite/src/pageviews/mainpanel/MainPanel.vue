@@ -11,7 +11,7 @@ import { createNamespacedHelpers } from 'vuex';
 
 import topBar from './components/TopBar.vue';
 import sideMenu from './components/SideMenu.vue';
-import { REQUEST_METHOD, sendRequest } from './utils/request';
+import { REQUEST_METHOD, sendRequest } from '../../utils/request';
 
 const { mapState: userState, mapActions: userActions } = createNamespacedHelpers('user');
 

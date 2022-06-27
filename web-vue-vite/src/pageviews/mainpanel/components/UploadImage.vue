@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import { REQUEST_METHOD, sendRequest } from '../utils/request.js';
+import { REQUEST_METHOD, sendRequest } from '../../../utils/request.js';
 import { ElNotification } from 'element-plus';
 
 export default {

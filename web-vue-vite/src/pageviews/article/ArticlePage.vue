@@ -1,6 +1,7 @@
 <template>
 	<div :class="{page: true, 'page-night': isNight, 'page-pink': pageColor.pink, 'page-blue': pageColor.blue, 'page-green': pageColor.green, 'page-orange': pageColor.orange, 'page-gray': pageColor.gray}">
 		<top-bar ref="topBar"></top-bar>
+		<main-body></main-body>
 		<router-view></router-view>
 	</div>
 </template>
@@ -12,6 +13,7 @@ import { createNamespacedHelpers } from 'vuex';
 
 // 引入组件
 import topBar from './components/TopBar.vue';
+import mainBody from './views/MainBody.vue';
 import { REQUEST_METHOD, sendRequest } from '../../utils/request.js';
 
 // vuex模块
@@ -21,7 +23,8 @@ const { mapActions: userActions } = createNamespacedHelpers('user');
 export default {
 	components: {
 		'el-tooltip': ElTooltip,
-		'top-bar': topBar
+		'top-bar': topBar,
+		'main-body': mainBody
 	},
 	computed: {
 		...themeState(['menuShow', 'isNight', 'isMobile', 'pageColor'])

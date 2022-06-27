@@ -59,7 +59,7 @@
 import ClipBoard from 'clipboard';
 import infoDialog from '../components/InfoDialog.vue';
 import uploadImage from '../components/UploadImage.vue';
-import { sendRequest, REQUEST_METHOD } from '../utils/request.js';
+import { sendRequest, REQUEST_METHOD } from '../../../utils/request.js';
 import { ElNotification } from 'element-plus';
 import { createNamespacedHelpers } from 'vuex';
 

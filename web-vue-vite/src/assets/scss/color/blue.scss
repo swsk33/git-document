@@ -10,6 +10,11 @@
 		}
 
 		.content {
+			// 定义一号标题颜色
+			h1 {
+				border-bottom-color: #2c5dff;
+			}
+
 			// 定义二号标题颜色
 			h2 {
 				border-bottom-color: #6dc1ff;
@@ -22,7 +27,7 @@
 			}
 
 			// 定义文字行内代码样式
-			p, h2, h3, h4, h5, h6, li, blockquote {
+			p, h1, h2, h3, h4, h5, h6, li, blockquote {
 				code {
 					color: #0040ff;
 					background-color: #e5eaff;

@@ -1,12 +1,12 @@
 import { createApp } from 'vue';
-import PanelMain from './MainPanel.vue';
+import App from './App.vue';
 import ElementPlus from 'element-plus';
 import 'element-plus/dist/index.css';
 import store from './store';
-import router from './router/index.js';
+import router from './router';
 
 // 创建实例
-const app = createApp(PanelMain);
+const app = createApp(App);
 // 使用组件
 app.use(ElementPlus);
 app.use(store);

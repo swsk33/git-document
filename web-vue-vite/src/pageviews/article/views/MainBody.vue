@@ -252,6 +252,11 @@ export default {
 		box-sizing: border-box;
 		padding: 1vh 8vw;
 
+		// 定义一号标题样式
+		h1 {
+			border-bottom: 1px solid;
+		}
+
 		// 定义二号标题样式
 		h2 {
 			border-bottom: 1px solid;
@@ -302,7 +307,7 @@ export default {
 		}
 
 		// 定义文字行内代码样式
-		p, h2, h3, h4, h5, h6, li, blockquote {
+		p, h1, h2, h3, h4, h5, h6, li, blockquote {
 			code {
 				display: inline-block;
 				line-height: 125%;
@@ -311,6 +316,20 @@ export default {
 				padding-right: 5px;
 				margin-left: 2px;
 				margin-right: 2px;
+			}
+		}
+
+		// 调整一号标题代码样式
+		h1 {
+			code {
+				line-height: 200%;
+			}
+		}
+
+		// 调整二号标题代码样式
+		h2 {
+			code {
+				line-height: 180%;
 			}
 		}
 
@@ -339,7 +358,7 @@ export default {
 				display: block;
 				margin: 0 auto;
 				// 设定图片最大宽度
-				max-width: 95%;
+				max-width: 100%;
 			}
 		}
 
