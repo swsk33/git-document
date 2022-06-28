@@ -1,0 +1,18 @@
+#!/bin/bash
+# 最后移除端口转发
+
+# 移除转发配置，第一个参数为被转发端口，第二个参数为转发目标端口
+removeForward() {
+	# 根据端口转发列表查询输出的内容获取我们端口转发具体的位置，得到查询内容的结果字符串
+	route=$(sudo iptables -t nat -nL --line | grep "tcp dpt:$1 redir ports $2")
+	# 序号位于结果字符串首尾，因此先获取结果的第一个空格的位置
+	index=$(expr $(expr index "$route" " ") - 1)
+	# 利用这个空格的位置，裁剪结果字符串得到了序号，用序号才能移除端口转发配置
+	num=$(expr substr "$route" 1 $index)
+	# 最后移除转发
+	sudo iptables -t nat -D PREROUTING $num
+}
+
+echo 正在移除端口转发配置...
+removeForward 80 8800
+removeForward 443 8443

@@ -1,0 +1,3 @@
+这里是可执行文件所在目录，需要将最终打包的jar文件重命名为git-document.jar，和external-resource文件夹一起放在这里，并把项目中的初始化sql文件放进external-resource目录下。
+
+最终打包时请删除该说明文件。

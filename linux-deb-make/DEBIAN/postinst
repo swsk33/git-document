@@ -1,0 +1,14 @@
+#!/bin/bash
+# 安装时，添加端口转发，将非80/443端口转发到上面，使得普通用户也可以运行这个后台服务端
+echo --------------------------GitDocument 初始化------------------------------
+echo 正在开启端口转发功能...
+sudo sysctl -w net.ipv4.ip_forward=1
+sudo sysctl -p
+echo 正在配置端口转发...
+sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8800
+sudo iptables -t nat -A PREROUTING -p tcp --dport 443 -j REDIRECT --to-ports 8443
+echo 已将80转发到8800，443转发到8443
+echo 正在设定目录权限...
+sudo chmod -R 777 /opt/git-document/external-resource
+echo 修改权限完成！
+echo 已完成初始化！
