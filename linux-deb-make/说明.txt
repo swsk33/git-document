@@ -4,7 +4,7 @@
 
 - DEBIAN/postinst
 - DEBIAN/postrm
-- opt/git-document/doc-start.sh
+- usr/bin/git-doc-start
 
 除此之外，DEBIAN目录的权限需要是755，通过如下命令：
 

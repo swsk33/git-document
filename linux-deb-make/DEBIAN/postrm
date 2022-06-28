@@ -16,3 +16,6 @@ removeForward() {
 echo 正在移除端口转发配置...
 removeForward 80 8800
 removeForward 443 8443
+# 移除配置文件中关于端口转发的内容
+sudo sed -i '/net.ipv4.ip_forward/d' /etc/sysctl.conf
+sudo sysctl -p
