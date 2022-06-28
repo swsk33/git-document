@@ -6,7 +6,7 @@
 		</div>
 		<el-table class="user-list" :data="userList" border row-class-name="user-list-row" empty-text="没有用户">
 			<el-table-column prop="id" label="id" width="60" align="center"/>
-			<el-table-column label="头像" width="100" :resizable="false" align="center">
+			<el-table-column label="头像" width="120" :resizable="false" align="center">
 				<template #default="scope">
 					<img :src="scope.row.avatar" alt="无法显示">
 				</template>
@@ -298,7 +298,7 @@ export default {
 			}
 
 			.input {
-				width: 115%;
+				width: 135%;
 				margin-left: 3%;
 			}
 		}

@@ -118,7 +118,7 @@ export default {
 	justify-content: flex-start;
 	align-items: center;
 	width: 30%;
-	height: 50%;
+	height: 45%;
 	border-radius: 8px;
 	box-shadow: white 1px 1px 7px;
 	background: rgba(255, 255, 255, 0.42);
@@ -131,7 +131,6 @@ export default {
 
 	.input-box {
 		position: relative;
-		margin-top: 16px;
 		width: 100%;
 		height: 45%;
 		display: flex;
@@ -140,7 +139,7 @@ export default {
 
 		.text-input {
 			width: 75%;
-			margin-top: 28px;
+			margin-top: 10%;
 		}
 	}
 
@@ -151,10 +150,9 @@ export default {
 		display: flex;
 		justify-content: space-evenly;
 		align-items: center;
-		margin-top: 10px;
+		margin-top: 5%;
 
 		.button {
-			width: 72px;
 			font-size: 18px;
 		}
 	}

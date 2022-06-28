@@ -71,7 +71,7 @@ export default {
 		}
 
 		.content {
-			height: 55%;
+			height: 60%;
 			width: 90%;
 			left: 5%;
 			display: flex;
@@ -100,6 +100,7 @@ export default {
 
 		.button-box {
 			height: 10%;
+			margin-top: 3%;
 			display: flex;
 			align-items: center;
 			justify-content: space-evenly;

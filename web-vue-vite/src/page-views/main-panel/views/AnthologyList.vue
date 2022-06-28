@@ -333,11 +333,11 @@ export default {
 			}
 
 			.name {
-				margin-top: 8%;
+				margin-top: 12%;
 			}
 
 			.show-name {
-				margin-top: 10%;
+				margin-top: 15%;
 			}
 		}
 	}
@@ -345,7 +345,7 @@ export default {
 	.edit-anthology {
 		.content {
 			.cover {
-				margin-top: 4%;
+				margin-top: 8%;
 			}
 
 			.show-name {
@@ -353,7 +353,7 @@ export default {
 				width: 90%;
 				justify-content: space-evenly;
 				align-items: center;
-				margin-top: 7%;
+				margin-top: 9%;
 
 				.text {
 					width: 128px;
@@ -370,8 +370,7 @@ export default {
 		.button-box {
 			.delete-button {
 				position: absolute;
-				right: 2%;
-				bottom: -100%;
+				right: 3%;
 			}
 		}
 	}
