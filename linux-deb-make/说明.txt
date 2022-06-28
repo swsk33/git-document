@@ -1,11 +1,14 @@
 这里是Linux制作安装包用的脚本和配置。
 
-以下脚本需要在打包之前添加可执行权限：
+以下脚本需要在打包之前添加可执行权限，通过chmod +x命令：
 
 - DEBIAN/postinst
 - DEBIAN/postrm
 - opt/git-document/doc-start.sh
 
+除此之外，DEBIAN目录的权限需要是755，通过如下命令：
+
+chmod -R 755 DEBIAN
 
 
 最终打包时请删除该说明文件。
