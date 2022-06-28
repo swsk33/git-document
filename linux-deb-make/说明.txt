@@ -10,5 +10,8 @@
 
 chmod -R 755 DEBIAN
 
+最后，需要检查DEBIAN目录下所有文件和usr/bin/git-doc-start脚本的换行符，务必要是LF，否则会出现问题。
+
+通过vim命令打开这些文件，然后在命令模式下输入 :set ff=unix ，然后:wq保存退出即可更改换行符为LF。
 
 最终打包时请删除该说明文件。

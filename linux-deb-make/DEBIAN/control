@@ -8,4 +8,3 @@ Depends: openssh-server, openssh-sftp-server
 Maintainer: swsk33<yanhanhui2001a@163.com>
 Provides: swsk33
 Description: 一个轻量级的文档查看和管理平台。
-
