@@ -11,9 +11,8 @@ import { createNamespacedHelpers } from 'vuex';
 
 import topBar from './components/TopBar.vue';
 import sideMenu from './components/SideMenu.vue';
-import { REQUEST_METHOD, sendRequest } from '../../utils/request';
 
-const { mapState: userState, mapActions: userActions } = createNamespacedHelpers('user');
+const { mapGetters: orgGetter } = createNamespacedHelpers('organization');
 
 export default {
 	components: {
@@ -24,10 +23,9 @@ export default {
 		return {};
 	},
 	computed: {
-		...userState(['userData'])
+		...orgGetter(['organizationName'])
 	},
 	methods: {
-		...userActions(['checkLogin']),
 		/**
 		 * 关闭头像菜单
 		 */
@@ -35,15 +33,9 @@ export default {
 			this.$refs.topBar.menuControl(false);
 		}
 	},
-	async mounted() {
-		// 若未登录则跳转到登录页
-		if (!await this.checkLogin()) {
-			location.href = '/login';
-			return;
-		}
+	created() {
 		// 设定标题
-		const getOrganization = await sendRequest('/api/config-get/organization', REQUEST_METHOD.GET);
-		document.title = getOrganization.data + ' | GitDocument';
+		document.title = this.organizationName + ' | GitDocument';
 	}
 };
 </script>

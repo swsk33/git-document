@@ -39,6 +39,11 @@ const mainPanelRouter = {
 		{
 			path: 'my',
 			component: () => import('../page-views/main-panel/views/MyInfoEdit.vue')
+		},
+		// 404页面
+		{
+			path: '/:pathMatch(.*)*',
+			component: () => import('../page-views/main-panel/views/NotFoundView.vue')
 		}
 	]
 };
@@ -52,7 +57,8 @@ const articleRouter = {
 const routes = [loginPageRouter, mainPanelRouter, articleRouter];
 
 const router = createRouter({
-	history: createWebHistory(), routes
+	history: createWebHistory(),
+	routes
 });
 
 export default router;

@@ -1,34 +1,21 @@
 <template>
 	<div class="login-page">
-		<div class="welcome-text">Welcome Back! 来自{{ organization }}的成员</div>
+		<div class="welcome-text">Welcome Back! 来自{{ organizationName }}的成员</div>
 		<router-view class="panel"/>
 	</div>
 </template>
 
 <script>
-import { sendRequest, REQUEST_METHOD } from '../../utils/request';
 import { createNamespacedHelpers } from 'vuex';
 
-const { mapActions: userAction } = createNamespacedHelpers('user');
+const { mapGetters: orgGetter } = createNamespacedHelpers('organization');
 
 export default {
-	data() {
-		return {
-			organization: undefined
-		};
+	computed: {
+		...orgGetter(['organizationName'])
 	},
-	methods: {
-		...userAction(['checkLogin'])
-	},
-	async mounted() {
-		// 若已登录则跳转到主面板
-		if (await this.checkLogin()) {
-			location.href = '/';
-			return;
-		}
-		const getOrganization = await sendRequest('/api/config-get/organization', REQUEST_METHOD.GET);
-		this.organization = getOrganization.data;
-		document.title = this.organization + ' | GitDocument - 用户登录';
+	async created() {
+		document.title = this.organizationName + ' | GitDocument - 用户登录';
 	}
 };
 </script>

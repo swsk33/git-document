@@ -1,4 +1,4 @@
-package com.gitee.swsk33.gitdocument.exception;
+package com.gitee.swsk33.gitdocument.config;
 
 import cn.dev33.satoken.exception.DisableLoginException;
 import cn.dev33.satoken.exception.NotLoginException;
@@ -17,15 +17,15 @@ import javax.servlet.http.HttpServletResponse;
  */
 @Slf4j
 @ControllerAdvice
-public class GlobalException {
+public class GlobalExceptionConfig {
 
 	// 全局异常拦截（拦截项目中的所有异常）
 	@ResponseBody
 	@ExceptionHandler
-	public Result handlerException(Exception e, HttpServletResponse response) {
-		Result result = new Result();
+	public Result<Void> handlerException(Exception e, HttpServletResponse response) {
+		Result<Void> result = new Result<>();
 		// 打印堆栈，以供调试
-		log.error("发生全局异常！");
+		log.error("发生全局异常！" + e.getClass().getName() + ":" + e.getMessage());
 		// 如果是未登录异常
 		if (e instanceof NotLoginException) {
 			result.setResultFailed("用户未登录！");

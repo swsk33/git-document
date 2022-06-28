@@ -14,11 +14,10 @@ import { createNamespacedHelpers } from 'vuex';
 // 引入组件
 import topBar from './components/TopBar.vue';
 import mainBody from './views/MainBody.vue';
-import { REQUEST_METHOD, sendRequest } from '../../utils/request.js';
 
 // vuex模块
 const { mapState: themeState, mapActions: themeActions } = createNamespacedHelpers('article-page-theme');
-const { mapActions: userActions } = createNamespacedHelpers('user');
+const { mapGetters: orgGetter } = createNamespacedHelpers('organization');
 
 export default {
 	components: {
@@ -27,21 +26,17 @@ export default {
 		'main-body': mainBody
 	},
 	computed: {
-		...themeState(['menuShow', 'isNight', 'isMobile', 'pageColor'])
+		...themeState(['menuShow', 'isNight', 'isMobile', 'pageColor']),
+		...orgGetter(['organizationName'])
 	},
 	methods: {
 		...themeActions(['setMenuShow', 'setIsNight', 'setIsMobile', 'setPageColor']),
-		...userActions(['checkLogin'])
 	},
-	async mounted() {
-		// 若未登录则跳转到登录页
-		if (!await this.checkLogin()) {
-			location.href = '/login';
-			return;
-		}
+	created() {
 		// 设定标签页标题
-		const getOrganization = await sendRequest('/api/config-get/organization', REQUEST_METHOD.GET);
-		document.title = getOrganization.data + ' | GitDocument - 文档阅读';
+		document.title = this.organizationName + ' | GitDocument - 文档阅读';
+	},
+	mounted() {
 		// 读取本地缓存记录的主题并切换
 		this.setPageColor(window.localStorage.getItem('color'));
 		// 若没有读取到夜晚模式储存，则读取时间判断是否是晚上

@@ -9,6 +9,10 @@
 				<a :style="{paddingLeft: getItemIndentation(item.indentation)}" :href="item.anchor">{{ item.text }}</a>
 			</el-tooltip>
 		</div>
+		<!-- 找不到文章 -->
+		<div class="not-found" v-if="isArticleNotFound">
+			<div class="text">找不到文章！╮(╯﹏╰）╭</div>
+		</div>
 	</div>
 </template>
 
@@ -46,7 +50,9 @@ export default {
 			// 正文内容
 			text: undefined,
 			// 菜单项
-			menuItems: []
+			menuItems: [],
+			// 文章是否不存在
+			isArticleNotFound: false
 		};
 	},
 	computed: {
@@ -164,9 +170,13 @@ export default {
 			this.changeCodeStyle(this.isNight);
 		}
 	},
-	async mounted() {
+	async created() {
 		// 初始化文本内容
 		const getText = await sendRequest('/api/article/get/' + this.$route.params.id, REQUEST_METHOD.GET);
+		if (getText === undefined || !getText.success) {
+			this.isArticleNotFound = true;
+			return;
+		}
 		this.text = marked(getText.data.content);
 	},
 	updated() {
@@ -393,6 +403,17 @@ export default {
 		// 定义分割线
 		hr {
 			border-top: none;
+		}
+	}
+
+	.not-found {
+		position: relative;
+		top: 30%;
+
+		.text {
+			text-align: center;
+			padding: 3vw;
+			font-size: 48px;
 		}
 	}
 }

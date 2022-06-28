@@ -23,7 +23,7 @@
 				<div class="text">{{ item.name }}</div>
 			</li>
 		</ul>
-		<div class="empty-text" v-if="isEmpty">该文集为空！</div>
+		<div class="empty-text" v-if="isEmpty">(o°ω°o)该文集为空！</div>
 	</div>
 </template>
 
@@ -306,10 +306,10 @@ export default {
 
 	.empty-text {
 		position: relative;
-		font-size: 32px;
+		font-size: 48px;
 		color: gray;
 		text-align: center;
-		top: 15%;
+		top: 25%;
 	}
 }
 </style>

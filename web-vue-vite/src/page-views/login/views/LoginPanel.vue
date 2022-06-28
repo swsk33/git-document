@@ -3,7 +3,7 @@
 		<div class="text">用户登录</div>
 		<div class="input-box">
 			<el-input size="large" class="text-input" v-model="userData.username" placeholder="用户名或者邮箱" :prefix-icon="icons.avatar"/>
-			<el-input size="large" class="text-input" v-model="userData.password" show-password placeholder="密码" :prefix-icon="icons.lock"/>
+			<el-input size="large" class="text-input" v-model="userData.password" show-password placeholder="密码" :prefix-icon="icons.lock" @keydown="enterKeyLogin($event)"/>
 		</div>
 		<div class="button-box">
 			<el-button class="button" type="primary" size="large" @click="login(userData)">登录</el-button>
@@ -93,9 +93,17 @@ export default {
 				type: 'warning',
 				duration: 1000
 			});
+		},
+		/**
+		 * 在密码输入框按下enter键时也执行登录
+		 */
+		enterKeyLogin(e) {
+			if (e.key === 'Enter') {
+				this.login(this.userData);
+			}
 		}
 	},
-	async mounted() {
+	async created() {
 		const getAllowPublic = await sendRequest('/api/config-get/allow-public', REQUEST_METHOD.GET);
 		this.allowPublic = getAllowPublic.data;
 	}

@@ -2,7 +2,7 @@
 	<div class="anthology-panel">
 		<div class="top-box">
 			<div class="title">文集列表</div>
-			<el-button type="primary" plain class="add" size="small" v-if="hasPermission('edit_anthology')" @click="$refs.addAnthology.frameShow = true">增加文集</el-button>
+			<el-button type="primary" plain class="add" v-if="hasPermission('edit_anthology')" @click="$refs.addAnthology.frameShow = true">增加文集</el-button>
 		</div>
 		<ul class="anthology-list">
 			<li v-for="item in list" :key="item.id">
@@ -17,6 +17,7 @@
 				</div>
 			</li>
 		</ul>
+		<div class="empty-text" v-if="list.length === 0">(=ﾟωﾟ)ﾉ没有文集！</div>
 		<!-- 信息弹窗 - 增加文集 -->
 		<info-dialog class="add-anthology" ref="addAnthology">
 			<template v-slot:title>增加文集</template>
@@ -50,6 +51,11 @@
 			<template v-slot:button-box>
 				<el-button class="ok" type="success" @click="editAnthology">确定</el-button>
 				<el-button class="cancel" type="warning" @click="$refs.editAnthology.frameShow = false">取消</el-button>
+				<el-popconfirm @confirm="deleteAnthology" title="确认删除这个文集？" cancel-button-text="取消" confirm-button-text="确认" cancel-button-type="primary" confirm-button-type="danger">
+					<template #reference>
+						<el-button type="danger" size="small" class="delete-button" plain>删除</el-button>
+					</template>
+				</el-popconfirm>
 			</template>
 		</info-dialog>
 	</div>
@@ -185,6 +191,30 @@ export default {
 			this.$refs.editAnthology.frameShow = false;
 			// 刷新列表
 			await this.getAnthologyList();
+		},
+		/**
+		 * 删除当前编辑的文集
+		 */
+		async deleteAnthology() {
+			const response = await sendRequest('/api/anthology/delete/' + this.editAnthologyInfo.id, REQUEST_METHOD.DELETE);
+			if (!response.success) {
+				ElNotification({
+					title: '失败',
+					message: response.message,
+					type: 'error',
+					duration: 1000
+				});
+				return;
+			}
+			ElNotification({
+				title: '成功',
+				message: '删除文集成功！',
+				type: 'success',
+				duration: 1000
+			});
+			this.$refs.editAnthology.frameShow = false;
+			// 刷新列表
+			await this.getAnthologyList();
 		}
 	},
 	mounted() {
@@ -197,7 +227,7 @@ export default {
 <style lang="scss" scoped>
 .anthology-panel {
 	.top-box {
-		height: 36px;
+		height: 48px;
 		line-height: 36px;
 		font-size: 18px;
 		border-bottom: 1px solid #a1a1a1;
@@ -273,6 +303,14 @@ export default {
 		}
 	}
 
+	.empty-text {
+		position: relative;
+		font-size: 64px;
+		color: #868686;
+		text-align: center;
+		top: 30%;
+	}
+
 	.add-anthology {
 		.content {
 			.name, .show-name {
@@ -326,6 +364,14 @@ export default {
 				.input {
 					width: 72%;
 				}
+			}
+		}
+
+		.button-box {
+			.delete-button {
+				position: absolute;
+				right: 2%;
+				bottom: -100%;
 			}
 		}
 	}

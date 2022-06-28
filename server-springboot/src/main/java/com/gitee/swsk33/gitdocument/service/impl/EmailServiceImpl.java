@@ -1,6 +1,6 @@
 package com.gitee.swsk33.gitdocument.service.impl;
 
-import com.gitee.swsk33.gitdocument.config.GitDocConfigProperties;
+import com.gitee.swsk33.gitdocument.config.ConfigProperties;
 import com.gitee.swsk33.gitdocument.dao.UserDAO;
 import com.gitee.swsk33.gitdocument.dataobject.User;
 import com.gitee.swsk33.gitdocument.model.ErrorReport;
@@ -24,7 +24,7 @@ public class EmailServiceImpl implements EmailService {
 	private String sender;
 
 	@Autowired
-	private GitDocConfigProperties configProperties;
+	private ConfigProperties configProperties;
 
 	@Autowired
 	private JavaMailSender mailSender;

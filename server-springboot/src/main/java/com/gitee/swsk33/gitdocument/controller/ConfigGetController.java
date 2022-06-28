@@ -1,7 +1,7 @@
 package com.gitee.swsk33.gitdocument.controller;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
-import com.gitee.swsk33.gitdocument.config.GitDocConfigProperties;
+import com.gitee.swsk33.gitdocument.config.ConfigProperties;
 import com.gitee.swsk33.gitdocument.model.Result;
 import com.gitee.swsk33.gitdocument.param.CommonValue;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 public class ConfigGetController {
 
 	@Autowired
-	private GitDocConfigProperties configProperties;
+	private ConfigProperties configProperties;
 
 	@GetMapping("/organization")
 	@ResponseBody

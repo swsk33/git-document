@@ -31,12 +31,12 @@
 				<template #default="scope">
 					<el-popconfirm title="确定重置？" @confirm="resetUser(scope.row.id)" confirm-button-type="danger" cancel-button-type="primary" confirm-button-text="确定" cancel-button-text="取消">
 						<template #reference>
-							<el-button type="warning" @click="popShow.resetUser = true">重置密码</el-button>
+							<el-button type="warning">重置密码</el-button>
 						</template>
 					</el-popconfirm>
 					<el-popconfirm title="确定删除？" @confirm="deleteUser(scope.row.id)" confirm-button-type="danger" cancel-button-type="primary" confirm-button-text="确定" cancel-button-text="取消">
 						<template #reference>
-							<el-button type="danger" @click="popShow.deleteUser = true">删除</el-button>
+							<el-button type="danger">删除</el-button>
 						</template>
 					</el-popconfirm>
 				</template>

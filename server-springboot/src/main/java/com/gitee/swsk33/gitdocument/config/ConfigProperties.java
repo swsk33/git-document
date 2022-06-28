@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "com.gitee.swsk33.git-doc")
 @Setter
 @Getter
-public class GitDocConfigProperties {
+public class ConfigProperties {
 
 	/**
 	 * 组织名

@@ -3,7 +3,7 @@ package com.gitee.swsk33.gitdocument.service.impl;
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckRole;
 import cn.dev33.satoken.stp.StpUtil;
-import com.gitee.swsk33.gitdocument.config.GitDocConfigProperties;
+import com.gitee.swsk33.gitdocument.config.ConfigProperties;
 import com.gitee.swsk33.gitdocument.dao.UserDAO;
 import com.gitee.swsk33.gitdocument.dataobject.User;
 import com.gitee.swsk33.gitdocument.model.Result;
@@ -35,7 +35,7 @@ public class UserServiceImpl implements UserService {
 	private EmailService emailService;
 
 	@Autowired
-	private GitDocConfigProperties configProperties;
+	private ConfigProperties configProperties;
 
 	@Override
 	public Result<User> register(User user) {

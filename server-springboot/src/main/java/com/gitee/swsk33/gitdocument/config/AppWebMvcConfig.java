@@ -6,7 +6,7 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-public class GitDocWebMvcConfig implements WebMvcConfigurer {
+public class AppWebMvcConfig implements WebMvcConfigurer {
 
 	/**
 	 * 重写资源路径配置
