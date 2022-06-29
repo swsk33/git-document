@@ -118,39 +118,35 @@ export default {
 	justify-content: flex-start;
 	align-items: center;
 	width: 30%;
-	height: 45%;
+	height: 50%;
 	border-radius: 8px;
 	box-shadow: white 1px 1px 7px;
 	background: rgba(255, 255, 255, 0.42);
 
 	.text {
-		margin-top: 7%;
+		margin-top: 9%;
 		position: relative;
 		font-size: 32px;
 	}
 
 	.input-box {
 		position: relative;
-		width: 100%;
-		height: 45%;
+		width: 75%;
+		height: 42%;
+		margin-top: 5%;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-
-		.text-input {
-			width: 75%;
-			margin-top: 10%;
-		}
+		justify-content: space-around;
 	}
 
 	.button-box {
 		position: relative;
 		width: 75%;
-		height: 15%;
+		height: 22%;
 		display: flex;
 		justify-content: space-evenly;
 		align-items: center;
-		margin-top: 5%;
 
 		.button {
 			font-size: 18px;

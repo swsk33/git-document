@@ -16,12 +16,15 @@
 			<el-table-column label="角色" width="120">
 				<template #default="scope">
 					<el-dropdown @command="changeUserRole">
-						<div class="current-value">
+						<div class="current-value" style="user-select: none">
 							{{ scope.row.role.showName }}
+							<el-icon class="arrow-down">
+								<arrow-down/>
+							</el-icon>
 						</div>
 						<template #dropdown>
 							<el-dropdown-menu>
-								<el-dropdown-item v-for="item in roleList" :command="{userId:scope.row.id, roleId: item.id}">{{ item.showName }}</el-dropdown-item>
+								<el-dropdown-item v-for="item in roleList" :command="{userId:scope.row.id, roleId: item.id}" style="user-select: none">{{ item.showName }}</el-dropdown-item>
 							</el-dropdown-menu>
 						</template>
 					</el-dropdown>
@@ -46,7 +49,7 @@
 		<info-dialog class="add-user-dialog" ref="addUserDialog">
 			<template v-slot:title>添加用户</template>
 			<template v-slot:content>
-				<upload-image ref="addUserAvatar" upload-url="/api/image/upload-avatar" random-url="/api/image/random-avatar" upload-name="avatar" init-image="init-random">
+				<upload-image class="avatar" ref="addUserAvatar" upload-url="/api/image/upload-avatar" random-url="/api/image/random-avatar" upload-name="avatar" init-image="init-random">
 					<template v-slot:text>设定头像</template>
 				</upload-image>
 				<div class="username">
@@ -87,13 +90,15 @@ import { createNamespacedHelpers } from 'vuex';
 
 import infoDialog from '../components/InfoDialog.vue';
 import uploadImage from '../components/UploadImage.vue';
+import { ArrowDown } from '@element-plus/icons-vue';
 
 const { mapState: userState, mapActions: userActions, mapGetters: userGetters } = createNamespacedHelpers('user');
 
 export default {
 	components: {
 		'info-dialog': infoDialog,
-		'upload-image': uploadImage
+		'upload-image': uploadImage,
+		'arrow-down': ArrowDown
 	},
 	data() {
 		return {
@@ -286,11 +291,17 @@ export default {
 	}
 
 	.add-user-dialog {
-		.username, .nickname, .password, .email, .role {
+		:deep(.content) {
+			justify-content: flex-start;
+		}
+
+		.avatar, .username, .nickname, .password, .email, .role {
 			position: relative;
 			display: flex;
+			justify-content: space-evenly;
 			align-items: center;
-			margin-top: 3%;
+			width: 80%;
+			margin-top: 2vh;
 
 			.text {
 				width: 128px;
@@ -307,5 +318,6 @@ export default {
 			right: 2%;
 		}
 	}
+
 }
 </style>

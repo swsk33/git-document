@@ -25,6 +25,20 @@ export default {
 </script>
 
 <style lang="scss">
+// 定义窗口宽高
+$frame-width: 40vw;
+$frame-height: 60vh;
+
+// 根据窗口宽获得长度（百分比以小数表示）
+@function getByWidthPercent($percent) {
+	@return #{$frame-width * $percent};
+}
+
+// 根据窗口高获得长度（百分比以小数表示）
+@function getByHeightPercent($percent) {
+	@return #{$frame-height * $percent};
+}
+
 .info-dialog {
 	position: absolute;
 	top: 0;
@@ -46,10 +60,10 @@ export default {
 
 	.frame {
 		position: relative;
-		width: 42%;
-		height: 56%;
+		width: $frame-width;
+		height: $frame-height;
 		margin: 0 auto;
-		top: 22%;
+		top: calc(50% - #{$frame-height} / 2);
 		background-color: #ddd8ff;
 		border-radius: 6px;
 		border: 1px #ff319e solid;
@@ -64,19 +78,19 @@ export default {
 
 		.title {
 			font-size: 26px;
-			height: 80px;
-			line-height: 80px;
+			height: getByHeightPercent(0.2);
+			line-height: getByHeightPercent(0.2);
 			text-align: center;
-			margin-top: 2%;
 		}
 
 		.content {
-			height: 60%;
-			width: 90%;
-			left: 5%;
+			height: getByHeightPercent(0.6);
+			width: getByWidthPercent(0.95);
+			left: getByWidthPercent(0.025);
 			display: flex;
 			flex-direction: column;
 			align-items: center;
+			justify-content: space-evenly;
 			overflow-x: hidden;
 			overflow-y: auto;
 
@@ -99,8 +113,7 @@ export default {
 		}
 
 		.button-box {
-			height: 10%;
-			margin-top: 3%;
+			height: getByHeightPercent(0.2);
 			display: flex;
 			align-items: center;
 			justify-content: space-evenly;

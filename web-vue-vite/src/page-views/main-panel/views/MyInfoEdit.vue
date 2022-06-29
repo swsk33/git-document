@@ -25,7 +25,7 @@
 				<div class="text">公钥</div>
 				<el-table class="data" :data="publicKeys" border empty-text="暂无公钥，请添加公钥后再推送文章！">
 					<el-table-column width="50" :resizable="false" label="id" prop="id" align="center"/>
-					<el-table-column width="800" show-overflow-tooltip label="公钥内容" prop="content"/>
+					<el-table-column width="600" show-overflow-tooltip label="公钥内容" prop="content"/>
 					<el-table-column class-name="column-operate" align="center">
 						<template #header>
 							<el-popover width="750" placement="left" title="添加SSH公钥" v-model:visible="popOverShow.publicKeyAdd">
@@ -230,7 +230,7 @@ export default {
 			align-items: center;
 			justify-content: flex-start;
 			height: 48px;
-			width: 75vw;
+			width: 75%;
 
 			.text {
 				width: 8%;
@@ -248,6 +248,7 @@ export default {
 		}
 
 		.public-key {
+			width: 75%;
 			.text {
 				position: relative;
 				font-size: 18px;

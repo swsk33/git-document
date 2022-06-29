@@ -312,6 +312,11 @@ export default {
 	}
 
 	.add-anthology {
+		:deep(.content) {
+			left: 10%;
+			width: 80%;
+		}
+
 		.content {
 			.name, .show-name {
 				position: relative;
@@ -327,30 +332,22 @@ export default {
 
 				.input {
 					position: relative;
-					width: 65%;
 					margin-left: 2%;
 				}
-			}
-
-			.name {
-				margin-top: 12%;
-			}
-
-			.show-name {
-				margin-top: 15%;
 			}
 		}
 	}
 
 	.edit-anthology {
-		.content {
-			.cover {
-				margin-top: 8%;
-			}
+		:deep(.content) {
+			width: 70%;
+			left: 15%;
+		}
 
+		.content {
 			.show-name {
 				display: flex;
-				width: 90%;
+				width: 100%;
 				justify-content: space-evenly;
 				align-items: center;
 				margin-top: 9%;
@@ -358,7 +355,6 @@ export default {
 				.text {
 					width: 128px;
 					text-align: right;
-					margin-right: 2%;
 				}
 
 				.input {
