@@ -150,6 +150,12 @@ sudo dpkg -i 安装包文件路径
 
 等待安装完成即可！
 
+若安装出现错误，请执行以下命令：
+
+```bash
+sudo apt install -f
+```
+
 ##### ② 修改配置文件
 
 通过安装包安装的话，配置文件位于`/etc/git-document/application.properties`，打开它就可以修改。
