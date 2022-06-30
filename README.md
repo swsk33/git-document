@@ -170,19 +170,23 @@ vim /etc/git-document/application.properties
 
 以下配置项必须要配置：
 
-首先是MySQL数据库：
+###### 1) MySQL数据库
 
 - `spring.datasource.url` 数据库地址，把`127.0.0.1:3306`这部分替换成你自己数据库的地址和端口，若数据库和GitDocument部署在一起且端口没改的话则无需修改
 - `spring.datasource.username` 数据库用户名
 - `spring.datasource.password` 数据库用户对应的密码
 
-然后是邮箱，用于发送通知邮件，需要先去注册一个邮箱例如QQ、163等等，并开启SMTP服务。
+###### 2) 邮箱
+
+用于发送通知邮件，需要先去注册一个邮箱例如QQ、163等等，并开启SMTP服务。
 
 - `spring.mail.host` 邮箱smtp服务器地址，可以在对应的邮箱网站找到
 - `spring.mail.username` 你的邮箱地址
 - `spring.mail.password` 邮箱授权码（注意不是密码！）
 
-如果你需要开启https服务，你需要准备好JKS格式的SSL证书，并修改以下配置：
+###### 3) 开启https（非必须）
+
+如果你需要开启https服务，你需要准备好P12格式或者JKS格式的SSL证书，推荐使用P12格式，并修改以下配置：
 
 1. `com.gitee.swsk33.git-doc.enable-https` 设定为`true`
 2. 修改`server.port`为`8443`
@@ -191,8 +195,9 @@ vim /etc/git-document/application.properties
 	- `server.ssl.key-store-password`
 	- `server.ssl.keyStoreType`
 4. 修改：
-	- `server.ssl.key-store` SSL证书文件位置，格式为`file:证书文件路径``
-	- ``server.ssl.key-store-password` 证书密码
+	- `server.ssl.key-store` SSL证书文件位置，格式为`file:证书文件路径`
+	- `server.ssl.key-store-password` 证书密码
+	- `server.ssl.keyStoreType` 证书格式，若使用JKS格式则填写`JKS`，使用P12格式则填写`PKCS12`
 
 
 ##### ③ 启动服务
