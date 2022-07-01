@@ -9,7 +9,7 @@
 	</parent>
 	<groupId>com.gitee.swsk33</groupId>
 	<artifactId>git-document</artifactId>
-	<version>1.0.1</version>
+	<version>1.0.2</version>
 	<name>git-document</name>
 	<description>基于Git版本管理工具的轻便的文档管理系统，使用Git管理Markdown文档</description>
 

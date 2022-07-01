@@ -250,6 +250,7 @@ export default {
 
 		.public-key {
 			display: block;
+			height: auto;
 
 			.header {
 				display: flex;
@@ -274,7 +275,9 @@ export default {
 	}
 
 	.save {
-		margin-top: 2%;
+		position: relative;
+		margin-top: 2vh;
+		margin-bottom: 2vh;
 	}
 }
 </style>
