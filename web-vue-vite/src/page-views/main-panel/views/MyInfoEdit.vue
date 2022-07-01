@@ -22,23 +22,23 @@
 				<el-input class="input" v-model="editUserdata.email" placeholder="请输入邮箱"/>
 			</div>
 			<div class="public-key" v-if="hasPermission('edit_anthology')">
-				<div class="text">公钥</div>
-				<el-table class="data" :data="publicKeys" border empty-text="暂无公钥，请添加公钥后再推送文章！">
+				<div class="header">
+					<div class="text">公钥</div>
+					<el-popover width="750" placement="left" title="添加SSH公钥" v-model:visible="popOverShow.publicKeyAdd">
+						<template #reference>
+							<el-button class="add" type="success" size="small" @click="popOverShow.publicKeyAdd = true">添加SSH公钥</el-button>
+						</template>
+						<el-input v-model="addPublicKey" type="textarea" cols="50" rows="5" resize="none" placeholder="请粘贴公钥内容至此"></el-input>
+						<div class="button-box" style="display: flex;margin-top: 12px">
+							<el-button type="success" size="small" @click="addPublicKeyRequest">确认</el-button>
+							<el-button type="warning" size="small" @click="popOverShow.publicKeyAdd = false">取消</el-button>
+						</div>
+					</el-popover>
+				</div>
+				<el-table class="data" :data="publicKeys" border empty-text="暂无公钥，添加公钥后才能推送文章！">
 					<el-table-column width="50" :resizable="false" label="id" prop="id" align="center"/>
 					<el-table-column width="600" show-overflow-tooltip label="公钥内容" prop="content"/>
-					<el-table-column class-name="column-operate" align="center">
-						<template #header>
-							<el-popover width="750" placement="left" title="添加SSH公钥" v-model:visible="popOverShow.publicKeyAdd">
-								<template #reference>
-									<el-button class="add" type="success" size="small" @click="popOverShow.publicKeyAdd = true">添加SSH公钥</el-button>
-								</template>
-								<el-input v-model="addPublicKey" type="textarea" cols="50" rows="5" resize="none" placeholder="请粘贴公钥内容至此"></el-input>
-								<div class="button-box" style="display: flex;margin-top: 12px">
-									<el-button type="success" size="small" @click="addPublicKeyRequest">确认</el-button>
-									<el-button type="warning" size="small" @click="popOverShow.publicKeyAdd = false">取消</el-button>
-								</div>
-							</el-popover>
-						</template>
+					<el-table-column class-name="column-operate" align="center" label="操作">
 						<template #default="scope">
 							<el-popconfirm title="确认删除？" confirm-button-text="是的" cancel-button-text="再想想" confirm-button-type="danger" cancel-button-type="success" @confirm="deleteKey(scope.row.id)">
 								<template #reference>
@@ -223,8 +223,9 @@ export default {
 		justify-content: flex-start;
 		align-items: center;
 		margin-top: 3%;
+		width: 90%;
 
-		.avatar, .username, .password, .nickname, .email {
+		.avatar, .username, .password, .nickname, .email, .public-key {
 			position: relative;
 			display: flex;
 			align-items: center;
@@ -232,7 +233,7 @@ export default {
 			height: 48px;
 			width: 75%;
 
-			.text {
+			> .text {
 				width: 8%;
 				text-align: right;
 				margin-right: 3%;
@@ -248,21 +249,26 @@ export default {
 		}
 
 		.public-key {
-			width: 75%;
-			.text {
-				position: relative;
-				font-size: 18px;
-				color: #4f43b7;
-				width: 8%;
-				left: 1%;
-				margin-bottom: 1%;
+			display: block;
+
+			.header {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				margin-bottom: 1vh;
+
+				.text {
+					position: relative;
+					font-size: 18px;
+					color: #4f43b7;
+				}
 			}
+
 
 			.data {
 				position: relative;
 				border: #2f3aff 1px solid;
-				border-radius: 6px;
-				width: 75vw;
+				border-radius: 5px;
 			}
 		}
 	}

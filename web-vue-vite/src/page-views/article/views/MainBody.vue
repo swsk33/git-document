@@ -4,7 +4,7 @@
 		<!-- 正文内容 -->
 		<div class="content" v-html="text" ref="content" @click="setMenuShow(false)"></div>
 		<!-- 菜单 -->
-		<div class="menu" v-if="menuShow">
+		<div class="menu" v-show="menuShow">
 			<el-tooltip placement="right" v-for="item in menuItems" :key="item.text" :content="item.text">
 				<a :style="{paddingLeft: getItemIndentation(item.indentation)}" :href="item.anchor">{{ item.text }}</a>
 			</el-tooltip>
@@ -56,10 +56,10 @@ export default {
 		};
 	},
 	computed: {
-		...themeState(['menuShow', 'menuParsed', 'isNight'])
+		...themeState(['menuShow', 'isMobile', 'menuParsed', 'isNight'])
 	},
 	methods: {
-		...themeActions(['setMenuShow', 'setMenuParsedDone', 'setIsNight']),
+		...themeActions(['setMenuShow', 'setMenuParsedDone']),
 		/**
 		 * 解析标题生成目录树
 		 */
@@ -96,6 +96,8 @@ export default {
 				item.indentation = item.level - maxLevel;
 			}
 			this.setMenuParsedDone();
+			// 手机端渲染完成隐藏菜单
+			this.setMenuShow(!this.isMobile);
 		},
 		/**
 		 * 获得目录项的缩进长度，css值形式
@@ -180,6 +182,7 @@ export default {
 		this.text = marked(getText.data.content);
 	},
 	updated() {
+		// 生成目录树，修改代码为代码样式
 		if (!this.menuParsed) {
 			this.parseTitle();
 			this.showCodeTypeAndCopy();

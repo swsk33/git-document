@@ -2,7 +2,7 @@
 	<div :class="{page: true, 'page-night': isNight, 'page-pink': pageColor.pink, 'page-blue': pageColor.blue, 'page-green': pageColor.green, 'page-orange': pageColor.orange, 'page-gray': pageColor.gray}">
 		<top-bar ref="topBar"></top-bar>
 		<main-body></main-body>
-		<router-view></router-view>
+		<router-view/>
 	</div>
 </template>
 
@@ -30,7 +30,7 @@ export default {
 		...orgGetter(['organizationName'])
 	},
 	methods: {
-		...themeActions(['setMenuShow', 'setIsNight', 'setIsMobile', 'setPageColor']),
+		...themeActions(['setMenuShow', 'setIsNight', 'setIsMobile', 'setPageColor'])
 	},
 	created() {
 		// 设定标签页标题
@@ -52,7 +52,6 @@ export default {
 		// 读取设备宽度判断是否是移动设备
 		if (window.innerWidth <= 768) {
 			this.setIsMobile(true);
-			this.setMenuShow(!this.isMobile);
 		}
 	}
 };
@@ -115,7 +114,7 @@ export default {
 		.main-body {
 			.menu {
 				left: 1.25vh;
-				height: 45%;
+				height: 30%;
 				width: 55%;
 				background-color: white;
 				border: 1px gray solid;

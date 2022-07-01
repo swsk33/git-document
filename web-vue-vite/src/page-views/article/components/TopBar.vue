@@ -68,10 +68,10 @@ export default {
 		};
 	},
 	computed: {
-		...themeState(['menuShow', 'menuParsed', 'isNight', 'isMobile', 'pageColor'])
+		...themeState(['isNight', 'pageColor'])
 	},
 	methods: {
-		...themeActions(['setMenuShow', 'setIsNight', 'setIsMobile', 'setPageColor']),
+		...themeActions(['setIsNight', 'setMenuShow', 'setPageColor']),
 		changePageColor(color) {
 			this.setPageColor(color);
 			ElNotification({

@@ -49,4 +49,19 @@ export default {
 		bottom: 23%;
 	}
 }
+
+// 手机模式
+@media screen and (max-width: 768px) {
+	.login-page {
+		.welcome-text {
+			font-size: 24px;
+			width: 80%;
+		}
+
+		.panel {
+			width: 85%;
+			height: 45%;
+		}
+	}
+}
 </style>

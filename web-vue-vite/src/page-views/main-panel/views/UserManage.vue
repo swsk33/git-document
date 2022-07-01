@@ -300,7 +300,7 @@ export default {
 			display: flex;
 			justify-content: space-evenly;
 			align-items: center;
-			width: 80%;
+			width: 90%;
 			margin-top: 2vh;
 
 			.text {
@@ -309,15 +309,10 @@ export default {
 			}
 
 			.input {
-				width: 135%;
+				width: 80%;
 				margin-left: 3%;
 			}
 		}
-
-		.role {
-			right: 2%;
-		}
 	}
-
 }
 </style>
