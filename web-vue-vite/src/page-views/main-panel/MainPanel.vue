@@ -35,7 +35,7 @@ export default {
 	},
 	created() {
 		// 设定标题
-		document.title = this.organizationName + ' | GitDocument';
+		document.title = this.organizationName.value + ' | GitDocument';
 	}
 };
 </script>

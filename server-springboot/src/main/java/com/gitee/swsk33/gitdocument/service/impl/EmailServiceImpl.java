@@ -82,4 +82,11 @@ public class EmailServiceImpl implements EmailService {
 		log.info("已向邮箱：" + email + " 发送了密码重置邮件！");
 	}
 
+	@Override
+	public void sendRoleChangeEmail(User changedUser, User operator) {
+		String content = "您的角色已被管理员：" + operator.getNickname() + " 修改为 " + changedUser.getRole().getShowName() + " ！";
+		sendNotifyMail(changedUser.getEmail(), "GitDocument · " + configProperties.getOrganizationName() + " - 角色更改", content);
+		log.info("已向邮箱：" + changedUser.getEmail() + " 发送了角色更改邮件！");
+	}
+
 }

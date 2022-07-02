@@ -97,21 +97,25 @@ public class UserServiceImpl implements UserService {
 			result.setResultFailed("找不到该用户！");
 			return result;
 		}
-		// 权限对比
-		if (!StpUtil.hasRole(CommonValue.Role.ADMIN)) {
-			if (StpUtil.getLoginId(0) != user.getId().intValue()) {
-				result.setResultFailed("非管理员不可以修改其它用户的信息！");
-				return result;
-			}
-			if (user.getRole() != null && user.getRole().getId() == 1) {
-				result.setResultFailed("非管理员不可以修改自己为管理员！");
-				return result;
-			}
-		}
-		// 不允许修改保留管理员的权限
-		if (user.getId() == 1 && user.getRole() != null && user.getRole().getId() != 1) {
-			result.setResultFailed("不能修改保留管理员用户的权限！");
+		// 权限判断
+		if (!StpUtil.hasRole(CommonValue.Role.ADMIN) && StpUtil.getLoginId(0) != user.getId().intValue()) {
+			result.setResultFailed("非管理员不可以修改其它用户的信息！");
 			return result;
+		}
+		// 若权限发生修改，则进行一些判断
+		boolean roleChanged = false;
+		if (user.getRole() != null && user.getRole().getId().intValue() != getUser.getRole().getId().intValue()) {
+			// 非管理员不能修改权限
+			if (!StpUtil.hasRole(CommonValue.Role.ADMIN)) {
+				result.setResultFailed("非管理员不可以修改自己的角色！");
+				return result;
+			}
+			// 不允许修改保留管理员的权限
+			if (user.getId() == 1) {
+				result.setResultFailed("不能修改保留管理员用户的权限！");
+				return result;
+			}
+			roleChanged = true;
 		}
 		// 信息覆盖
 		ClassExamine.objectOverlap(user, getUser);
@@ -130,8 +134,14 @@ public class UserServiceImpl implements UserService {
 			user.setPassword(BCryptEncoder.encode(user.getPassword()));
 		}
 		userDAO.update(user);
+		// 重新获取用户数据用于刷新缓存
+		User getNewUser = userDAO.getById(user.getId());
+		// 角色发生变化则发送邮件
+		if (roleChanged) {
+			emailService.sendRoleChangeEmail(getNewUser, (User) StpUtil.getSession().get(CommonValue.SA_USER_SESSION_INFO_KEY));
+		}
 		// 刷新用户session数据
-		StpUtil.getSessionByLoginId(user.getId()).set(CommonValue.SA_USER_SESSION_INFO_KEY, userDAO.getById(user.getId()));
+		StpUtil.getSessionByLoginId(user.getId()).set(CommonValue.SA_USER_SESSION_INFO_KEY, getNewUser);
 		result.setResultSuccess("修改用户成功！");
 		return result;
 	}

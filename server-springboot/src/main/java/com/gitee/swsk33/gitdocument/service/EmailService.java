@@ -1,5 +1,6 @@
 package com.gitee.swsk33.gitdocument.service;
 
+import com.gitee.swsk33.gitdocument.dataobject.User;
 import com.gitee.swsk33.gitdocument.model.ErrorReport;
 import org.springframework.stereotype.Service;
 
@@ -20,5 +21,13 @@ public interface EmailService {
 	 * @param password 重置后的密码
 	 */
 	void sendPasswordResetEmail(String email, String password);
+
+	/**
+	 * 发送角色更改邮件通知
+	 *
+	 * @param changedUser 被修改权限的角色
+	 * @param operator    操作者
+	 */
+	void sendRoleChangeEmail(User changedUser, User operator);
 
 }

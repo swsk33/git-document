@@ -1,6 +1,6 @@
 <template>
 	<div class="login-page">
-		<div class="welcome-text">Welcome Back! 来自{{ organizationName }}的成员</div>
+		<div class="welcome-text">Welcome Back! 来自{{ organizationName.value }}的成员</div>
 		<router-view class="panel"/>
 	</div>
 </template>
@@ -15,7 +15,7 @@ export default {
 		...orgGetter(['organizationName'])
 	},
 	async created() {
-		document.title = this.organizationName + ' | GitDocument - 用户登录';
+		document.title = this.organizationName.value + ' | GitDocument - 用户登录';
 	}
 };
 </script>

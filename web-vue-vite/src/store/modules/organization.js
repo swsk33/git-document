@@ -1,4 +1,5 @@
 import { sendRequest, REQUEST_METHOD } from '../../utils/request.js';
+import { ref } from 'vue';
 
 export default {
 	namespaced: true,
@@ -37,7 +38,7 @@ export default {
 		 * @return {*} 组织名
 		 */
 		organizationName(state) {
-			return state.name;
+			return ref(state.name);
 		}
 	}
 };

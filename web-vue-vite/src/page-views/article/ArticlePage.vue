@@ -34,7 +34,7 @@ export default {
 	},
 	created() {
 		// 设定标签页标题
-		document.title = this.organizationName + ' | GitDocument - 文档阅读';
+		document.title = this.organizationName.value + ' | GitDocument - 文档阅读';
 	},
 	mounted() {
 		// 读取本地缓存记录的主题并切换
