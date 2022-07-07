@@ -9,12 +9,18 @@
 import { createNamespacedHelpers } from 'vuex';
 
 const { mapGetters: orgGetter } = createNamespacedHelpers('organization');
+const { mapGetters: userGetter } = createNamespacedHelpers('user');
 
 export default {
 	computed: {
-		...orgGetter(['organizationName'])
+		...orgGetter(['organizationName']),
+		...userGetter(['isLogin'])
 	},
 	async created() {
+		// 若用户已登录则访问这个页面时跳转至/
+		if (this.isLogin) {
+			await this.$router.push('/');
+		}
 		document.title = this.organizationName.value + ' | GitDocument - 用户登录';
 	}
 };

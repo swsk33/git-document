@@ -23,6 +23,7 @@ import { ElNotification } from 'element-plus';
 
 // vuex
 const { mapActions: userActions } = createNamespacedHelpers('user');
+const { mapState: pathState } = createNamespacedHelpers('url-path');
 
 export default {
 	data() {
@@ -37,6 +38,9 @@ export default {
 			},
 			allowPublic: false
 		};
+	},
+	computed: {
+		...pathState(['path'])
 	},
 	methods: {
 		...userActions(['checkLogin']),
@@ -79,8 +83,14 @@ export default {
 			});
 			// 获取用户信息
 			await this.checkLogin();
+			// 跳转至用户访问的页面
 			setTimeout(() => {
-				location.href = '/';
+				// 防止跳转到登录页自己
+				if (this.path.startsWith('/login')) {
+					location.pathname = '/';
+					return;
+				}
+				location.pathname = this.path;
 			}, 1000);
 		},
 		/**

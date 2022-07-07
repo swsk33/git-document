@@ -283,6 +283,7 @@ export default {
 		.user-list-row {
 			img {
 				max-height: 75px;
+				max-width: 75px;
 				border-radius: 50%;
 				border: #7462ff 2px solid;
 				box-sizing: border-box;

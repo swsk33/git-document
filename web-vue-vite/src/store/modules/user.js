@@ -5,6 +5,7 @@ export default {
 	namespaced: true,
 	state: {
 		userData: undefined,
+		isLogin: false,
 		roleList: []
 	},
 	mutations: {
@@ -15,6 +16,14 @@ export default {
 		 */
 		setUserData(state, payload) {
 			state.userData = payload;
+		},
+		/**
+		 * 设定状态：是否登录
+		 * @param state 数据
+		 * @param payload 布尔值，表示是否登录
+		 */
+		setIsLogin(state, payload) {
+			state.isLogin = payload;
 		},
 		/**
 		 * 设定角色列表
@@ -38,6 +47,7 @@ export default {
 			} else {
 				context.commit('setUserData', undefined);
 			}
+			context.commit('setIsLogin', response.success);
 			return response.success;
 		},
 		/**
@@ -108,6 +118,13 @@ export default {
 		 */
 		roleList(state) {
 			return state.roleList;
+		},
+		/**
+		 * 是否登录
+		 * @param state 数据
+		 */
+		isLogin(state) {
+			return state.isLogin;
 		}
 	}
 };

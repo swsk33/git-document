@@ -6,11 +6,21 @@ javaNotFound() {
 }
 
 execStart() {
-	echo 正在启动...
+	echo 正在启动GitDocument...
+	# 先启动Nginx
+	echo 正在启动Nginx...
+	sudo /opt/git-document/nginx/sbin/nginx -p /opt/git-document/nginx
+	echo Nginx启动完成！
 	# 切换工作路径为jar所在路径
+	echo 正在启动GitDocument主程序...
 	cd /opt/git-document
 	# 通过安装包安装时配置文件位于：/etc/git-document/application.properties
-	java -jar git-document.jar --spring.config.location=/etc/git-document/
+	sudo -u $1 java -jar git-document.jar --spring.config.location=/etc/git-document/
 }
 
-java -version || javaNotFound && execStart
+if [ -z $1 ];then
+	echo 请指定运行GitDocument的用户！
+	exit
+fi
+
+java -version || javaNotFound && execStart $1

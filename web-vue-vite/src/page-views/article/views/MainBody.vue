@@ -263,7 +263,7 @@ export default {
 		left: 17vw;
 		height: 100%;
 		box-sizing: border-box;
-		padding: 1vh 8vw;
+		padding: 1vh 8vw 5vh 8vw;
 
 		// 定义一号标题样式
 		h1 {

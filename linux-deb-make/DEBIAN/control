@@ -1,10 +1,10 @@
 Package: git-document
-Version: 1.1.1
+Version: 1.2.1
 Section: utils
 Priority: optional
 Architecture: all
-Installed-Size: 45816
-Depends: openssh-server, openssh-sftp-server 
+Installed-Size: 51440
+Depends: openssh-server, openssh-sftp-server, libc6, zlib1g, libpcre3, libssl1.1
 Maintainer: swsk33<yanhanhui2001a@163.com>
 Provides: swsk33
-Description: 一个轻量级的文档查看和管理平台。
+Description: 一个轻量级的文档查看和管理平台

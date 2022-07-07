@@ -15,10 +15,11 @@
 
 # 自定义
 /server-springboot/config/application-dev.properties
-/server-springboot/src/main/resources/static/
 /server-springboot/external-resource/avatar/user/
 /server-springboot/external-resource/cover/custom/
 /server-springboot/external-resource/background/custom.jpg
 /server-springboot/external-resource/login-background/custom.jpg
 /linux-deb-make/opt/git-document/external-resource/
 /linux-deb-make/opt/git-document/*.jar
+/linux-deb-make/opt/git-document/nginx/html/
+/linux-deb-make/opt/git-document/nginx/sbin/
