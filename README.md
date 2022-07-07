@@ -59,7 +59,7 @@ GitDocoment是一个轻量的团队文档管理和查看工具，部署之后，
 - [highlight.js](https://highlightjs.org/) 实现代码高亮
 - [sass](https://sass-lang.com/) CSS预处理器
 - [Vue-Router](https://router.vuejs.org/zh/) 单页路由
-- [Vuex](https://vuex.vuejs.org/zh/) 数据流通
+- [Vuex](https://vuex.vuejs.org/zh/) 状态管理
 
 后端是使用Spring Boot进行搭建，可以理解为是SSM架构，除了Spring Boot的一些Starter之外，还用到了以下开源外部库：
 
@@ -166,6 +166,8 @@ sudo dpkg -i 安装包文件路径
 sudo apt install -f
 ```
 
+安装包除了安装程序主文件之外，还会安装一个Nginx，若服务器上已有Nginx建议先停掉原有的Nginx或者考虑源码编译安装。
+
 ##### ② 修改配置文件
 
 通过安装包安装的话，配置文件位于`/etc/git-document/application.properties`，打开它就可以修改。
@@ -196,18 +198,38 @@ vim /etc/git-document/application.properties
 
 ###### 3) 开启https（非必须）
 
-如果你需要开启https服务，你需要准备好P12格式或者JKS格式的SSL证书，推荐使用P12格式，并修改以下配置：
+如果你需要开启https服务，你需要准备好SSL证书文件和证书密钥文件，然后修改Nginx配置，Nginx配置文件位于`/opt/git-document/nginx/conf/nginx.conf`。
 
-1. `com.gitee.swsk33.git-doc.enable-https` 设定为`true`
-2. 修改`server.port`为`8443`
-2. 将以下配置前面的注释(`#`)去掉：
-	- `server.ssl.key-store`
-	- `server.ssl.key-store-password`
-	- `server.ssl.keyStoreType`
-4. 修改：
-	- `server.ssl.key-store` SSL证书文件位置，格式为`file:证书文件路径`
-	- `server.ssl.key-store-password` 证书密码
-	- `server.ssl.keyStoreType` 证书格式，若使用JKS格式则填写`JKS`，使用P12格式则填写`PKCS12`
+先找到`80`端口对应的`server`块：
+
+![image-20220707175202725](https://swsk33-note.oss-cn-shanghai.aliyuncs.com/image-20220707175202725.png)
+
+然后把`listen 80;`改成`listen 443 ssl;`，并在其下添加如下两行：
+
+```nginx
+ssl_certificate 你的证书文件路径;
+ssl_certificate_key 你的证书密钥文件路径;
+```
+
+最终如下图：
+
+![image-20220707175512156](https://swsk33-note.oss-cn-shanghai.aliyuncs.com/image-20220707175512156.png)
+
+然后再在这个`server`块上面再添加如下的`server`块用于80端口跳转443端口：
+
+```nginx
+# 80跳转443
+server {
+	listen 80;
+	rewrite ^(.*)$ https://$host$1 permanent;
+}
+```
+
+然后执行命令重载Nginx配置：
+
+```bash
+sudo /opt/git-document/nginx/sbin/nginx -p /opt/git-document/nginx -s reload
+```
 
 
 ##### ③ 启动服务
@@ -229,7 +251,9 @@ screen -S git-doc
 这个时候，你就创建并进入了一个新的终端窗口，你就可以运行该服务了！我们需要以上面创建的`git`用户作为运行用户运行：
 
 ```bash
-sudo -u git git-doc-start
+# 指定git用户用于运行GitDocument程序
+# 命令格式：git-doc-start 指定运行程序的用户名
+sudo git-doc-start git
 ```
 
 最后显示如下则为启动成功：
@@ -238,9 +262,17 @@ sudo -u git git-doc-start
 
 这个时候，直接访问你的服务器地址或者域名，即可访问到GitDocument的页面了！
 
-以后连接服务器可以执行`screen -r git-doc`命令进入窗口查看运行情况。
+以后连接服务器可以执行`screen -r git-doc`命令进入窗口查看运行情况，按下`Ctrl + C`可以停止服务。
+
+停止服务后，记得还要把Nginx也停掉：
+
+```bash
+sudo /opt/git-document/nginx/sbin/nginx -p /opt/git-document/nginx -s quit
+```
 
 #### 2. 编译源码安装
+
+使用源码安装的话，需要自行安装并配置Nginx。
 
 ##### ① 本地环境配置
 
@@ -271,13 +303,7 @@ npm run build
 
 构建完成，文件夹下会出现`dist`文件夹，这就是构建的结果。若`npm install`依赖安装的太慢，可以换用`cnpm`来执行安装依赖命令。
 
-##### ③ 把构建网页源代码放进Spring Boot
-
-把上述构建的Vue源码结果，即为`dist`目录下所有的内容复制到项目目录中的`server-springboot/src/main/resources/static`目录下，若`static`文件夹不存在则自己创建一个。
-
-注意是**把`dist`目录中所有内容**放进`static`目录下而不是把`dist`文件夹放进`static`！
-
-##### ④ 构建Spring Boot
+##### ③ 构建Spring Boot
 
 打开终端，切换当前路径到项目目录的`server-springboot`目录下，执行命令以构建：
 
@@ -287,41 +313,101 @@ mvn clean package
 
 等待构建完成，目录下会出现`target`目录即为构建结果。
 
-##### ⑤ 上传构建结果到服务器
+##### ④ 上传Spring Boot构建结果到服务器
 
 将项目目录的`server-springboot/target`目录下的`git-document-x.x.x.jar`（`x`为版本号）和`server-springboot`目录下的`config`目录与`external-resource`目录这三项一起上传到服务器，务必保证`jar`文件和这两个文件夹放在服务器上的同级目录下！
 
-##### ⑥ 修改配置
+##### ⑤ 修改Spring Boot配置
 
 上传到服务器后，编辑`config`目录下的`application.properties`文件，把`spring.profiles.active`的值由`dev`改为`prod`。
 
 然后打开`config`目录下的`application-prod.properties`文件，这个就是主要配置文件，其中需要修改的配置项和安装包安装中配置文件是一样的，这里不再赘述，大家可以参考安装包安装方式章节中的修改配置文件部分。
 
-##### ⑦ 配置服务器端口转发
+##### ⑥ 安装并配置Nginx
 
-由于非`root`用户无法直接在`80`或者`443`端口上运行服务，因此这里通过端口转发的方式达到普通用户在`80`端口和`443`端口上运行服务的目的。
-
-> 如果是安装包安装，端口转发会在安装时自动配置好，这里使用源码编译安装的话就要手动配置。
-
-连接服务器，先执行下列命令打开端口转发功能：
+Nginx可以使用包管理器`apt`直接安装：
 
 ```bash
-sudo sh -c 'echo "net.ipv4.ip_forward = 1" >> /etc/sysctl.conf'
-sudo sysctl -p
+sudo apt install nginx
 ```
 
-然后配置端口转发：
+也可以自行编译安装，参考：[传送门](https://juejin.cn/post/7116382852836507679)
 
-```bash
-sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8800
-sudo iptables -t nat -A PREROUTING -p tcp --dport 443 -j REDIRECT --to-ports 8443
+注意，两种安装方式的Nginx配置文件所在位置不同：
+
+- `apt`安装：`/etc/nginx/conf/nginx.conf`
+- 编译安装：`/usr/local/nginx/conf/nginx.conf`
+
+先在配置文件中加入下列指令，指定以`root`用户运行Nginx：
+
+```nginx
+user root;
 ```
 
-##### ⑧ 启动运行服务
+然后需要把上述第②步的Vue源码构建结果配置到Nginx中，把项目的`web-vue-vite/dist`文件夹下所有内容上传至服务器的某个目录下，这里假设：
 
-运行`jar`文件即可，注意运行路径需要在`jar`文件所在目录下！
+- 前端构建结果传到服务器的`/root/web`目录下
+- 把第④步的jar文件、`external-resource`和`config`目录上传到了服务器的`/root/app`目录下
+
+那么就修改端口为`80`的`server`块如下：
+
+```nginx
+server {
+	listen 80;
+	server_name localhost;
+
+	location / {
+		root /root/web;
+		index index.html;
+		# 兼容Vue Router
+		try_files $uri $uri/ /index.html;
+	}
+
+	# 转发请求
+	# Spring Boot中端口默认是8800，若修改了Spring Boot端口，这里的端口对应也需要修改
+	location /api {
+		proxy_pass http://127.0.0.1:8800;
+	}
+
+	# 定位静态资源
+	location /static {
+		alias /root/app/external-resource;
+	}
+}
+```
+
+也就是说上述`location /`块中的`root`需要配置为Vue构建结果文件所在的目录，`location /static`块中`alias`需要对应为`external-resource`目录位置。
+
+若要配置https，同样需要准备好SSL证书，然后先把上述`80`端口对应的`server`块改为如下：
+
+```nginx
+server {
+	listen 443 ssl;
+	ssl_certificate 你的证书文件路径;
+	ssl_certificate_key 你的证书密钥文件路径;
+	server_name localhost;
+
+	# 下面所有location块和上面一样
+}
+```
+
+然后再在这个`server`块的上面添加如下`server`块以实现http跳转https：
+
+```nginx
+# 80跳转443
+server {
+	listen 80;
+	rewrite ^(.*)$ https://$host$1 permanent;
+}
+```
+
+##### ⑦ 启动运行服务
+
+首先是启动Nginx，确认Nginx正常启动后，再运行`jar`文件即可，注意运行路径需要在`jar`文件所在目录下！
 
 ```bash
+# 先启动Nginx
+sudo nginx
 cd jar文件所在目录
 # 以我们创建的git用户运行服务
 sudo -u git java -jar git-document-x.x.x.jar
@@ -340,43 +426,22 @@ sudo -u git java -jar git-document-x.x.x.jar
 如果你是安装包安装的方式，先停止程序运行，然后执行以下命令即可卸载：
 
 ```bash
+# 先停止Nginx
+sudo /opt/git-document/nginx/sbin/nginx -p /opt/git-document/nginx -s stop
+# 卸载软件包
 sudo apt remove git-document
+# 清除残留
 sudo rm -rf /opt/git-document
 ```
 
 ### (2) 编译安装
 
-编译安装的方式，先停止程序运行，然后删除程序的`jar`文件、`external-resource`目录和`config`目录即可。
-
-然后移除端口转发配置并关闭端口转发，将下列内容保存为一个`sh`脚本：
+编译安装的方式，先停止Nginx程序运行，然后删除程序的`jar`文件、`external-resource`目录和`config`目录即可。
 
 ```bash
-#!/bin/bash
-# 最后移除端口转发
-
-# 移除转发配置，第一个参数为被转发端口，第二个参数为转发目标端口
-removeForward() {
-	# 根据端口转发列表查询输出的内容获取我们端口转发具体的位置，得到查询内容的结果字符串
-	route=$(sudo iptables -t nat -nL --line | grep "tcp dpt:$1 redir ports $2")
-	# 序号位于结果字符串首尾，因此先获取结果的第一个空格的位置
-	index=$(expr $(expr index "$route" " ") - 1)
-	# 利用这个空格的位置，裁剪结果字符串得到了序号，用序号才能移除端口转发配置
-	num=$(expr substr "$route" 1 $index)
-	# 最后移除转发
-	sudo iptables -t nat -D PREROUTING $num
-}
-
-echo 正在移除端口转发配置...
-removeForward 80 8800
-removeForward 443 8443
-# 移除配置文件中关于端口转发的内容
-sudo sed -i '/net.ipv4.ip_forward/d' /etc/sysctl.conf
-sudo sysctl -p
+# 停止Nginx
+sudo nginx -s stop
 ```
-
-然后给这个脚本加上可执行权限，运行这个脚本即可。
-
-> 安装包安装的方式，在卸载时也会自动移除端口转发的配置，因此编译安装的话需要手动移除而安装包安装不需要。
 
 ## 4，平台使用
 
@@ -551,4 +616,4 @@ git push origin master
 
 同样地，准备好自定义的背景图，`jpg`格式，最好是`16:9`的尺寸，`1920 x 1080`或者`2560 x 1440`分辨率，并把该图片命名为`custom.jpg`放到程序所在目录的`external-resource/background`目录下。当这个目录下存在`custom.jpg`文件时，主面板页就会显示为你自定义的背景图片。
 
-> 最后更新：2022.7.2
+> 最后更新：2022.7.7
