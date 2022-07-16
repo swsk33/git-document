@@ -24,6 +24,7 @@ import { REQUEST_METHOD, sendRequest } from '../../../utils/request.js';
 
 import highlight from 'highlight.js';
 import ClipBoard from 'clipboard';
+import renderMathInElement from 'katex/dist/contrib/auto-render.js';
 
 // vuex模块
 const { mapState: themeState, mapActions: themeActions } = createNamespacedHelpers('article-page-theme');
@@ -187,7 +188,17 @@ export default {
 			this.parseTitle();
 			this.showCodeTypeAndCopy();
 		}
+		// 根据白天或者夜晚模式改变代码样式
 		this.changeCodeStyle(this.isNight);
+		// 最后渲染公式
+		renderMathInElement(this.$refs.content, {
+			delimiters: [
+				{ left: '$$', right: '$$', display: true },
+				{ left: '$', right: '$', display: false }
+			],
+			strict: false,
+			throwOnError: false
+		});
 	}
 };
 </script>
