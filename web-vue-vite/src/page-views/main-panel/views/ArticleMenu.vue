@@ -3,6 +3,7 @@
 		<div class="path">
 			<div class="head">
 				<div class="text">当前位置：</div>
+				<el-button class="committer" type="success" size="small" plain @click="this.$router.push('/committer/' + this.$route.params.id)">贡献者</el-button>
 				<el-button class="last" type="primary" size="small" :icon="icons.top" @click="goToLast" circle/>
 			</div>
 			<ul class="menu-tree">
@@ -166,7 +167,7 @@ export default {
 			this.depth--;
 		}
 	},
-	async mounted() {
+	async created() {
 		const response = await sendRequest('/api/article/get-article-list/' + this.$route.params.id, REQUEST_METHOD.GET);
 		if (!response.success) {
 			ElNotification({
@@ -198,6 +199,11 @@ export default {
 
 			.text {
 				line-height: 3.5vh;
+			}
+
+			.committer {
+				position: absolute;
+				right: 6%;
 			}
 
 			.last {

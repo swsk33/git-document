@@ -9,7 +9,12 @@
 				<div class="image">
 					<img :src="item.cover" alt="undefined"/>
 				</div>
-				<div class="text">{{ item.showName }}</div>
+				<el-tooltip placement="top" :content="item.showName">
+					<div class="text">{{ item.showName }}</div>
+				</el-tooltip>
+				<el-tooltip placement="top" content="最后更新时间">
+					<div class="update-time">{{ getUpdateTime(item.updateTime) }}</div>
+				</el-tooltip>
 				<div class="button-box">
 					<el-button type="primary" plain class="copy-ssh" :id="'copy-ssh-' + item.id" v-if="hasPermission('edit_anthology')" @click="copySSH(item.id, item.systemUser, item.repoPath)">复制Git SSH地址</el-button>
 					<el-button type="warning" plain class="edit" v-if="hasPermission('edit_anthology')" @click="showEditDialog(item)">编辑</el-button>
@@ -66,6 +71,7 @@ import ClipBoard from 'clipboard';
 import infoDialog from '../components/InfoDialog.vue';
 import uploadImage from '../components/UploadImage.vue';
 import { sendRequest, REQUEST_METHOD } from '../../../utils/request.js';
+import { timestampToDateString } from '../../../utils/time-convert.js';
 import { ElNotification } from 'element-plus';
 import { createNamespacedHelpers } from 'vuex';
 
@@ -91,7 +97,12 @@ export default {
 		};
 	},
 	computed: {
-		...userGetters(['hasPermission'])
+		...userGetters(['hasPermission']),
+		getUpdateTime() {
+			return (timestamp) => {
+				return timestampToDateString(timestamp);
+			};
+		}
 	},
 	methods: {
 		/**
@@ -217,7 +228,7 @@ export default {
 			await this.getAnthologyList();
 		}
 	},
-	mounted() {
+	created() {
 		// 获取文集列表
 		this.getAnthologyList();
 	}
@@ -269,7 +280,6 @@ export default {
 				justify-content: center;
 				align-items: center;
 				margin-left: 0.5%;
-
 				box-sizing: border-box;
 
 				img {
@@ -280,15 +290,25 @@ export default {
 				}
 			}
 
-			.text {
-				margin-left: 3%;
-				width: 51%;
-				height: 6vh;
-				line-height: 6vh;
-				font-size: 18px;
+			.text, .update-time {
 				white-space: nowrap;
 				overflow: hidden;
 				text-overflow: ellipsis;
+				height: 6vh;
+				line-height: 6vh;
+			}
+
+			.text {
+				margin-left: 3%;
+				width: 31%;
+				font-size: 18px;
+			}
+
+			.update-time {
+				width: 20%;
+				font-size: 13px;
+				text-align: center;
+				color: #5500ff;
 			}
 
 			.button-box {

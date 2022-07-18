@@ -47,6 +47,11 @@ public class Anthology implements Serializable {
 	private String systemUser;
 
 	/**
+	 * 文集最后更新的时间戳
+	 */
+	private int updateTime;
+
+	/**
 	 * 对应仓库地址
 	 */
 	private String repoPath;

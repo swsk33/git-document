@@ -46,13 +46,8 @@ public class AnthologyAPI {
 	}
 
 	@GetMapping("/get/{id}")
-	public Result<Anthology> getById(@PathVariable long id) {
+	public Result<Anthology> getById(@PathVariable long id) throws Exception {
 		return anthologyService.getById(id);
-	}
-
-	@GetMapping("/get-update-time/{id}")
-	public Result<Long> getLatestUpdateTime(@PathVariable long id) throws Exception {
-		return anthologyService.getLatestUpdateTime(id);
 	}
 
 	@GetMapping("/get-all-commits/{id}")

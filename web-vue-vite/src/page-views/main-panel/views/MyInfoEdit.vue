@@ -185,14 +185,7 @@ export default {
 		if (this.userData === undefined) {
 			await this.checkLogin();
 		}
-		this.editUserdata = {
-			id: this.userData.id,
-			username: this.userData.username,
-			password: undefined,
-			nickname: this.userData.nickname,
-			avatar: this.userData.avatar,
-			email: this.userData.email
-		};
+		this.editUserdata = { ...this.userData };
 		this.$refs.imageUpload.previewImage = this.editUserdata.avatar;
 		// 管理员用户获取公钥
 		if (this.hasPermission('edit_anthology')) {

@@ -247,7 +247,7 @@ export default {
 			this.$refs.addUserDialog.frameShow = false;
 		}
 	},
-	async mounted() {
+	async created() {
 		await this.getUserList();
 		await this.getRoleList();
 	}

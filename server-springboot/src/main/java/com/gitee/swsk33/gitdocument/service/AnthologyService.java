@@ -40,14 +40,7 @@ public interface AnthologyService {
 	 *
 	 * @param id 文集id
 	 */
-	Result<Anthology> getById(long id);
-
-	/**
-	 * 获取文集最后更新时间
-	 *
-	 * @param id 文集id
-	 */
-	Result<Long> getLatestUpdateTime(long id) throws Exception;
+	Result<Anthology> getById(long id) throws Exception;
 
 	/**
 	 * 获取文集全部的贡献对象

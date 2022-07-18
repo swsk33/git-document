@@ -134,7 +134,7 @@ public class AnthologyServiceImpl implements AnthologyService {
 
 	@SaCheckLogin
 	@Override
-	public Result<Anthology> getById(long id) {
+	public Result<Anthology> getById(long id) throws Exception {
 		Result<Anthology> result = new Result<>();
 		Anthology getAnthology = anthologyDAO.getById(id);
 		if (getAnthology == null) {
@@ -143,25 +143,8 @@ public class AnthologyServiceImpl implements AnthologyService {
 		}
 		// 填充信息
 		getAnthology.setSystemUser(CommonValue.RUN_USER_NAME);
+		getAnthology.setUpdateTime(GitRepositoryUtils.getHeadCommit(getAnthology.getRepoPath()).getCommitTime());
 		result.setResultSuccess("查找成功！", getAnthology);
-		return result;
-	}
-
-	@SaCheckLogin
-	@Override
-	public Result<Long> getLatestUpdateTime(long id) throws Exception {
-		Result<Long> result = new Result<>();
-		Anthology getAnthology = anthologyDAO.getById(id);
-		if (getAnthology == null) {
-			result.setResultFailed("文集不存在！");
-			return result;
-		}
-		RevCommit latestCommit = GitRepositoryUtils.getHeadCommit(getAnthology.getRepoPath());
-		if (latestCommit == null) {
-			result.setResultFailed("没有提交记录！");
-			return result;
-		}
-		result.setResultSuccess("获取时间戳成功！", (long) latestCommit.getCommitTime());
 		return result;
 	}
 
@@ -203,7 +186,14 @@ public class AnthologyServiceImpl implements AnthologyService {
 		List<Anthology> anthologies = anthologyDAO.getAll();
 		// 填充信息
 		anthologies.forEach(item -> {
+			int timestamp = 0;
+			try {
+				timestamp = GitRepositoryUtils.getHeadCommit(item.getRepoPath()).getCommitTime();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			item.setSystemUser(CommonValue.RUN_USER_NAME);
+			item.setUpdateTime(timestamp);
 		});
 		result.setResultSuccess("查询成功！", anthologies);
 		return result;
