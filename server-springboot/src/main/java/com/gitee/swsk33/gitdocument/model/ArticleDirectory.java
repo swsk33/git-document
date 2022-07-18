@@ -1,8 +1,7 @@
 package com.gitee.swsk33.gitdocument.model;
 
 import com.gitee.swsk33.gitdocument.param.FileIndexType;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -11,8 +10,7 @@ import java.util.List;
 /**
  * 文章目录索引，类似系统目录一样的树状结构，用于返回给前端作为树状结构显示和解析
  */
-@Getter
-@Setter
+@Data
 public class ArticleDirectory implements Serializable {
 
 	/**

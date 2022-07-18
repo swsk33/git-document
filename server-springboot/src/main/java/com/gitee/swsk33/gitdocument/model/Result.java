@@ -1,8 +1,6 @@
 package com.gitee.swsk33.gitdocument.model;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 
 import java.io.Serializable;
 
@@ -11,9 +9,7 @@ import java.io.Serializable;
  *
  * @param <T> 结果数据类型
  */
-@Getter
-@Setter
-@NoArgsConstructor
+@Data
 public class Result<T> implements Serializable {
 
 	/**

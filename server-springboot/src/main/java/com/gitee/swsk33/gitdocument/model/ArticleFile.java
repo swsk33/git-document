@@ -1,14 +1,12 @@
 package com.gitee.swsk33.gitdocument.model;
 
 import com.gitee.swsk33.gitdocument.param.FileIndexType;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 /**
  * 文章文件索引，不存放文章信息，只用于给前端解析的索引信息
  */
-@Getter
-@Setter
+@Data
 public class ArticleFile {
 
 	/**

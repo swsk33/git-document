@@ -1,8 +1,6 @@
 package com.gitee.swsk33.gitdocument.dataobject;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -12,9 +10,7 @@ import java.util.List;
 /**
  * 角色
  */
-@Setter
-@Getter
-@NoArgsConstructor
+@Data
 public class Role implements Serializable {
 
 	/**

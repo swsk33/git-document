@@ -1,9 +1,7 @@
 package com.gitee.swsk33.gitdocument.dataobject;
 
 import com.gitee.swsk33.gitdocument.param.ValidationRules;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -13,9 +11,7 @@ import java.time.LocalDateTime;
 /**
  * 星星（收藏）
  */
-@Setter
-@Getter
-@NoArgsConstructor
+@Data
 public class Star implements Serializable {
 
 	/**

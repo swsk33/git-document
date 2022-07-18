@@ -1,6 +1,7 @@
 package com.gitee.swsk33.gitdocument.api;
 
 import com.gitee.swsk33.gitdocument.dataobject.Anthology;
+import com.gitee.swsk33.gitdocument.model.CommitInfo;
 import com.gitee.swsk33.gitdocument.model.Result;
 import com.gitee.swsk33.gitdocument.param.ValidationRules;
 import com.gitee.swsk33.gitdocument.service.AnthologyService;
@@ -47,6 +48,16 @@ public class AnthologyAPI {
 	@GetMapping("/get/{id}")
 	public Result<Anthology> getById(@PathVariable long id) {
 		return anthologyService.getById(id);
+	}
+
+	@GetMapping("/get-update-time/{id}")
+	public Result<Long> getLatestUpdateTime(@PathVariable long id) throws Exception {
+		return anthologyService.getLatestUpdateTime(id);
+	}
+
+	@GetMapping("/get-all-commits/{id}")
+	public Result<List<CommitInfo>> getAllCommits(@PathVariable long id) throws Exception {
+		return anthologyService.getAllCommits(id);
 	}
 
 	@GetMapping("/get-all")

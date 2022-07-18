@@ -2,8 +2,7 @@ package com.gitee.swsk33.gitdocument.model;
 
 import com.gitee.swsk33.gitdocument.dataobject.Article;
 import com.gitee.swsk33.gitdocument.dataobject.User;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -13,8 +12,7 @@ import java.time.LocalDateTime;
 /**
  * 问题报告
  */
-@Getter
-@Setter
+@Data
 public class ErrorReport implements Serializable {
 
 	/**

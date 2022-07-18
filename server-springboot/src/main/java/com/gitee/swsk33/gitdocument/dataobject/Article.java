@@ -1,17 +1,13 @@
 package com.gitee.swsk33.gitdocument.dataobject;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 
 /**
  * 文章索引信息
  */
-@Getter
-@Setter
-@NoArgsConstructor
+@Data
 public class Article {
 
 	/**

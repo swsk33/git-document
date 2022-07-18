@@ -2,9 +2,7 @@ package com.gitee.swsk33.gitdocument.dataobject;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.gitee.swsk33.gitdocument.param.ValidationRules;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 
 import javax.validation.constraints.*;
 import java.io.Serializable;
@@ -13,9 +11,7 @@ import java.time.LocalDateTime;
 /**
  * 用户类
  */
-@Getter
-@Setter
-@NoArgsConstructor
+@Data
 @JsonIgnoreProperties(allowSetters = true, value = {"password"})
 public class User implements Serializable {
 

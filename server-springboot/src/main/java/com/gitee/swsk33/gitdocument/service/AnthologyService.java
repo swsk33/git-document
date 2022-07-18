@@ -1,6 +1,7 @@
 package com.gitee.swsk33.gitdocument.service;
 
 import com.gitee.swsk33.gitdocument.dataobject.Anthology;
+import com.gitee.swsk33.gitdocument.model.CommitInfo;
 import com.gitee.swsk33.gitdocument.model.Result;
 import org.springframework.stereotype.Service;
 
@@ -40,6 +41,20 @@ public interface AnthologyService {
 	 * @param id 文集id
 	 */
 	Result<Anthology> getById(long id);
+
+	/**
+	 * 获取文集最后更新时间
+	 *
+	 * @param id 文集id
+	 */
+	Result<Long> getLatestUpdateTime(long id) throws Exception;
+
+	/**
+	 * 获取文集全部的贡献对象
+	 *
+	 * @param id 文集id
+	 */
+	Result<List<CommitInfo>> getAllCommits(long id) throws Exception;
 
 	/**
 	 * 获取全部文集列表

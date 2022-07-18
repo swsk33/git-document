@@ -1,9 +1,7 @@
 package com.gitee.swsk33.gitdocument.dataobject;
 
 import com.gitee.swsk33.gitdocument.param.ValidationRules;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -14,9 +12,7 @@ import java.time.LocalDateTime;
 /**
  * 文章集
  */
-@Setter
-@Getter
-@NoArgsConstructor
+@Data
 public class Anthology implements Serializable {
 
 	/**

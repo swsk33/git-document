@@ -2,13 +2,16 @@ package com.gitee.swsk33.gitdocument.service.impl;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckRole;
+import com.gitee.swsk33.gitdocument.context.GitFileListenerContext;
 import com.gitee.swsk33.gitdocument.context.GitTaskContext;
 import com.gitee.swsk33.gitdocument.dao.AnthologyDAO;
+import com.gitee.swsk33.gitdocument.dao.UserDAO;
 import com.gitee.swsk33.gitdocument.dataobject.Anthology;
+import com.gitee.swsk33.gitdocument.dataobject.User;
+import com.gitee.swsk33.gitdocument.model.CommitInfo;
 import com.gitee.swsk33.gitdocument.model.Result;
 import com.gitee.swsk33.gitdocument.param.CommonValue;
 import com.gitee.swsk33.gitdocument.service.AnthologyService;
-import com.gitee.swsk33.gitdocument.context.GitFileListenerContext;
 import com.gitee.swsk33.gitdocument.service.ImageService;
 import com.gitee.swsk33.gitdocument.util.ClassExamine;
 import com.gitee.swsk33.gitdocument.util.GitRepositoryUtils;
@@ -16,12 +19,14 @@ import com.gitee.swsk33.gitdocument.util.SnowflakeIdGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.jgit.revwalk.RevCommit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -30,6 +35,9 @@ public class AnthologyServiceImpl implements AnthologyService {
 
 	@Autowired
 	private AnthologyDAO anthologyDAO;
+
+	@Autowired
+	private UserDAO userDAO;
 
 	@Autowired
 	private ImageService imageService;
@@ -136,6 +144,55 @@ public class AnthologyServiceImpl implements AnthologyService {
 		// 填充信息
 		getAnthology.setSystemUser(CommonValue.RUN_USER_NAME);
 		result.setResultSuccess("查找成功！", getAnthology);
+		return result;
+	}
+
+	@SaCheckLogin
+	@Override
+	public Result<Long> getLatestUpdateTime(long id) throws Exception {
+		Result<Long> result = new Result<>();
+		Anthology getAnthology = anthologyDAO.getById(id);
+		if (getAnthology == null) {
+			result.setResultFailed("文集不存在！");
+			return result;
+		}
+		RevCommit latestCommit = GitRepositoryUtils.getHeadCommit(getAnthology.getRepoPath());
+		if (latestCommit == null) {
+			result.setResultFailed("没有提交记录！");
+			return result;
+		}
+		result.setResultSuccess("获取时间戳成功！", (long) latestCommit.getCommitTime());
+		return result;
+	}
+
+	@SaCheckLogin
+	@Override
+	public Result<List<CommitInfo>> getAllCommits(long id) throws Exception {
+		Result<List<CommitInfo>> result = new Result<>();
+		Anthology getAnthology = anthologyDAO.getById(id);
+		if (getAnthology == null) {
+			result.setResultFailed("文集不存在！");
+			return result;
+		}
+		List<RevCommit> getCommits = GitRepositoryUtils.getAllCommits(getAnthology.getRepoPath());
+		// 结果列表
+		List<CommitInfo> commitInfos = new ArrayList<>();
+		// 填充信息
+		getCommits.forEach(item -> {
+			CommitInfo info = new CommitInfo();
+			// 获取用户信息
+			User getUser = userDAO.getByUsernameOrEmail(item.getAuthorIdent().getEmailAddress());
+			if (getUser == null) {
+				getUser = new User();
+				getUser.setNickname("未知用户");
+				getUser.setAvatar(imageService.getRandomAvatar().getData());
+			}
+			info.setCommitter(getUser);
+			info.setMessage(item.getFullMessage());
+			info.setTimestamp(item.getCommitTime());
+			commitInfos.add(info);
+		});
+		result.setResultSuccess("获取成功！", commitInfos);
 		return result;
 	}
 

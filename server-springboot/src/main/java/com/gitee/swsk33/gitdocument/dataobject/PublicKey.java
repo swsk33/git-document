@@ -1,8 +1,6 @@
 package com.gitee.swsk33.gitdocument.dataobject;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
@@ -11,9 +9,7 @@ import java.time.LocalDateTime;
 /**
  * 用户公钥信息
  */
-@Setter
-@Getter
-@NoArgsConstructor
+@Data
 public class PublicKey implements Serializable {
 
 	/**
