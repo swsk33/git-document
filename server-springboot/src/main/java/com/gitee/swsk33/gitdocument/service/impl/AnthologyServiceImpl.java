@@ -188,7 +188,10 @@ public class AnthologyServiceImpl implements AnthologyService {
 		anthologies.forEach(item -> {
 			int timestamp = 0;
 			try {
-				timestamp = GitRepositoryUtils.getHeadCommit(item.getRepoPath()).getCommitTime();
+				RevCommit commit = GitRepositoryUtils.getHeadCommit(item.getRepoPath());
+				if (commit != null) {
+					timestamp = commit.getCommitTime();
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

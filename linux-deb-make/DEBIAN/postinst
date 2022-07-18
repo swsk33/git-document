@@ -1,7 +1,0 @@
-#!/bin/bash
-echo --------------------------GitDocument 初始化------------------------------
-echo 正在设定目录和文件权限...
-sudo chmod -R 777 /opt/git-document
-sudo chmod -R 777 /etc/git-document
-echo 修改权限完成！
-echo 已完成初始化！

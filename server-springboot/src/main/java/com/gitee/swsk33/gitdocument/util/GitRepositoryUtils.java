@@ -81,8 +81,13 @@ public class GitRepositoryUtils {
 		Repository repository = new FileRepositoryBuilder().setGitDir(new File(repositoryPath)).build();
 		// 创建修订对象，可以用于获取所有的commit
 		RevWalk walk = new RevWalk(repository);
+		// 得到HEAD指针的提交ID
+		ObjectId headId = repository.resolve("HEAD");
+		if (headId == null) {
+			return result;
+		}
 		// 设定从HEAD指针为起始点开始遍历
-		walk.markStart(walk.parseCommit(repository.resolve("HEAD")));
+		walk.markStart(walk.parseCommit(headId));
 		// 遍历获取信息，时间从新到旧
 		for (RevCommit commit : walk) {
 			result.add(commit);
