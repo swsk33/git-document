@@ -1,9 +1,11 @@
-FROM swsk33/openjdk-zulu-jre-17-alpine:nginx-lite
+FROM swsk33/openjdk-zulu-jre-17-debian:nginx
 # 初始化容器系统
 RUN rm -rf /usr/local/nginx/html/* /usr/local/nginx/conf/nginx.conf \
 	&& mkdir /app /app/config /git-doc \
-	&& adduser git -D \
-	&& apk add sudo vim openssh git
+	&& useradd -s /bin/bash -m git \
+	&& apt install -y sudo vim openssh-server git \
+	&& apt clean \
+	&& ln -s /opt/zulu-17/bin/java /usr/bin/java
 # 添加必要文件
 ADD springboot.tar.xz /app/
 ADD vue.tar.xz /usr/local/nginx/html/
