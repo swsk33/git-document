@@ -9,7 +9,7 @@
 
 因此，我们开发了这个**面向小型程序员团队的文档管理和在线浏览平台**——**GitDocument**。
 
-GitDocoment是一个轻量的团队文档管理和查看工具，部署之后，完全使用Git来管理团队的文档，并在线浏览，文档全部为Markdown文件形式。
+GitDocument是一个轻量的团队文档管理和查看工具，部署之后，完全使用Git来管理团队的文档，并在线浏览，文档全部为Markdown文件形式。
 
 ![image-20220630113713174](https://swsk33-note.oss-cn-shanghai.aliyuncs.com/image-20220630113713174.png)
 
@@ -37,6 +37,7 @@ GitDocoment是一个轻量的团队文档管理和查看工具，部署之后，
 	- 创建Git仓库作为在线文集
 	- 完全以Git仓库的形式管理在线文集，管理员可以克隆文集仓库到本地
 	- 编写好文档后即可推送至文集仓库并在线浏览
+	- 贡献者查看
 - 用户管理
 
 ### (2) 待开发的功能
@@ -57,6 +58,7 @@ GitDocoment是一个轻量的团队文档管理和查看工具，部署之后，
 - [element-plus](https://element-plus.gitee.io/zh-CN/) 组件库
 - [marked.js](https://marked.js.org/) Markdown转HTML
 - [highlight.js](https://highlightjs.org/) 实现代码高亮
+- [katex](https://katex.org/) 对LaTeX公式支持
 - [sass](https://sass-lang.com/) CSS预处理器
 - [Vue-Router](https://router.vuejs.org/zh/) 单页路由
 - [Vuex](https://vuex.vuejs.org/zh/) 状态管理
@@ -81,43 +83,16 @@ GitDocoment是一个轻量的团队文档管理和查看工具，部署之后，
 
 ## 2，安装和部署
 
-该项目需要安装部署在Linux服务器上，大家下载安装包直接安装即可使用。
+该项目需要安装部署在Linux服务器上，大家可以通过拉取Docker镜像的方式运行。
 
-要求：
+若你要编译运行与实体机上，则需要满足以下系统要求：
 
 - 操作系统：Linux操作系统，推荐Debian 11
 - 运行环境：Java 17及其以上版本
 - 数据库：MySQL 8及其以上版本
 - 工具：服务端需安装Git
 
-大家可以直接使用安装包安装到服务器上面，也可以通过编译源代码安装等等，推荐使用安装包安装的方式。
-
-### (1) 系统准备
-
-在安装之前，我们需要创建一个系统用户专门用于管理这些存放在服务器的文集Git仓库，我们就将这个用户命名为`git`就行。
-
-> 事实上不创建这个系统用户，也不会影响你的使用，不过我们还是推荐创建一个专门的`git`用户，分离职责。
-
-执行以下命令以创建用户：
-
-```bash
-# 创建git用户
-sudo useradd -s /bin/bash -m git
-# 给git用户设定密码
-sudo passwd git
-```
-
-创建用户完成，即可进入我们的安装步骤了！
-
-然后，我们还需要在服务器上面安装Git工具，大家可以直接通过命令安装：
-
-```bash
-sudo apt install git
-```
-
-通过`apt`安装的Git版本不是特别新，当然不影响使用。若想要安装最新Git可以从源码编译，参考：[传送门](https://juejin.cn/post/7083777705996451854)
-
-### (2) 安装和配置数据库
+### (1) 安装和配置数据库
 
 该平台需要MySQL 8及其以上版本的数据库支持，安装GitDocument之前需要先配置好数据库，这里不再赘述MySQL的安装配置过程，若不太熟悉可以先参考这个文章进行MySQL的安装和配置：[传送门](https://juejin.cn/post/6989125524937244686)
 
@@ -144,41 +119,41 @@ source 下载的sql文件位置
 
 到此，数据库初始化完成！
 
-### (3) 安装和运行
+### (2) 安装和运行
 
-这里提供**安装包安装**和**源码编译安装**两种方式，两种方式都写在这里，大家可以根据实际情况自行选择其中一种方式。
+这里提供**通过Docker镜像部署运行**和**源码编译安装**两种方式，两种方式都写在这里，大家可以根据实际情况自行选择其中一种方式。
 
-#### 1. 下载安装包安装（推荐）
+#### 1. 通过拉取Docker镜像（推荐）
 
-##### ① 安装
+##### ① 安装Docker Engine并拉取镜像
 
-在右侧发行版/Releases处下载最新版的安装包，安装包为`deb`格式，下载后上传到服务器，在服务器执行命令安装：
+首先连接服务器，并在服务器上安装好Docker Engine，这部分不再赘述，请参考官方文档：[传送门](https://docs.docker.com/engine/install/debian/)
 
-```bash
-sudo dpkg -i 安装包文件路径
-```
-
-等待安装完成即可！
-
-若安装出现错误，请执行以下命令：
+安装完成Docker Engine之后，拉取最新版GitDocument镜像：
 
 ```bash
-sudo apt install -f
+docker pull swsk33/git-document
 ```
 
-安装包除了安装程序主文件之外，还会安装一个Nginx，若服务器上已有Nginx建议先停掉原有的Nginx或者考虑源码编译安装。
+##### ② 创建容器并修改配置文件
 
-##### ② 修改配置文件
+拉取镜像完成之后，我们先要创建容器并修改配置文件，Spring Boot位于容器中的`/app/config`目录下。
 
-通过安装包安装的话，配置文件位于`/etc/git-document/application.properties`，打开它就可以修改。
-
-这里以使用vim编辑配置为例，先打开配置文件：
+先创建并进入容器：
 
 ```bash
-vim /etc/git-document/application.properties
+docker run -it --name=git-doc -p 80:80 -p 443:443 -p 23:22 swsk33/git-document bash
 ```
 
-按下`i`键进入编辑模式，即可修改配置文件，修改完成后按下Esc停止编辑，再输入`:wq`即可保存并退出编辑。
+这样，便创建好了容器并进入了容器中的终端。
+
+镜像中已经集成了`vim`文本编辑器，执行下列命令开始编辑Spring Boot配置文件：
+
+```bash
+vim /app/config/application.properties
+```
+
+按下`i`键进入编辑模式，即可移动光标修改配置文件，修改完成后按下Esc停止编辑，再输入`:wq`即可保存并退出编辑。
 
 以下配置项必须要配置：
 
@@ -198,9 +173,17 @@ vim /etc/git-document/application.properties
 
 ###### 3) 开启https（非必须）
 
-如果你需要开启https服务，你需要准备好SSL证书文件和证书密钥文件，然后修改Nginx配置，Nginx配置文件位于`/opt/git-document/nginx/conf/nginx.conf`。
+如果你需要开启https服务，你需要准备好SSL证书文件和证书密钥文件，然后修改Nginx配置，Nginx配置文件位于容器中的`/usr/local/nginx/conf/nginx.conf`。
 
-先找到`80`端口对应的`server`块：
+首先准备好**证书文件**和**密钥文件**，可以先退出容器，通过`docker cp`命令把这两个文件拷贝到容器中再配置，也可以在上述`docker run`的时候通过`-v`参数配置数据卷，这里不再赘述。
+
+在容器中同样通过`vim`编辑Nginx配置文件：
+
+```bash
+vim /usr/local/nginx/conf/nginx.conf
+```
+
+找到`80`端口对应的`server`块：
 
 ![image-20220707175202725](https://swsk33-note.oss-cn-shanghai.aliyuncs.com/image-20220707175202725.png)
 
@@ -225,54 +208,66 @@ server {
 }
 ```
 
-然后执行命令重载Nginx配置：
+
+##### ③ 启动容器
+
+先在容器中执行`exit`退出容器，然后执行下列命令启动容器：
 
 ```bash
-sudo /opt/git-document/nginx/sbin/nginx -p /opt/git-document/nginx -s reload
+docker start git-doc
+docker exec -id git-doc /start.sh
 ```
 
+执行`docker ps -a`命令，若大致`15s`后容器状态能够一直保持运行状态则启动成功！
 
-##### ③ 启动服务
+![image-20220719201932419](https://swsk33-note.oss-cn-shanghai.aliyuncs.com/image-20220719201932419.png)
 
-我们推荐把服务挂在后台运行，利用`screen`软件即可。若没有可以先安装：
+这个时候，访问服务器地址或者域名，就可以进入网页了！
+
+##### ④ 容器关键目录说明
+
+容器中有以下关键目录，在启动时会自动挂载至宿主机：
+
+- `/git-doc` 存放文集Git仓库的位置
+- `/app/config` Spring Boot主程序配置文件目录
+- `/usr/local/nginx/conf` Nginx配置文件目录
+
+可以通过下面命令查看这几个目录被挂载至哪个位置：
 
 ```bash
-sudo apt install screen
+docker inspect git-doc
 ```
 
-然后创建一个窗口：
+找到`Mounts`字段即可查看：
 
-```bash
-screen -S git-doc
-```
-
-窗口名为`git-doc`，当然你也可以起一个别的名字。
-
-这个时候，你就创建并进入了一个新的终端窗口，你就可以运行该服务了！我们需要以上面创建的`git`用户作为运行用户运行：
-
-```bash
-# 指定git用户用于运行GitDocument程序
-# 命令格式：git-doc-start 指定运行程序的用户名
-sudo git-doc-start git
-```
-
-最后显示如下则为启动成功：
-
-![image-20220630123257977](https://swsk33-note.oss-cn-shanghai.aliyuncs.com/image-20220630123257977.png)
-
-这个时候，直接访问你的服务器地址或者域名，即可访问到GitDocument的页面了！
-
-以后连接服务器可以执行`screen -r git-doc`命令进入窗口查看运行情况，按下`Ctrl + C`可以停止服务。
-
-停止服务后，记得还要把Nginx也停掉：
-
-```bash
-sudo /opt/git-document/nginx/sbin/nginx -p /opt/git-document/nginx -s quit
-```
+![image-20220719203927182](https://swsk33-note.oss-cn-shanghai.aliyuncs.com/image-20220719203927182.png)
 
 #### 2. 编译源码安装
 
 使用源码安装的话，需要自行安装并配置Nginx。
+
+在通过源码编译安装之前，建议大家在自己服务器上创建一个系统用户专门用于管理这些存放在服务器的文集Git仓库，我们就将这个用户命名为`git`就行。
+
+> 事实上不创建这个系统用户，也不会影响你的使用，不过我们还是推荐创建一个专门的`git`用户，分离职责。
+
+执行以下命令以创建用户：
+
+```bash
+# 创建git用户
+sudo useradd -s /bin/bash -m git
+# 给git用户设定密码
+sudo passwd git
+```
+
+创建用户完成，即可进入我们的安装步骤了！
+
+然后，我们还需要在服务器上面安装Git工具，大家可以直接通过命令安装：
+
+```bash
+sudo apt install git
+```
+
+通过`apt`安装的Git版本不是特别新，当然不影响使用。若想要安装最新Git可以从源码编译，参考：[传送门](https://juejin.cn/post/7083777705996451854)
 
 ##### ① 本地环境配置
 
@@ -321,7 +316,7 @@ mvn clean package
 
 上传到服务器后，编辑`config`目录下的`application.properties`文件，把`spring.profiles.active`的值由`dev`改为`prod`。
 
-然后打开`config`目录下的`application-prod.properties`文件，这个就是主要配置文件，其中需要修改的配置项和安装包安装中配置文件是一样的，这里不再赘述，大家可以参考安装包安装方式章节中的修改配置文件部分。
+然后打开`config`目录下的`application-prod.properties`文件，这个就是主要配置文件，其中需要修改的配置项和上面的容器部署部分的配置文件是一样的，这里不再赘述，大家可以参考上面容器部署章节中的修改配置文件部分。
 
 ##### ⑥ 安装并配置Nginx
 
@@ -415,35 +410,11 @@ sudo -u git java -jar git-document-x.x.x.jar
 
 `x`是版本号，大家自行替换为自己的实际文件名。
 
-同样地，也建议大家通过`screen`软件将其挂在后台运行。
+建议大家通过`screen`软件将其挂在后台运行。
 
 这个时候，访问服务器地址或者域名，就可以进入网页了！
 
-## 3，卸载
-
-### (1) 安装包安装
-
-如果你是安装包安装的方式，先停止程序运行，然后执行以下命令即可卸载：
-
-```bash
-# 先停止Nginx
-sudo /opt/git-document/nginx/sbin/nginx -p /opt/git-document/nginx -s stop
-# 卸载软件包
-sudo apt remove git-document
-# 清除残留
-sudo rm -rf /opt/git-document
-```
-
-### (2) 编译安装
-
-编译安装的方式，先停止Nginx程序运行，然后删除程序的`jar`文件、`external-resource`目录和`config`目录即可。
-
-```bash
-# 停止Nginx
-sudo nginx -s stop
-```
-
-## 4，平台使用
+## 3，平台使用
 
 安装配置完成之后，访问服务器地址或者域名即可进入网页。
 
@@ -505,7 +476,7 @@ ssh-keygen -t rsa -C "密钥名"
 
 ![image-20220630163709438](https://swsk33-note.oss-cn-shanghai.aliyuncs.com/image-20220630163709438.png)
 
-如果提示“公钥内容不合法！”的错误，请检查内容末尾是否有回车，去掉回车即可。
+如果提示“公钥内容不合法！”的错误，请检查**内容末尾是否有回车**，去掉回车即可。
 
 到此，公钥配置完毕！
 
@@ -584,7 +555,16 @@ git push origin master
 
 ![image-20220630171016713](https://swsk33-note.oss-cn-shanghai.aliyuncs.com/image-20220630171016713.png)
 
-## 5，个性化配置
+### (6) LaTeX公式问题
+
+从`1.3.0`版本起，GitDocument添加了对LaTeX公式的支持，不过需要注意以下注意事项：
+
+- 块状公式换行请不要用`\\`，而是使用`\newline`，否则会导致换行不生效
+- LaTeX公式的支持是使用katex库实现，但是katex并非支持所有的LaTeX语法，大部分都支持，支持列表请参考：
+	- 支持的函数：https://katex.org/docs/supported.html
+	- 支持的语法：https://katex.org/docs/support_table.html
+
+## 4，个性化配置
 
 在GitDocument中，也提供了许多的个性化配置。
 
@@ -608,7 +588,7 @@ git push origin master
 
 准备好自定义的背景图，需要是`jpg`格式，最好是`16:9`的尺寸，`1920 x 1080`或者`2560 x 1440`分辨率，并把该图片命名为`custom.jpg`放到程序所在目录的`external-resource/login-background`目录下。当这个目录下存在`custom.jpg`文件时，登录页就会显示为你自定义的背景图片。
 
-如果你是安装包安装，则`external-resource`文件夹位于`/opt/git-document`目录下。
+若是使用Docker容器部署，可以通过`docker cp`命令把图片拷贝到容器中的`/app/external-resource/login-background`目录下。
 
 ### (4) 自定义主面板页面背景图
 
@@ -616,4 +596,6 @@ git push origin master
 
 同样地，准备好自定义的背景图，`jpg`格式，最好是`16:9`的尺寸，`1920 x 1080`或者`2560 x 1440`分辨率，并把该图片命名为`custom.jpg`放到程序所在目录的`external-resource/background`目录下。当这个目录下存在`custom.jpg`文件时，主面板页就会显示为你自定义的背景图片。
 
-> 最后更新：2022.7.7
+若是使用Docker容器部署，可以通过`docker cp`命令把图片拷贝到容器中的`/app/external-resource/background`目录下。
+
+> 最后更新：2022.7.19
