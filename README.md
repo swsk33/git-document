@@ -125,6 +125,8 @@ source 下载的sql文件位置
 
 #### 1. 通过拉取Docker镜像（推荐）
 
+使用Docker镜像的方式部署的话，请先确保服务器的`80`、`443`和`23`端口可以被外网正常访问，即需要确保这几个端口加入到服务器防火墙白名单。
+
 ##### ① 安装Docker Engine并拉取镜像
 
 首先连接服务器，并在服务器上安装好Docker Engine，这部分不再赘述，请参考官方文档：[传送门](https://docs.docker.com/engine/install/debian/)
