@@ -16,7 +16,7 @@
 					<div class="update-time">{{ getUpdateTime(item.updateTime) }}</div>
 				</el-tooltip>
 				<div class="button-box">
-					<el-button type="primary" plain class="copy-ssh" :id="'copy-ssh-' + item.id" v-if="hasPermission('edit_anthology')" @click="copySSH(item.id, item.systemUser, item.repoPath)">复制Git SSH地址</el-button>
+					<el-button type="primary" plain class="copy-ssh" :id="'copy-ssh-' + item.id" v-if="hasPermission('edit_anthology')" @click="copySSH(item.id, item.systemUser, item.repoPath, item.sshPort)">复制Git SSH地址</el-button>
 					<el-button type="warning" plain class="edit" v-if="hasPermission('edit_anthology')" @click="showEditDialog(item)">编辑</el-button>
 					<el-button type="success" plain class="go-to-read" @click="this.$router.push('/article-menu/' + item.id)">去阅读</el-button>
 				</div>
@@ -126,10 +126,14 @@ export default {
 		 * @param id 传入文集id
 		 * @param systemUser 传入后台运行用户
 		 * @param repoPath 传入仓库路径
+		 * @param port 传入仓库暴露端口
 		 */
-		copySSH(id, systemUser, repoPath) {
+		copySSH(id, systemUser, repoPath, port) {
 			const clipBoard = new ClipBoard('#copy-ssh-' + id, {
 				text() {
+					if (port !== 22) {
+						return 'ssh://' + systemUser + '@' + location.hostname + ':' + port + repoPath;
+					}
 					return systemUser + '@' + location.hostname + ':' + repoPath;
 				}
 			});

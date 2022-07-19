@@ -47,6 +47,11 @@ public class Anthology implements Serializable {
 	private String systemUser;
 
 	/**
+	 * 文集仓库暴露Git SSH宿主机端口（用于拼接克隆文集仓库地址）
+	 */
+	private int sshPort;
+
+	/**
 	 * 文集最后更新的时间戳
 	 */
 	private int updateTime;

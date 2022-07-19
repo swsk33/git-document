@@ -2,6 +2,7 @@ package com.gitee.swsk33.gitdocument.service.impl;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckRole;
+import com.gitee.swsk33.gitdocument.config.ConfigProperties;
 import com.gitee.swsk33.gitdocument.context.GitFileListenerContext;
 import com.gitee.swsk33.gitdocument.context.GitTaskContext;
 import com.gitee.swsk33.gitdocument.dao.AnthologyDAO;
@@ -45,6 +46,9 @@ public class AnthologyServiceImpl implements AnthologyService {
 	@Autowired
 	private GitFileListenerContext listenerContext;
 
+	@Autowired
+	private ConfigProperties configProperties;
+
 	/**
 	 * 启动时，开始监听现有的每个仓库，并开启文件更新任务队列
 	 */
@@ -60,7 +64,7 @@ public class AnthologyServiceImpl implements AnthologyService {
 		}
 		// 开启监听者
 		listenerContext.start();
-		log.info("所有仓库位于：" + CommonValue.ResourcePath.GIT_REPO_PATH);
+		log.info("所有仓库位于：" + configProperties.getRepoPath());
 	}
 
 	@SaCheckRole(CommonValue.Role.ADMIN)
@@ -73,7 +77,7 @@ public class AnthologyServiceImpl implements AnthologyService {
 			return result;
 		}
 		// 先去创建一个Git仓库，并加入到监听列表
-		String repoPath = CommonValue.ResourcePath.GIT_REPO_PATH + File.separator + anthology.getName() + ".git";
+		String repoPath = configProperties.getRepoPath() + File.separator + anthology.getName() + ".git";
 		if (!GitRepositoryUtils.initGitBareRepository(repoPath)) {
 			result.setResultFailed("创建文集仓库失败！请联系开发者！");
 			return result;
@@ -143,6 +147,7 @@ public class AnthologyServiceImpl implements AnthologyService {
 		}
 		// 填充信息
 		getAnthology.setSystemUser(CommonValue.RUN_USER_NAME);
+		getAnthology.setSshPort(configProperties.getHostPort());
 		getAnthology.setUpdateTime(GitRepositoryUtils.getHeadCommit(getAnthology.getRepoPath()).getCommitTime());
 		result.setResultSuccess("查找成功！", getAnthology);
 		return result;
@@ -196,6 +201,7 @@ public class AnthologyServiceImpl implements AnthologyService {
 				e.printStackTrace();
 			}
 			item.setSystemUser(CommonValue.RUN_USER_NAME);
+			item.setSshPort(configProperties.getHostPort());
 			item.setUpdateTime(timestamp);
 		});
 		result.setResultSuccess("查询成功！", anthologies);

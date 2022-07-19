@@ -131,11 +131,6 @@ public class CommonValue {
 		 */
 		public static final String CUSTOM_LOGIN_BACKGROUND = "external-resource" + File.separator + "login-background" + File.separator + "custom.jpg";
 
-		/**
-		 * 默认仓库存放位置
-		 */
-		public static final String GIT_REPO_PATH = System.getProperty("user.home") + File.separator + "git-doc-repos";
-
 	}
 
 }
