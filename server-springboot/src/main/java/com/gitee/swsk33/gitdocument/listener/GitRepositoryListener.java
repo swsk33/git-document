@@ -7,8 +7,8 @@ import com.gitee.swsk33.gitdocument.task.GitCreateTask;
 import com.gitee.swsk33.gitdocument.task.GitUpdateTask;
 import com.gitee.swsk33.gitdocument.util.GitFileUtils;
 import com.gitee.swsk33.gitdocument.util.GitRepositoryUtils;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
@@ -25,8 +25,8 @@ import java.util.List;
 /**
  * Git仓库头指针监听器
  */
-@Getter
-@Setter
+@EqualsAndHashCode(callSuper = true)
+@Data
 @Slf4j
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 @Component

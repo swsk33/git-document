@@ -56,7 +56,13 @@ public class AnthologyServiceImpl implements AnthologyService {
 	private void startRepositoryUpdateTask() throws Exception {
 		// 打开任务队列
 		GitTaskContext.getInstance().start();
-		List<Anthology> anthologies = anthologyDAO.getAll();
+		List<Anthology> anthologies;
+		try {
+			anthologies = anthologyDAO.getAll();
+		} catch (Exception e) {
+			log.error("连接数据库失败！请检查配置！终止！");
+			return;
+		}
 		log.info("共获取到：" + anthologies.size() + "个文集仓库！");
 		// 开始监听每个仓库
 		for (Anthology anthology : anthologies) {
