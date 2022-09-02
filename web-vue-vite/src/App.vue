@@ -7,18 +7,18 @@
 import { createNamespacedHelpers } from 'vuex';
 
 const { mapActions: userActions } = createNamespacedHelpers('user');
-const { mapActions: orgActions } = createNamespacedHelpers('organization');
+const { mapActions: metaActions } = createNamespacedHelpers('meta-data');
 const { mapActions: pathActions } = createNamespacedHelpers('url-path');
 
 export default {
 	methods: {
 		...userActions(['checkLogin']),
-		...orgActions(['requestName']),
+		...metaActions(['getAllMeta']),
 		...pathActions(['setPath'])
 	},
 	async created() {
 		// 初始化后端配置数据
-		await this.requestName();
+		await this.getAllMeta();
 		// 跳转之前，获取第一次用户访问路径
 		this.setPath(location.pathname);
 		// 未登录跳转至登录页

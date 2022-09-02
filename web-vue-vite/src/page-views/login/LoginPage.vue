@@ -1,6 +1,6 @@
 <template>
 	<div class="login-page">
-		<div class="welcome-text">Welcome Back! 来自{{ organizationName.value }}的成员</div>
+		<div class="welcome-text">Welcome Back! 来自{{ organizationName }}的成员</div>
 		<router-view class="panel"/>
 	</div>
 </template>
@@ -8,12 +8,12 @@
 <script>
 import { createNamespacedHelpers } from 'vuex';
 
-const { mapGetters: orgGetter } = createNamespacedHelpers('organization');
+const { mapState: metaState } = createNamespacedHelpers('meta-data');
 const { mapGetters: userGetter } = createNamespacedHelpers('user');
 
 export default {
 	computed: {
-		...orgGetter(['organizationName']),
+		...metaState(['organizationName']),
 		...userGetter(['isLogin'])
 	},
 	async created() {
@@ -21,7 +21,7 @@ export default {
 		if (this.isLogin) {
 			await this.$router.push('/');
 		}
-		document.title = this.organizationName.value + ' | GitDocument - 用户登录';
+		document.title = this.organizationName + ' | GitDocument - 用户登录';
 	}
 };
 </script>

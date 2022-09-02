@@ -17,7 +17,7 @@ import mainBody from './views/MainBody.vue';
 
 // vuex模块
 const { mapState: themeState, mapActions: themeActions } = createNamespacedHelpers('article-page-theme');
-const { mapGetters: orgGetter } = createNamespacedHelpers('organization');
+const { mapGetters: metaState } = createNamespacedHelpers('meta-data');
 
 export default {
 	components: {
@@ -27,14 +27,14 @@ export default {
 	},
 	computed: {
 		...themeState(['menuShow', 'isNight', 'isMobile', 'pageColor']),
-		...orgGetter(['organizationName'])
+		...metaState(['organizationName'])
 	},
 	methods: {
 		...themeActions(['setMenuShow', 'setIsNight', 'setIsMobile', 'setPageColor'])
 	},
 	created() {
 		// 设定标签页标题
-		document.title = this.organizationName.value + ' | GitDocument - 文档阅读';
+		document.title = this.organizationName + ' | GitDocument - 文档阅读';
 	},
 	mounted() {
 		// 读取本地缓存记录的主题并切换

@@ -24,6 +24,7 @@ import { ElNotification } from 'element-plus';
 // vuex
 const { mapActions: userActions } = createNamespacedHelpers('user');
 const { mapState: pathState } = createNamespacedHelpers('url-path');
+const { mapState: metaState } = createNamespacedHelpers('meta-data');
 
 export default {
 	data() {
@@ -35,12 +36,12 @@ export default {
 			icons: {
 				avatar: shallowRef(Avatar),
 				lock: shallowRef(Lock)
-			},
-			allowPublic: false
+			}
 		};
 	},
 	computed: {
-		...pathState(['path'])
+		...pathState(['path']),
+		...metaState(['allowPublic'])
 	},
 	methods: {
 		...userActions(['checkLogin']),
@@ -112,10 +113,6 @@ export default {
 				this.login(this.userData);
 			}
 		}
-	},
-	async created() {
-		const getAllowPublic = await sendRequest('/api/config-get/allow-public', REQUEST_METHOD.GET);
-		this.allowPublic = getAllowPublic.data;
 	}
 };
 </script>

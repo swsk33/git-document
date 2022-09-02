@@ -12,18 +12,15 @@ import { createNamespacedHelpers } from 'vuex';
 import topBar from './components/TopBar.vue';
 import sideMenu from './components/SideMenu.vue';
 
-const { mapGetters: orgGetter } = createNamespacedHelpers('organization');
+const { mapState: metaState } = createNamespacedHelpers('meta-data');
 
 export default {
 	components: {
 		'side-menu': sideMenu,
 		'top-bar': topBar
 	},
-	data() {
-		return {};
-	},
 	computed: {
-		...orgGetter(['organizationName'])
+		...metaState(['organizationName'])
 	},
 	methods: {
 		/**
@@ -35,7 +32,7 @@ export default {
 	},
 	created() {
 		// 设定标题
-		document.title = this.organizationName.value + ' | GitDocument';
+		document.title = this.organizationName + ' | GitDocument';
 	}
 };
 </script>
