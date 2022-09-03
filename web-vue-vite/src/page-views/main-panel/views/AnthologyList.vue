@@ -1,5 +1,5 @@
 <template>
-	<div class="anthology-panel">
+	<div class="anthology-panel" v-loading="!loadingDone" element-loading-text="正在拉取文集列表...">
 		<div class="top-box">
 			<div class="title">文集列表</div>
 			<el-button type="primary" plain class="add" v-if="hasPermission('edit_anthology')" @click="$refs.addAnthology.frameShow = true">增加文集</el-button>
@@ -85,6 +85,7 @@ export default {
 	data() {
 		return {
 			list: [],
+			loadingDone: false,
 			addAnthologyInfo: {
 				name: undefined,
 				showName: undefined
@@ -110,6 +111,7 @@ export default {
 		 */
 		async getAnthologyList() {
 			const response = await sendRequest('/api/anthology/get-all', REQUEST_METHOD.GET);
+			this.loadingDone = true;
 			if (!response.success) {
 				ElNotification({
 					title: '错误',

@@ -1,5 +1,5 @@
 <template>
-	<div class="user-manage">
+	<div class="user-manage" v-loading="!loadingDone" element-loading-text="正在拉取用户列表...">
 		<div class="head">
 			<div class="title">用户管理</div>
 			<el-button class="add-user-button" type="success" @click="$refs.addUserDialog.frameShow = true">添加用户</el-button>
@@ -92,7 +92,7 @@ import infoDialog from '../components/InfoDialog.vue';
 import uploadImage from '../components/UploadImage.vue';
 import { ArrowDown } from '@element-plus/icons-vue';
 
-const { mapState: userState, mapActions: userActions, mapGetters: userGetters } = createNamespacedHelpers('user');
+const { mapState: userState, mapActions: userActions } = createNamespacedHelpers('user');
 
 export default {
 	components: {
@@ -102,6 +102,7 @@ export default {
 	},
 	data() {
 		return {
+			loadingDone: false,
 			userList: [],
 			addUserData: {
 				username: undefined,
@@ -116,8 +117,7 @@ export default {
 		};
 	},
 	computed: {
-		...userState(['userData']),
-		...userGetters(['roleList'])
+		...userState(['userData', 'roleList'])
 	},
 	methods: {
 		...userActions(['getRoleList']),
@@ -126,6 +126,7 @@ export default {
 		 */
 		async getUserList() {
 			const response = await sendRequest('/api/user/get-all', REQUEST_METHOD.GET);
+			this.loadingDone = true;
 			if (!response.success) {
 				ElNotification({
 					title: '失败',

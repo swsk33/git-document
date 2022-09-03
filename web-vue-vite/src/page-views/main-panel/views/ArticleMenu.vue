@@ -1,5 +1,5 @@
 <template>
-	<div class="anthology-menu">
+	<div class="anthology-menu" v-loading="!loadingDone" element-loading-text="正在拉取文章目录...">
 		<div class="path">
 			<div class="head">
 				<div class="text">当前位置：</div>
@@ -41,6 +41,7 @@ export default {
 	},
 	data() {
 		return {
+			loadingDone: false,
 			icons: {
 				top: shallowRef(Top)
 			},
@@ -169,6 +170,7 @@ export default {
 	},
 	async created() {
 		const response = await sendRequest('/api/article/get-article-list/' + this.$route.params.id, REQUEST_METHOD.GET);
+		this.loadingDone = true;
 		if (!response.success) {
 			ElNotification({
 				title: '错误',

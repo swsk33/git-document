@@ -1,6 +1,6 @@
 <template>
 	<!-- 贡献者列表 -->
-	<div class="committer-list">
+	<div class="committer-list" v-loading="!loadingDone" element-loading-text="正在拉取贡献者数据...">
 		<el-table class="table" :data="commits" row-class-name="commit-row" empty-text="暂无贡献" border>
 			<el-table-column label="贡献者" width="300" :resizable="false" align="center">
 				<template #default="scope">
@@ -30,6 +30,7 @@ import { ElNotification } from 'element-plus';
 export default {
 	data() {
 		return {
+			loadingDone: false,
 			commits: []
 		};
 	},
@@ -41,7 +42,9 @@ export default {
 		}
 	},
 	async created() {
+		// 拉取贡献者列表
 		const response = await sendRequest('/api/anthology/get-all-commits/' + this.$route.params.id, REQUEST_METHOD.GET);
+		this.loadingDone = true;
 		if (!response.success) {
 			ElNotification({
 				title: '失败',

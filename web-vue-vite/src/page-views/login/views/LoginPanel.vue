@@ -78,21 +78,19 @@ export default {
 			}
 			ElNotification({
 				title: '成功！',
-				message: '登录成功！1s后跳转...',
+				message: '登录成功！',
 				type: 'success',
 				duration: 750
 			});
 			// 获取用户信息
 			await this.checkLogin();
 			// 跳转至用户访问的页面
-			setTimeout(() => {
-				// 防止跳转到登录页自己
-				if (this.path.startsWith('/login')) {
-					location.pathname = '/';
-					return;
-				}
-				location.pathname = this.path;
-			}, 1000);
+			// 防止跳转到登录页自己
+			if (this.path.startsWith('/login')) {
+				this.$router.push('/');
+				return;
+			}
+			this.$router.push(this.path);
 		},
 		/**
 		 * 忘记密码

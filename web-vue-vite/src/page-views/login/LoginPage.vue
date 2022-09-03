@@ -9,16 +9,18 @@
 import { createNamespacedHelpers } from 'vuex';
 
 const { mapState: metaState } = createNamespacedHelpers('meta-data');
-const { mapGetters: userGetter } = createNamespacedHelpers('user');
+const { mapActions: userActions } = createNamespacedHelpers('user');
 
 export default {
 	computed: {
 		...metaState(['organizationName']),
-		...userGetter(['isLogin'])
+	},
+	methods: {
+		...userActions(['checkLogin'])
 	},
 	async created() {
 		// 若用户已登录则访问这个页面时跳转至/
-		if (this.isLogin) {
+		if (await this.checkLogin()) {
 			await this.$router.push('/');
 		}
 		document.title = this.organizationName + ' | GitDocument - 用户登录';

@@ -1,8 +1,8 @@
 <template>
-	<div class="top-bar">
-		<el-avatar class="avatar" :src="userAvatar" @click.stop="menuControl(true)"></el-avatar>
+	<div class="top-bar" v-if="userData !== undefined">
+		<el-avatar class="avatar" :src="userData.avatar" @click.stop="menuControl(true)"></el-avatar>
 		<div class="menu" v-if="menuShow">
-			<div class="info">{{ userNickname }} <br> <span class="role-name">{{ userRole }}</span></div>
+			<div class="info">{{ userData.nickname }} <br> <span class="role-name">{{ userData.role.showName }}</span></div>
 			<ul class="menu-body">
 				<li @click="toUserInfo">个人设置</li>
 				<li @click="userLogout">退出登录</li>
@@ -16,7 +16,7 @@ import { createNamespacedHelpers } from 'vuex';
 import { sendRequest, REQUEST_METHOD } from '../../../utils/request.js';
 import { ElNotification } from 'element-plus';
 
-const { mapActions: userActions, mapGetters: userGetters } = createNamespacedHelpers('user');
+const { mapState: userState, mapActions: userActions } = createNamespacedHelpers('user');
 
 export default {
 	data() {
@@ -25,7 +25,7 @@ export default {
 		};
 	},
 	computed: {
-		...userGetters(['userNickname', 'userRole', 'userAvatar'])
+		...userState(['userData'])
 	},
 	methods: {
 		...userActions(['checkLogin']),
@@ -56,9 +56,7 @@ export default {
 						duration: 750
 					}
 			);
-			setTimeout(() => {
-				location.href = '/login';
-			}, 1000);
+			this.$router.push('/login');
 		}
 	}
 };
