@@ -144,18 +144,13 @@ docker pull swsk33/git-document
 先创建并进入容器：
 
 ```bash
-docker run -it --name=git-doc -p 80:80 -p 443:443 -p 23:22 swsk33/git-document bash
+docker run -id --name=git-doc -p 80:80 -p 443:443 -p 23:22 \
+	-v 自定义SpringBoot配置挂载目录:/app/config \
+	-v 自定义Nginx配置挂载目录:/usr/local/nginx/conf \
+	swsk33/git-document
 ```
 
 这样，便创建好了容器并进入了容器中的终端。
-
-镜像中已经集成了`vim`文本编辑器，执行下列命令开始编辑Spring Boot配置文件：
-
-```bash
-vim /app/config/application.properties
-```
-
-按下`i`键进入编辑模式，即可移动光标修改配置文件，修改完成后按下Esc停止编辑，再输入`:wq`即可保存并退出编辑。
 
 以下配置项必须要配置：
 

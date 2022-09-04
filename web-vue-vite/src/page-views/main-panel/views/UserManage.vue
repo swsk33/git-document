@@ -125,6 +125,7 @@ export default {
 		 * 获取全部用户列表
 		 */
 		async getUserList() {
+			this.loadingDone = false;
 			const response = await sendRequest('/api/user/get-all', REQUEST_METHOD.GET);
 			this.loadingDone = true;
 			if (!response.success) {

@@ -110,6 +110,7 @@ export default {
 		 * 获取文集列表
 		 */
 		async getAnthologyList() {
+			this.loadingDone = false;
 			const response = await sendRequest('/api/anthology/get-all', REQUEST_METHOD.GET);
 			this.loadingDone = true;
 			if (!response.success) {
