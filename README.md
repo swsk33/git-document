@@ -127,7 +127,7 @@ source 下载的sql文件位置
 
 使用Docker镜像的方式部署的话，请先确保服务器的`80`、`443`和`23`端口可以被外网正常访问，即需要确保这几个端口加入到服务器防火墙白名单。
 
-##### ① 安装Docker Engine并拉取镜像
+##### ①. 安装Docker Engine并拉取镜像
 
 首先连接服务器，并在服务器上安装好Docker Engine，这部分不再赘述，请参考官方文档：[传送门](https://docs.docker.com/engine/install/debian/)
 
@@ -151,6 +151,8 @@ docker volume create git-doc-nginx
 ```bash
 docker run -id --name=git-doc -p 80:80 -p 443:443 -p 23:22 -v git-doc-springboot:/app/config -v git-doc-nginx:/usr/local/nginx/conf swsk33/git-document
 ```
+
+> 这里数据卷使用的是**具名挂载**方式，防止容器内配置文件被覆盖。
 
 这样，便创建好了容器。由于是第一次创建容器，但是一些关键配置例如数据库等等还没配置，这时程序是没有正常运行的，因此我们需要修改关键配置。
 
@@ -186,12 +188,6 @@ docker run -id --name=git-doc -p 80:80 -p 443:443 -p 23:22 -v git-doc-springboot
 如果你需要开启https服务，你需要准备好**SSL证书文件**和**证书密钥文件**，然后修改Nginx配置。
 
 首先准备好**证书文件**和**密钥文件**，可以通过`docker cp`命令把这两个文件拷贝到容器中再配置，也可以在上述`docker run`的时候通过`-v`参数配置数据卷，这里不再赘述。
-
-在容器中同样通过`vim`编辑Nginx配置文件：
-
-```bash
-vim /usr/local/nginx/conf/nginx.conf
-```
 
 找到`80`端口对应的`server`块：
 
@@ -252,6 +248,56 @@ docker inspect git-doc
 找到`Mounts`字段即可查看：
 
 ![image-20220719203927182](https://swsk33-note.oss-cn-shanghai.aliyuncs.com/image-20220719203927182.png)
+
+##### ⑤ 关于SSH克隆路径问题
+
+由于通常宿主机的22端口是用于我们SSH远程连接的，而GitDocument也需要使用22端口来完成仓库的推送、拉取工作，但是由于宿主机的SSH服务已经占用的22端口，**容器的22端口无法直接绑定到我们服务器的22端口**，所以说上述部署Docker容器时，我们把容器的22端口绑定到了宿主机的23端口。
+
+也就是说，平时在进行拉取、推送操作时，事实上是推送到了宿主机的23端口，再转发给容器的22端口。
+
+这样，你在复制Git SSH克隆链接时，会发现这个链接是这种形式：
+
+```bash
+ssh://git@example.com:23/git-doc/xxx.git
+```
+
+当然了，**这是完全不影响使用的**。
+
+但是比起平时用的Github等等仓库的SSH链接，这个链接不仅多了最前面的`ssh://`前缀，还带上了端口号，显得非常不美观。
+
+如果你是一个不折不扣的“强迫症”，这里也提供一个解决方法，那就是创建容器之前，**先修改宿主机的ssh端口为其它端口**，这样，22端口不就空出来了吗？
+
+首先编辑宿主机的SSH服务端配置文件：
+
+```bash
+vim /etc/ssh/sshd_config
+```
+
+找到`#Port 22`这一行，把最前面的注释`#`去掉，并把`Port`后面的`22`改成别的，例如我这里改成`2333`：
+
+![image-20220904174507657](https://swsk33-note.oss-cn-shanghai.aliyuncs.com/undefinedimage-20220904174507657.png)
+
+然后重启服务：
+
+```bash
+systemctl restart sshd
+```
+
+好的，注意这时服务器的SSH端口就被改成`2333`了，因此再连接服务器时，就要指定为`2333`端口。
+
+> 记得确保你的服务器的防火墙规则对你新修改的端口是放行的。
+
+这个时候，再来创建容器，就可以绑定为`22`端口了！
+
+```bash
+docker run -id --name=git-doc -p 80:80 -p 443:443 -p 22:22 -v git-doc-springboot:/app/config -v git-doc-nginx:/usr/local/nginx/conf swsk33/git-document
+```
+
+然后，**除了修改上述提到的配置之外，这里还有一个配置需要修改**。
+
+编辑Spring Boot的配置文件，找到`com.gitee.swsk33.git-doc.host-port`配置项，将其值`23`改为`22`即可！
+
+最后不要忘记重启容器！
 
 #### 2. 编译源码安装
 
@@ -599,7 +645,7 @@ git push origin master
 
 准备好自定义的背景图，需要是`jpg`格式，最好是`16:9`的尺寸，`1920 x 1080`或者`2560 x 1440`分辨率，并把该图片命名为`custom.jpg`放到程序所在目录的`external-resource/login-background`目录下。当这个目录下存在`custom.jpg`文件时，登录页就会显示为你自定义的背景图片。
 
-若是使用Docker容器部署，可以通过`docker cp`命令把图片拷贝到容器中的`/app/external-resource/login-background`目录下。
+若是使用Docker容器部署，可以通过`docker cp`命令把图片拷贝到容器中的`/app/external-resource/login-background`目录下，或者是挂载数据卷。
 
 ### (4) 自定义主面板页面背景图
 
@@ -607,6 +653,6 @@ git push origin master
 
 同样地，准备好自定义的背景图，`jpg`格式，最好是`16:9`的尺寸，`1920 x 1080`或者`2560 x 1440`分辨率，并把该图片命名为`custom.jpg`放到程序所在目录的`external-resource/background`目录下。当这个目录下存在`custom.jpg`文件时，主面板页就会显示为你自定义的背景图片。
 
-若是使用Docker容器部署，可以通过`docker cp`命令把图片拷贝到容器中的`/app/external-resource/background`目录下。
+若是使用Docker容器部署，可以通过`docker cp`命令把图片拷贝到容器中的`/app/external-resource/background`目录下，或者是挂载数据卷。
 
-> 最后更新：2022.7.19
+> 最后更新：2022.9.4
