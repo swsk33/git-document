@@ -139,28 +139,39 @@ docker pull swsk33/git-document
 
 ##### ② 创建容器并修改配置文件
 
-拉取镜像完成之后，我们先要创建容器并修改配置文件，Spring Boot位于容器中的`/app/config`目录下。
-
-先创建并进入容器：
+拉取镜像并创建容器之前，为了方便我们修改配置文件，我们先要为容器内的Spring Boot和Nginx的配置文件目录创建数据卷：
 
 ```bash
-docker run -id --name=git-doc -p 80:80 -p 443:443 -p 23:22 \
-	-v 自定义SpringBoot配置挂载目录:/app/config \
-	-v 自定义Nginx配置挂载目录:/usr/local/nginx/conf \
-	swsk33/git-document
+docker volume create git-doc-springboot
+docker volume create git-doc-nginx
 ```
 
-这样，便创建好了容器并进入了容器中的终端。
+然后创建容器并挂载数据卷：
 
-以下配置项必须要配置：
+```bash
+docker run -id --name=git-doc -p 80:80 -p 443:443 -p 23:22 -v git-doc-springboot:/app/config -v git-doc-nginx:/usr/local/nginx/conf swsk33/git-document
+```
 
-###### 1) MySQL数据库
+这样，便创建好了容器。由于是第一次创建容器，但是一些关键配置例如数据库等等还没配置，这时程序是没有正常运行的，因此我们需要修改关键配置。
+
+按照上述步骤挂载数据卷之后，配置文件应当位于宿主机如下位置：
+
+- **Spring Boot配置文件**：`/var/lib/docker/volumes/git-doc-springboot/_data/application.properties`
+- **Nginx配置文件**：`/var/lib/docker/volumes/git-doc-nginx/_data/nginx.conf`
+
+可以通过vim等等文本编辑器编辑配置，下列配置修改都是基于这两个文件。
+
+###### 1) MySQL数据库（必须）
+
+这一项配置是修改**Spring Boot配置文件**。
 
 - `spring.datasource.url` 数据库地址，把`127.0.0.1:3306`这部分替换成你自己数据库的地址和端口，若数据库和GitDocument部署在一起且端口没改的话则无需修改
 - `spring.datasource.username` 数据库用户名
 - `spring.datasource.password` 数据库用户对应的密码
 
-###### 2) 邮箱
+###### 2) 邮箱（必须）
+
+这一项配置是修改**Spring Boot配置文件**。
 
 用于发送通知邮件，需要先去注册一个邮箱例如QQ、163等等，并开启SMTP服务。
 
@@ -170,9 +181,11 @@ docker run -id --name=git-doc -p 80:80 -p 443:443 -p 23:22 \
 
 ###### 3) 开启https（非必须）
 
-如果你需要开启https服务，你需要准备好SSL证书文件和证书密钥文件，然后修改Nginx配置，Nginx配置文件位于容器中的`/usr/local/nginx/conf/nginx.conf`。
+这一项配置是修改**Nginx配置文件**。
 
-首先准备好**证书文件**和**密钥文件**，可以先退出容器，通过`docker cp`命令把这两个文件拷贝到容器中再配置，也可以在上述`docker run`的时候通过`-v`参数配置数据卷，这里不再赘述。
+如果你需要开启https服务，你需要准备好**SSL证书文件**和**证书密钥文件**，然后修改Nginx配置。
+
+首先准备好**证书文件**和**密钥文件**，可以通过`docker cp`命令把这两个文件拷贝到容器中再配置，也可以在上述`docker run`的时候通过`-v`参数配置数据卷，这里不再赘述。
 
 在容器中同样通过`vim`编辑Nginx配置文件：
 
@@ -191,6 +204,8 @@ ssl_certificate 你的证书文件路径;
 ssl_certificate_key 你的证书密钥文件路径;
 ```
 
+注意这里证书文件和密钥文件路径需要是在**容器内的路径**！
+
 最终如下图：
 
 ![image-20220707175512156](https://swsk33-note.oss-cn-shanghai.aliyuncs.com/image-20220707175512156.png)
@@ -206,13 +221,12 @@ server {
 ```
 
 
-##### ③ 启动容器
+##### ③ 重新启动容器
 
-先在容器中执行`exit`退出容器，然后执行下列命令启动容器：
+修改完成所有配置后，需要重新启动容器：
 
 ```bash
-docker start git-doc
-docker exec -id git-doc /start.sh
+docker restart git-doc
 ```
 
 执行`docker ps -a`命令，若大致`15s`后容器状态能够一直保持运行状态则启动成功！
@@ -223,11 +237,11 @@ docker exec -id git-doc /start.sh
 
 ##### ④ 容器关键目录说明
 
-容器中有以下关键目录，在启动时会自动挂载至宿主机：
+除了上述两个配置文件目录，容器中还有以下关键目录，在启动时会自动挂载至宿主机：
 
 - `/git-doc` 存放文集Git仓库的位置
-- `/app/config` Spring Boot主程序配置文件目录
-- `/usr/local/nginx/conf` Nginx配置文件目录
+- `/app/external-resource` 存放一些静态资源的目录
+- `/app/log` Spring Boot日志文件目录
 
 可以通过下面命令查看这几个目录被挂载至哪个位置：
 

@@ -12,7 +12,7 @@ import { createNamespacedHelpers } from 'vuex';
 import topBar from './components/TopBar.vue';
 import sideMenu from './components/SideMenu.vue';
 
-const { mapState: metaState } = createNamespacedHelpers('meta-data');
+const { mapState: metaState, mapActions: metaActions } = createNamespacedHelpers('meta-data');
 
 export default {
 	components: {
@@ -23,6 +23,7 @@ export default {
 		...metaState(['organizationName'])
 	},
 	methods: {
+		...metaActions(['setTitle']),
 		/**
 		 * 关闭头像菜单
 		 */
@@ -30,9 +31,13 @@ export default {
 			this.$refs.topBar.menuControl(false);
 		}
 	},
-	created() {
-		// 设定标题
-		document.title = this.organizationName + ' | GitDocument';
+	watch: {
+		organizationName: {
+			handler() {
+				this.setTitle('GitDocument');
+			},
+			immediate: true
+		}
 	}
 };
 </script>

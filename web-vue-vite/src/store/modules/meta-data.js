@@ -6,7 +6,7 @@ export default {
 		/**
 		 * 组织名，先从本地缓存拿取
 		 */
-		organizationName: window.localStorage.getItem('org'),
+		organizationName: '获取中...',
 		/**
 		 * 是否允许公开注册
 		 */
@@ -19,7 +19,7 @@ export default {
 		 * @param payload 传入组织名
 		 */
 		setName(state, payload) {
-			state.name = payload;
+			state.organizationName = payload;
 		},
 		/**
 		 * 设定是否允许公开注册
@@ -32,20 +32,14 @@ export default {
 	},
 	actions: {
 		/**
-		 * 从后端获取组织名，并存入本地缓存
+		 * 从后端获取组织名
 		 * @param context 上下文
 		 */
 		async requestName(context) {
 			const response = await sendRequest('/api/config-get/organization', REQUEST_METHOD.GET);
-			if (!response.success) {
-				return;
-			}
-			// 先和本地缓存比对
-			if (context.state.name !== response.data) {
-				window.localStorage.setItem('org', response.data);
+			if (response.success) {
 				context.commit('setName', response.data);
 			}
-			// 否则直接使用本地缓存
 		},
 		/**
 		 * 从后端获取是否允许公开注册
@@ -64,6 +58,14 @@ export default {
 		async getAllMeta(context) {
 			await context.dispatch('requestName');
 			await context.dispatch('requestAllowPublic');
+		},
+		/**
+		 * 设置当前页的标签标题
+		 * @param context 上下文
+		 * @param payload 参数，标题后缀，标题最终值为：组织名 | 标题后缀
+		 */
+		setTitle(context, payload) {
+			document.title = context.state.organizationName + ' | ' + payload;
 		}
 	}
 };

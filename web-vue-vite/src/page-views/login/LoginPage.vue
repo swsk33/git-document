@@ -8,14 +8,15 @@
 <script>
 import { createNamespacedHelpers } from 'vuex';
 
-const { mapState: metaState } = createNamespacedHelpers('meta-data');
+const { mapState: metaState, mapActions: metaActions } = createNamespacedHelpers('meta-data');
 const { mapActions: userActions } = createNamespacedHelpers('user');
 
 export default {
 	computed: {
-		...metaState(['organizationName']),
+		...metaState(['organizationName'])
 	},
 	methods: {
+		...metaActions(['setTitle']),
 		...userActions(['checkLogin'])
 	},
 	async created() {
@@ -23,7 +24,14 @@ export default {
 		if (await this.checkLogin()) {
 			await this.$router.push('/');
 		}
-		document.title = this.organizationName + ' | GitDocument - 用户登录';
+	},
+	watch: {
+		organizationName: {
+			handler() {
+				this.setTitle('GitDocument - 用户登录');
+			},
+			immediate: true
+		}
 	}
 };
 </script>

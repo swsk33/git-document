@@ -20,5 +20,5 @@ ENV LANG C.UTF-8
 # 需映射至宿主机23端口
 EXPOSE 22
 # 配置数据卷
-VOLUME ["/git-doc", "/app/config", "/usr/local/nginx/conf", "/app/external-resource"]
+VOLUME ["/git-doc", "/app/log", "/app/config", "/usr/local/nginx/conf", "/app/external-resource"]
 CMD ["/start.sh"]
