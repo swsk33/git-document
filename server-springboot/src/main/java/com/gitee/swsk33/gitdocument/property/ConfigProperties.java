@@ -1,4 +1,4 @@
-package com.gitee.swsk33.gitdocument.config;
+package com.gitee.swsk33.gitdocument.property;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

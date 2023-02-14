@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.gitee.swsk33.gitdocument.param.ValidationRules;
 import lombok.Data;
 
-import javax.validation.constraints.*;
+import jakarta.validation.constraints.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 

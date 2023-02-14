@@ -2,7 +2,7 @@ package com.gitee.swsk33.gitdocument.dataobject;
 
 import lombok.Data;
 
-import javax.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotEmpty;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 

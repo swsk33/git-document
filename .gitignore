@@ -15,7 +15,7 @@
 
 # 自定义
 /server-springboot/log/
-/server-springboot/config/application-dev.properties
+/server-springboot/config/application-dev.yml
 /server-springboot/external-resource/avatar/user/
 /server-springboot/external-resource/cover/custom/
 /server-springboot/external-resource/background/custom.jpg

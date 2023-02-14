@@ -1,4 +1,4 @@
-package com.gitee.swsk33.gitdocument.context;
+package com.gitee.swsk33.gitdocument.strategy.context;
 
 import com.gitee.swsk33.gitdocument.strategy.GitFileChangeStrategy;
 import com.gitee.swsk33.gitdocument.strategy.impl.FileAddStrategy;
@@ -10,7 +10,7 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
 

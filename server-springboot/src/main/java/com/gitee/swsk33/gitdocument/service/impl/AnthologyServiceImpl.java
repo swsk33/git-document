@@ -2,7 +2,7 @@ package com.gitee.swsk33.gitdocument.service.impl;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckRole;
-import com.gitee.swsk33.gitdocument.config.ConfigProperties;
+import com.gitee.swsk33.gitdocument.property.ConfigProperties;
 import com.gitee.swsk33.gitdocument.context.GitFileListenerContext;
 import com.gitee.swsk33.gitdocument.context.GitTaskContext;
 import com.gitee.swsk33.gitdocument.dao.AnthologyDAO;
@@ -17,6 +17,7 @@ import com.gitee.swsk33.gitdocument.service.ImageService;
 import com.gitee.swsk33.gitdocument.util.ClassExamine;
 import com.gitee.swsk33.gitdocument.util.GitRepositoryUtils;
 import com.gitee.swsk33.gitdocument.util.SnowflakeIdGenerator;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -24,7 +25,7 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;

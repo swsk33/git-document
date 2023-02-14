@@ -1,6 +1,5 @@
 package com.gitee.swsk33.gitdocument.config;
 
-import cn.dev33.satoken.exception.DisableLoginException;
 import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.exception.NotPermissionException;
 import cn.dev33.satoken.exception.NotRoleException;
@@ -10,7 +9,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * 自定义全局异常，例如鉴权注解的异常等等
@@ -41,12 +40,6 @@ public class GlobalExceptionConfig {
 		// 如果是权限异常
 		if (e instanceof NotPermissionException) {
 			result.setResultFailed("用户没有权限！");
-			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-			return result;
-		}
-		// 如果是被封禁异常
-		if (e instanceof DisableLoginException) {
-			result.setResultFailed("用户被封禁！");
 			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
 			return result;
 		}

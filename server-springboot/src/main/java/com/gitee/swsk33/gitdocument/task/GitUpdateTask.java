@@ -2,7 +2,7 @@ package com.gitee.swsk33.gitdocument.task;
 
 import com.gitee.swsk33.gitdocument.dao.AnthologyDAO;
 import com.gitee.swsk33.gitdocument.dataobject.Anthology;
-import com.gitee.swsk33.gitdocument.context.FileChangeStrategyContext;
+import com.gitee.swsk33.gitdocument.strategy.context.FileChangeStrategyContext;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
