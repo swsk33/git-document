@@ -14,6 +14,7 @@ import com.gitee.swsk33.gitdocument.property.ConfigProperties;
 import com.gitee.swsk33.gitdocument.service.AnthologyService;
 import com.gitee.swsk33.gitdocument.service.ImageService;
 import com.gitee.swsk33.gitdocument.util.ClassExamine;
+import com.gitee.swsk33.gitdocument.util.GitFileUtils;
 import com.gitee.swsk33.gitdocument.util.GitRepositoryUtils;
 import com.gitee.swsk33.gitdocument.util.SnowflakeIdGenerator;
 import jakarta.annotation.PostConstruct;
@@ -210,6 +211,27 @@ public class AnthologyServiceImpl implements AnthologyService {
 			item.setUpdateTime(timestamp);
 		});
 		result.setResultSuccess("查询成功！", anthologies);
+		return result;
+	}
+
+	@SaCheckPermission(CommonValue.Permission.BROWSE_ARTICLE)
+	@Override
+	public Result<byte[]> getImageData(long id, String imageFilePath) {
+		Result<byte[]> result = new Result<>();
+		Anthology getAnthology = anthologyDAO.getById(id);
+		if (getAnthology == null) {
+			result.setResultFailed("文集不存在！");
+			return result;
+		}
+		byte[] data;
+		try {
+			data = GitFileUtils.getFileBytesInLatestCommit(getAnthology.getRepoPath(), imageFilePath);
+		} catch (Exception e) {
+			e.printStackTrace();
+			result.setResultFailed("图片文件获取失败！");
+			return result;
+		}
+		result.setResultSuccess("获取成功！", data);
 		return result;
 	}
 

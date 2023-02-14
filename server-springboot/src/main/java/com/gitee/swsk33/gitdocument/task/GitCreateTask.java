@@ -60,6 +60,10 @@ public class GitCreateTask implements Runnable {
 			article.setFilePath(path);
 			articles.add(article);
 		}
+		if (articles.size() == 0) {
+			log.info("没有可用的新文件，退出！");
+			return;
+		}
 		articleDAO.batchAdd(articles);
 		log.info("已将" + articles.size() + "个文件信息扫描进数据库！");
 		// 刷新文集仓库信息

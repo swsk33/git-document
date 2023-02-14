@@ -62,7 +62,7 @@ public class ArticleServiceImpl implements ArticleService {
 			return result;
 		}
 		// 去文章仓库中取出文章内容
-		getArticle.setContent(GitFileUtils.getFileContentInLatestCommit(getArticle.getAnthology().getRepoPath(), getArticle.getFilePath()));
+		getArticle.setContent(GitFileUtils.getFileTextContentInLatestCommit(getArticle.getAnthology().getRepoPath(), getArticle.getFilePath()));
 		result.setResultSuccess("查找文章成功！", getArticle);
 		return result;
 	}

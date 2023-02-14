@@ -6,6 +6,7 @@ import com.gitee.swsk33.gitdocument.model.Result;
 import com.gitee.swsk33.gitdocument.param.ValidationRules;
 import com.gitee.swsk33.gitdocument.service.AnthologyService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -58,6 +59,15 @@ public class AnthologyAPI {
 	@GetMapping("/get-all")
 	public Result<List<Anthology>> getAll() {
 		return anthologyService.getAll();
+	}
+
+	@GetMapping(value = "/get-image/id/{id}", produces = MediaType.IMAGE_JPEG_VALUE)
+	public byte[] getImage(@PathVariable long id, @RequestParam("path") String path) {
+		Result<byte[]> result = anthologyService.getImageData(id, path);
+		if (!result.isSuccess()) {
+			return null;
+		}
+		return result.getData();
 	}
 
 }

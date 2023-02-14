@@ -54,4 +54,12 @@ public interface AnthologyService {
 	 */
 	Result<List<Anthology>> getAll();
 
+	/**
+	 * 获取一个文集仓库中的图片文件
+	 *
+	 * @param id            文集id
+	 * @param imageFilePath 图片文件在文集仓库中的绝对路径
+	 */
+	Result<byte[]> getImageData(long id, String imageFilePath);
+
 }

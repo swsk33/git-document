@@ -55,13 +55,13 @@ public class GitFileUtils {
 	}
 
 	/**
-	 * 获取Git仓库中最新提交的版本中某个文件的内容
+	 * 获取Git仓库中最新提交的版本中某个文件的二进制字节内容
 	 *
 	 * @param gitDirectory Git版本库目录（.git文件夹）
 	 * @param filePath     文件路径（相对于工作区下的路径）
-	 * @return 文件内容，为字符串形式
+	 * @return 文件内容，为字节数组形式
 	 */
-	public static String getFileContentInLatestCommit(String gitDirectory, String filePath) throws Exception {
+	public static byte[] getFileBytesInLatestCommit(String gitDirectory, String filePath) throws Exception {
 		// 读取现有仓库
 		Repository repository = new FileRepositoryBuilder().setGitDir(new File(gitDirectory)).build();
 		// 得到HEAD指针的提交ID
@@ -79,9 +79,18 @@ public class GitFileUtils {
 		// 利用对象加载器打开对应的blob对象（即为文件）
 		ObjectLoader objectLoader = objectReader.open(blobId);
 		// 得到其内容字节数据
-		byte[] bytes = objectLoader.getBytes();
-		// 把字节数据转换为字符串返回
-		return new String(bytes, StandardCharsets.UTF_8);
+		return objectLoader.getBytes();
+	}
+
+	/**
+	 * 获取Git仓库中最新提交的版本中某个文件的文本内容
+	 *
+	 * @param gitDirectory Git版本库目录（.git文件夹）
+	 * @param filePath     文件路径（相对于工作区下的路径）
+	 * @return 文件内容，为字符串形式
+	 */
+	public static String getFileTextContentInLatestCommit(String gitDirectory, String filePath) throws Exception {
+		return new String(getFileBytesInLatestCommit(gitDirectory, filePath), StandardCharsets.UTF_8);
 	}
 
 	/**
