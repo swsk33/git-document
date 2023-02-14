@@ -1,13 +1,13 @@
 package com.gitee.swsk33.gitdocument.service.impl;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
-import cn.dev33.satoken.annotation.SaCheckRole;
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.stp.StpUtil;
-import com.gitee.swsk33.gitdocument.property.ConfigProperties;
 import com.gitee.swsk33.gitdocument.dao.UserDAO;
 import com.gitee.swsk33.gitdocument.dataobject.User;
 import com.gitee.swsk33.gitdocument.model.Result;
 import com.gitee.swsk33.gitdocument.param.CommonValue;
+import com.gitee.swsk33.gitdocument.property.ConfigProperties;
 import com.gitee.swsk33.gitdocument.service.EmailService;
 import com.gitee.swsk33.gitdocument.service.ImageService;
 import com.gitee.swsk33.gitdocument.service.UserService;
@@ -40,8 +40,12 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public Result<User> register(User user) {
 		Result<User> result = new Result<>();
-		if (!StpUtil.hasRole(CommonValue.Role.ADMIN) && !configProperties.isAllowPublic()) {
+		if (!StpUtil.hasPermission(CommonValue.Permission.EDIT_USER) && !configProperties.isAllowPublic()) {
 			result.setResultFailed("本站不允许访客注册！请联系管理员。");
+			return result;
+		}
+		if (user.getRole().getId() == 1) {
+			result.setResultFailed("不允许增加预留管理员角色的用户！");
 			return result;
 		}
 		// 先检查用户是否已存在
@@ -57,7 +61,7 @@ public class UserServiceImpl implements UserService {
 			return result;
 		}
 		// 权限对比
-		if (!StpUtil.hasRole(CommonValue.Role.ADMIN) && user.getRole().getId() == 1) {
+		if (!StpUtil.hasPermission(CommonValue.Permission.EDIT_USER) && (user.getRole().getId() == 1 || user.getRole().getId() == 2)) {
 			result.setResultFailed("不允许注册成管理员！");
 			return result;
 		}
@@ -72,11 +76,16 @@ public class UserServiceImpl implements UserService {
 		return result;
 	}
 
-	@SaCheckRole(CommonValue.Role.ADMIN)
+	@SaCheckPermission(CommonValue.Permission.EDIT_USER)
 	@Override
 	public Result<User> delete(int id) {
 		Result<User> result = new Result<>();
-		if (id == 1) {
+		User getUser = userDAO.getById(id);
+		if (getUser == null) {
+			result.setResultFailed("用户不存在！");
+			return result;
+		}
+		if (getUser.getRole().getName().equals(CommonValue.Role.PRESERVE_ADMIN)) {
 			result.setResultFailed("预留管理员账户不可以删除！");
 			return result;
 		}
@@ -98,20 +107,20 @@ public class UserServiceImpl implements UserService {
 			return result;
 		}
 		// 权限判断
-		if (!StpUtil.hasRole(CommonValue.Role.ADMIN) && StpUtil.getLoginId(0) != user.getId().intValue()) {
-			result.setResultFailed("非管理员不可以修改其它用户的信息！");
+		if (!StpUtil.hasPermission(CommonValue.Permission.EDIT_USER) && StpUtil.getLoginId(0) != user.getId().intValue()) {
+			result.setResultFailed("您没有修改其他用户信息的权限！");
 			return result;
 		}
 		// 若权限发生修改，则进行一些判断
 		boolean roleChanged = false;
 		if (user.getRole() != null && user.getRole().getId().intValue() != getUser.getRole().getId().intValue()) {
 			// 非管理员不能修改权限
-			if (!StpUtil.hasRole(CommonValue.Role.ADMIN)) {
-				result.setResultFailed("非管理员不可以修改自己的角色！");
+			if (!StpUtil.hasPermission(CommonValue.Permission.EDIT_USER)) {
+				result.setResultFailed("非管理员不可以修改角色！");
 				return result;
 			}
 			// 不允许修改保留管理员的权限
-			if (user.getId() == 1) {
+			if (getUser.getRole().getName().equals(CommonValue.Role.PRESERVE_ADMIN)) {
 				result.setResultFailed("不能修改保留管理员用户的权限！");
 				return result;
 			}
@@ -124,7 +133,7 @@ public class UserServiceImpl implements UserService {
 			log.info("头像被修改！");
 			if (!getUser.getAvatar().contains("default")) {
 				String originFilePath = getUser.getAvatar();
-				originFilePath = CommonValue.ResourcePath.USER_AVATAR_PATH + File.separator + originFilePath.substring(originFilePath.lastIndexOf("/") + 1);
+				originFilePath = CommonValue.ResourcePath.USER_AVATAR_FOLDER + File.separator + originFilePath.substring(originFilePath.lastIndexOf("/") + 1);
 				new File(originFilePath).delete();
 				log.info("删除原始文件：" + originFilePath);
 			}
@@ -168,7 +177,7 @@ public class UserServiceImpl implements UserService {
 		return result;
 	}
 
-	@SaCheckRole(CommonValue.Role.ADMIN)
+	@SaCheckPermission(CommonValue.Permission.EDIT_USER)
 	@Override
 	public Result<List<User>> getAll() {
 		Result<List<User>> result = new Result<>();
@@ -177,7 +186,7 @@ public class UserServiceImpl implements UserService {
 		return result;
 	}
 
-	@SaCheckRole(CommonValue.Role.ADMIN)
+	@SaCheckPermission(CommonValue.Permission.EDIT_USER)
 	@Override
 	public Result<User> adminResetPassword(int id) {
 		Result<User> result = new Result<>();

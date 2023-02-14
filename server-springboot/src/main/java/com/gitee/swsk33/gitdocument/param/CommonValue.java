@@ -23,14 +23,46 @@ public class CommonValue {
 	public static class Role {
 
 		/**
-		 * 管理员的角色名
+		 * 预留管理员
+		 */
+		public static final String PRESERVE_ADMIN = "ROLE_PRESERVE_ADMIN";
+
+		/**
+		 * 管理员
 		 */
 		public static final String ADMIN = "ROLE_ADMIN";
 
 		/**
-		 * 普通成员的角色名
+		 * 普通成员
 		 */
 		public static final String MEMBER = "ROLE_MEMBER";
+
+	}
+
+	/**
+	 * 权限名
+	 */
+	public static class Permission {
+
+		/**
+		 * 修改用户
+		 */
+		public static final String EDIT_USER = "edit_user";
+
+		/**
+		 * 编辑文集
+		 */
+		public static final String EDIT_ANTHOLOGY = "edit_anthology";
+
+		/**
+		 * 修改系统设置
+		 */
+		public static final String ALTER_SYSTEM_SETTING = "alter_system_setting";
+
+		/**
+		 * 浏览内部文章
+		 */
+		public static final String BROWSE_ARTICLE = "browse_article";
 
 	}
 
@@ -70,19 +102,19 @@ public class CommonValue {
 		public static final String DEFAULT_COVER_REQUEST_PATH = EXTERNAL_REQUEST_PATH + "/cover/default/";
 
 		/**
-		 * 默认背景图片请求路径
+		 * 默认主面板背景图片请求路径
 		 */
 		public static final String DEFAULT_BACKGROUND_REQUEST_PATH = EXTERNAL_REQUEST_PATH + "/background/default/";
 
 		/**
-		 * 自定义背景图片请求路径
+		 * 自定义主面板背景图片请求路径
 		 */
 		public static final String CUSTOM_BACKGROUND_REQUEST_PATH = EXTERNAL_REQUEST_PATH + "/background/custom.jpg";
 
 		/**
 		 * 默认登录背景图
 		 */
-		public static final String DEFAULT_LOGIN_BACKGROUND_PATH = EXTERNAL_REQUEST_PATH + "/login-background/";
+		public static final String DEFAULT_LOGIN_BACKGROUND_PATH = EXTERNAL_REQUEST_PATH + "/login-background/default/";
 
 		/**
 		 * 自定义登录背景图
@@ -97,39 +129,44 @@ public class CommonValue {
 	public static class ResourcePath {
 
 		/**
-		 * 用户头像存放路径
+		 * 用户头像存放文件夹
 		 */
-		public static final String USER_AVATAR_PATH = "external-resource" + File.separator + "avatar" + File.separator + "user";
+		public static final String USER_AVATAR_FOLDER = "external-resource" + File.separator + "avatar" + File.separator + "user";
 
 		/**
-		 * 默认头像存放路径
+		 * 默认头像存放文件夹
 		 */
-		public static final String DEFAULT_AVATAR_PATH = "external-resource" + File.separator + "avatar" + File.separator + "default";
+		public static final String DEFAULT_AVATAR_FOLDER = "external-resource" + File.separator + "avatar" + File.separator + "default";
 
 		/**
-		 * 自定义封面存放路径
+		 * 自定义封面存放文件夹
 		 */
-		public static final String CUSTOM_COVER_PATH = "external-resource" + File.separator + "cover" + File.separator + "custom";
+		public static final String CUSTOM_COVER_FOLDER = "external-resource" + File.separator + "cover" + File.separator + "custom";
 
 		/**
-		 * 默认封面存放路径
+		 * 默认封面存放文件夹
 		 */
-		public static final String DEFAULT_COVER_PATH = "external-resource" + File.separator + "cover" + File.separator + "default";
+		public static final String DEFAULT_COVER_FOLDER = "external-resource" + File.separator + "cover" + File.separator + "default";
 
 		/**
-		 * 背景图片位置
+		 * 自定义面板背景图所在目录
 		 */
-		public static final String BACKGROUND_IMAGE = "external-resource" + File.separator + "background" + File.separator;
+		public static final String CUSTOM_BACKGROUND_FOLDER = "external-resource" + File.separator + "background";
 
 		/**
-		 * 自定义背景图片位置
+		 * 自定义主面板背景图片路径
 		 */
-		public static final String CUSTOM_BACKGROUND = BACKGROUND_IMAGE + "custom.jpg";
+		public static final String CUSTOM_BACKGROUND_FILE = CUSTOM_BACKGROUND_FOLDER + File.separator + "custom.jpg";
 
 		/**
-		 * 自定义登录背景图
+		 * 自定义登录背景图所在目录
 		 */
-		public static final String CUSTOM_LOGIN_BACKGROUND = "external-resource" + File.separator + "login-background" + File.separator + "custom.jpg";
+		public static final String CUSTOM_LOGIN_BACKGROUND_FOLDER = "external-resource" + File.separator + "login-background";
+
+		/**
+		 * 自定义登录背景图片路径
+		 */
+		public static final String CUSTOM_LOGIN_BACKGROUND_FILE = CUSTOM_LOGIN_BACKGROUND_FOLDER + File.separator + "custom.jpg";
 
 	}
 

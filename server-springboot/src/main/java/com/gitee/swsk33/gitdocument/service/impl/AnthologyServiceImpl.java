@@ -1,8 +1,6 @@
 package com.gitee.swsk33.gitdocument.service.impl;
 
-import cn.dev33.satoken.annotation.SaCheckLogin;
-import cn.dev33.satoken.annotation.SaCheckRole;
-import com.gitee.swsk33.gitdocument.property.ConfigProperties;
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.gitee.swsk33.gitdocument.context.GitFileListenerContext;
 import com.gitee.swsk33.gitdocument.context.GitTaskContext;
 import com.gitee.swsk33.gitdocument.dao.AnthologyDAO;
@@ -12,6 +10,7 @@ import com.gitee.swsk33.gitdocument.dataobject.User;
 import com.gitee.swsk33.gitdocument.model.CommitInfo;
 import com.gitee.swsk33.gitdocument.model.Result;
 import com.gitee.swsk33.gitdocument.param.CommonValue;
+import com.gitee.swsk33.gitdocument.property.ConfigProperties;
 import com.gitee.swsk33.gitdocument.service.AnthologyService;
 import com.gitee.swsk33.gitdocument.service.ImageService;
 import com.gitee.swsk33.gitdocument.util.ClassExamine;
@@ -24,7 +23,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 
 import java.io.File;
 import java.io.IOException;
@@ -74,7 +72,7 @@ public class AnthologyServiceImpl implements AnthologyService {
 		log.info("所有仓库位于：" + configProperties.getRepoPath());
 	}
 
-	@SaCheckRole(CommonValue.Role.ADMIN)
+	@SaCheckPermission(CommonValue.Permission.EDIT_ANTHOLOGY)
 	@Override
 	public Result<Anthology> add(Anthology anthology) {
 		Result<Anthology> result = new Result<>();
@@ -102,7 +100,7 @@ public class AnthologyServiceImpl implements AnthologyService {
 		return result;
 	}
 
-	@SaCheckRole(CommonValue.Role.ADMIN)
+	@SaCheckPermission(CommonValue.Permission.EDIT_ANTHOLOGY)
 	@Override
 	public Result<Anthology> delete(long id) throws IOException {
 		Result<Anthology> result = new Result<>();
@@ -127,7 +125,7 @@ public class AnthologyServiceImpl implements AnthologyService {
 		return result;
 	}
 
-	@SaCheckRole(CommonValue.Role.ADMIN)
+	@SaCheckPermission(CommonValue.Permission.EDIT_ANTHOLOGY)
 	@Override
 	public Result<Anthology> update(Anthology anthology) throws Exception {
 		Result<Anthology> result = new Result<>();
@@ -143,7 +141,7 @@ public class AnthologyServiceImpl implements AnthologyService {
 		return result;
 	}
 
-	@SaCheckLogin
+	@SaCheckPermission(CommonValue.Permission.BROWSE_ARTICLE)
 	@Override
 	public Result<Anthology> getById(long id) throws Exception {
 		Result<Anthology> result = new Result<>();
@@ -160,7 +158,7 @@ public class AnthologyServiceImpl implements AnthologyService {
 		return result;
 	}
 
-	@SaCheckLogin
+	@SaCheckPermission(CommonValue.Permission.BROWSE_ARTICLE)
 	@Override
 	public Result<List<CommitInfo>> getAllCommits(long id) throws Exception {
 		Result<List<CommitInfo>> result = new Result<>();
@@ -191,7 +189,7 @@ public class AnthologyServiceImpl implements AnthologyService {
 		return result;
 	}
 
-	@SaCheckLogin
+	@SaCheckPermission(CommonValue.Permission.BROWSE_ARTICLE)
 	@Override
 	public Result<List<Anthology>> getAll() {
 		Result<List<Anthology>> result = new Result<>();

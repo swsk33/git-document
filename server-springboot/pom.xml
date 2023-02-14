@@ -75,10 +75,17 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!-- Sa-Token 权限认证 -->
+		<!-- Sa-Token 安全框架 -->
 		<dependency>
 			<groupId>cn.dev33</groupId>
 			<artifactId>sa-token-spring-boot3-starter</artifactId>
+			<version>1.34.0</version>
+		</dependency>
+
+		<!-- Sa-Token 整合SpringAOP实现注解鉴权 -->
+		<dependency>
+			<groupId>cn.dev33</groupId>
+			<artifactId>sa-token-spring-aop</artifactId>
 			<version>1.34.0</version>
 		</dependency>
 

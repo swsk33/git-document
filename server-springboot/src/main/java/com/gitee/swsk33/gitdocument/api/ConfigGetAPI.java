@@ -40,7 +40,7 @@ public class ConfigGetAPI {
 	@GetMapping("/background")
 	public String getBackground() {
 		// 若自定义图片文件不存在，则根据季节返回背景图片
-		if (new File(CommonValue.ResourcePath.CUSTOM_BACKGROUND).exists()) {
+		if (new File(CommonValue.ResourcePath.CUSTOM_BACKGROUND_FILE).exists()) {
 			return CommonValue.RequestPath.CUSTOM_BACKGROUND_REQUEST_PATH;
 		}
 		int month = LocalDateTime.now().getMonthValue();
@@ -59,7 +59,7 @@ public class ConfigGetAPI {
 	@GetMapping("/login-background")
 	public String getLoginBackground() {
 		// 若自定义图片不存在则返回默认
-		if (new File(CommonValue.ResourcePath.CUSTOM_LOGIN_BACKGROUND).exists()) {
+		if (new File(CommonValue.ResourcePath.CUSTOM_LOGIN_BACKGROUND_FILE).exists()) {
 			return CommonValue.RequestPath.CUSTOM_LOGIN_BACKGROUND_PATH;
 		}
 		int time = LocalDateTime.now().getHour();

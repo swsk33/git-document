@@ -111,19 +111,26 @@ create table `star`
 
 -- 初始化一些数据
 insert into `role` (`name`, `show_name`, `gmt_created`, `gmt_modified`)
-values ('ROLE_ADMIN', '管理员', now(), now()), -- id为1，管理员
-	   ('ROLE_MEMBER', '团队成员', now(), now()); -- id为2，团队成员
+values ('ROLE_PRESERVE_ADMIN', '预留管理员', now(), now()), -- id为1，预留管理员
+	   ('ROLE_ADMIN', '管理员', now(), now()),              -- id为2，管理员
+	   ('ROLE_MEMBER', '团队成员', now(), now()); -- id为3，团队成员
 
 insert into `permission`(`name`, `show_name`, `gmt_created`, `gmt_modified`)
-values ('edit_user', '编辑用户', now(), now()),      -- id为1，增加或者编辑用户
-	   ('edit_anthology', '编辑文集', now(), now()), -- id为2，增加或者修改或者删除文集
-	   ('browse_article', '浏览内部文章', now(), now()); -- id为3，浏览内部文章
+values ('edit_user', '编辑用户', now(), now()),                -- id为1，增加或者编辑用户
+	   ('edit_anthology', '编辑文集', now(), now()),           -- id为2，增加或者修改或者删除文集
+	   ('alter_system_setting', '修改系统设置', now(), now()), -- id为3，修改系统设置
+	   ('browse_article', '浏览内部文章', now(), now()); -- id为4，浏览内部文章
 
 insert into `role_permission`
 values (1, 1),
 	   (1, 2),
 	   (1, 3),
-	   (2, 3);
+	   (1, 4),
+	   (2, 1),
+	   (2, 2),
+	   (2, 3),
+	   (2, 4),
+	   (3, 4);
 
 -- 初始管理员账户，用户名：admin，密码：789101112
 insert into `user` (`username`, `password`, `nickname`, `avatar`, `email`, `role_id`, `gmt_created`, `gmt_modified`)

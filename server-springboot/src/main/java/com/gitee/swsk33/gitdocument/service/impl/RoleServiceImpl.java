@@ -1,6 +1,6 @@
 package com.gitee.swsk33.gitdocument.service.impl;
 
-import cn.dev33.satoken.annotation.SaCheckRole;
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.gitee.swsk33.gitdocument.dao.RoleDAO;
 import com.gitee.swsk33.gitdocument.dataobject.Role;
 import com.gitee.swsk33.gitdocument.model.Result;
@@ -17,7 +17,7 @@ public class RoleServiceImpl implements RoleService {
 	@Autowired
 	private RoleDAO roleDAO;
 
-	@SaCheckRole(CommonValue.Role.ADMIN)
+	@SaCheckPermission(CommonValue.Permission.EDIT_USER)
 	@Override
 	public Result<List<Role>> getAll() {
 		Result<List<Role>> result = new Result<>();

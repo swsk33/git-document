@@ -1,6 +1,6 @@
 package com.gitee.swsk33.gitdocument.service.impl;
 
-import cn.dev33.satoken.annotation.SaCheckRole;
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.stp.StpUtil;
 import com.gitee.swsk33.gitdocument.dao.PublicKeyDAO;
 import com.gitee.swsk33.gitdocument.dataobject.PublicKey;
@@ -13,11 +13,11 @@ import com.gitee.swsk33.readandwrite.StringComparer;
 import com.gitee.swsk33.readandwrite.TextFileReader;
 import com.gitee.swsk33.readandwrite.TextFileWriter;
 import com.gitee.swsk33.readandwrite.param.CharSetValue;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import jakarta.annotation.PostConstruct;
 import java.io.File;
 import java.util.List;
 
@@ -45,7 +45,7 @@ public class PublicKeyServiceImpl implements PublicKeyService {
 		log.info("已找到公钥文件位置：" + publicKeyFilePath);
 	}
 
-	@SaCheckRole(CommonValue.Role.ADMIN)
+	@SaCheckPermission(CommonValue.Permission.EDIT_ANTHOLOGY)
 	@Override
 	public Result<PublicKey> add(PublicKey publicKey) throws Exception {
 		Result<PublicKey> result = new Result<>();
@@ -73,7 +73,7 @@ public class PublicKeyServiceImpl implements PublicKeyService {
 		return result;
 	}
 
-	@SaCheckRole(CommonValue.Role.ADMIN)
+	@SaCheckPermission(CommonValue.Permission.EDIT_ANTHOLOGY)
 	@Override
 	public Result<PublicKey> delete(int id) throws Exception {
 		Result<PublicKey> result = new Result<>();
@@ -94,7 +94,7 @@ public class PublicKeyServiceImpl implements PublicKeyService {
 		return result;
 	}
 
-	@SaCheckRole(CommonValue.Role.ADMIN)
+	@SaCheckPermission(CommonValue.Permission.EDIT_ANTHOLOGY)
 	@Override
 	public Result<List<PublicKey>> getByUser() throws Exception {
 		Result<List<PublicKey>> result = new Result<>();

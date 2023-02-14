@@ -1,11 +1,12 @@
 package com.gitee.swsk33.gitdocument.service.impl;
 
-import cn.dev33.satoken.annotation.SaCheckLogin;
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.gitee.swsk33.gitdocument.dao.ArticleDAO;
 import com.gitee.swsk33.gitdocument.dataobject.Article;
 import com.gitee.swsk33.gitdocument.model.ArticleDirectory;
 import com.gitee.swsk33.gitdocument.model.ArticleFile;
 import com.gitee.swsk33.gitdocument.model.Result;
+import com.gitee.swsk33.gitdocument.param.CommonValue;
 import com.gitee.swsk33.gitdocument.service.ArticleService;
 import com.gitee.swsk33.gitdocument.util.GitFileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +52,7 @@ public class ArticleServiceImpl implements ArticleService {
 		return root;
 	}
 
-	@SaCheckLogin
+	@SaCheckPermission(CommonValue.Permission.BROWSE_ARTICLE)
 	@Override
 	public Result<Article> getById(long id) throws Exception {
 		Result<Article> result = new Result<>();
@@ -66,7 +67,7 @@ public class ArticleServiceImpl implements ArticleService {
 		return result;
 	}
 
-	@SaCheckLogin
+	@SaCheckPermission(CommonValue.Permission.BROWSE_ARTICLE)
 	@Override
 	public Result<ArticleDirectory> getByAnthology(long anthologyId) {
 		Result<ArticleDirectory> result = new Result<>();
