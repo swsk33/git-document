@@ -3,7 +3,9 @@ package com.gitee.swsk33.gitdocument.service.impl;
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.stp.StpUtil;
+import com.gitee.swsk33.gitdocument.dao.SettingDAO;
 import com.gitee.swsk33.gitdocument.dao.UserDAO;
+import com.gitee.swsk33.gitdocument.dataobject.Setting;
 import com.gitee.swsk33.gitdocument.dataobject.User;
 import com.gitee.swsk33.gitdocument.model.Result;
 import com.gitee.swsk33.gitdocument.param.CommonValue;
@@ -27,6 +29,9 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private UserDAO userDAO;
+
+	@Autowired
+	private SettingDAO settingDAO;
 
 	@Autowired
 	private ImageService imageService;
@@ -71,6 +76,11 @@ public class UserServiceImpl implements UserService {
 		if (user.getAvatar() == null) {
 			user.setAvatar(imageService.getRandomAvatar().getData());
 		}
+		// 新建默认用户配置
+		Setting setting = new Setting();
+		setting.setReceiveUpdateEmail(true);
+		settingDAO.add(setting);
+		user.setSetting(setting);
 		userDAO.add(user);
 		result.setResultSuccess("注册用户成功！");
 		return result;

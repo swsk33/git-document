@@ -24,6 +24,14 @@ public interface UserDAO {
 	 */
 	User getByUsernameOrEmail(String credential);
 
+	/**
+	 * 根据设置id获取这个设置的用户对象
+	 *
+	 * @param settingId 设置id
+	 * @return 用户id
+	 */
+	User getUserBySettingId(int settingId);
+
 	List<User> getAll();
 
 	List<User> getAllAdmin();

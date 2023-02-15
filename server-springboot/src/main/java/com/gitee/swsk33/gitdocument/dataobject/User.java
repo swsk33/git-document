@@ -5,6 +5,7 @@ import com.gitee.swsk33.gitdocument.param.ValidationRules;
 import lombok.Data;
 
 import jakarta.validation.constraints.*;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -54,6 +55,11 @@ public class User implements Serializable {
 	@Email(groups = {ValidationRules.DataAdd.class, ValidationRules.DataUpdate.class}, message = "邮箱格式不正确！")
 	@NotEmpty(groups = ValidationRules.DataAdd.class, message = "邮箱不能为空！")
 	private String email;
+
+	/**
+	 * 偏好设置
+	 */
+	private Setting setting;
 
 	/**
 	 * 角色

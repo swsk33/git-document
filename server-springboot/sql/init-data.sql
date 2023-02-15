@@ -1,5 +1,5 @@
 -- 初始化表
-drop table if exists `user`, `role`, `role_permission`, `permission`, `public_key`, `article`, `anthology`, `star`;
+drop table if exists `user`, `setting`, `role`, `role_permission`, `permission`, `public_key`, `article`, `anthology`, `star`;
 
 -- 角色
 create table `role`
@@ -36,6 +36,17 @@ create table `role_permission`
 ) engine InnoDB
   default charset = utf8mb4;
 
+-- 用户偏好设置
+create table `setting`
+(
+	`id`                   int unsigned auto_increment,
+	`receive_update_email` bool,
+	`gmt_created`          datetime,
+	`gmt_modified`         datetime,
+	primary key (`id`)
+) engine InnoDB
+  default charset = utf8mb4;
+
 -- 用户
 create table `user`
 (
@@ -45,10 +56,12 @@ create table `user`
 	`nickname`     varchar(32)   not null,
 	`avatar`       varchar(1024) not null,
 	`email`        varchar(64)   not null unique,
+	`setting_id`   int unsigned  not null,
 	`role_id`      int unsigned  not null,
 	`gmt_created`  datetime,
 	`gmt_modified` datetime,
 	primary key (`id`),
+	foreign key (`setting_id`) references `setting` (`id`) on delete cascade on update cascade,
 	foreign key (`role_id`) references `role` (`id`) on delete cascade on update cascade
 ) engine InnoDB
   default charset = utf8mb4;
@@ -121,6 +134,9 @@ values ('edit_user', '编辑用户', now(), now()),                -- id为1，�
 	   ('alter_system_setting', '修改系统设置', now(), now()), -- id为3，修改系统设置
 	   ('browse_article', '浏览内部文章', now(), now()); -- id为4，浏览内部文章
 
+insert into `setting` (`receive_update_email`, `gmt_created`, `gmt_modified`)
+values (true, now(), now()); -- id为1
+
 insert into `role_permission`
 values (1, 1),
 	   (1, 2),
@@ -133,5 +149,5 @@ values (1, 1),
 	   (3, 4);
 
 -- 初始管理员账户，用户名：admin，密码：789101112
-insert into `user` (`username`, `password`, `nickname`, `avatar`, `email`, `role_id`, `gmt_created`, `gmt_modified`)
-	value ('admin', '$2a$10$DnVDUKyYw77O5VTbQsi7XOktMOGUajGwq1xkoDn2BM6fKvMCtZNtu', 'Administrator', '/static/avatar/default/1.png', 'example@example.com', 1, now(), now());
+insert into `user` (`username`, `password`, `nickname`, `avatar`, `email`, `role_id`, `setting_id`, `gmt_created`, `gmt_modified`)
+	value ('admin', '$2a$10$DnVDUKyYw77O5VTbQsi7XOktMOGUajGwq1xkoDn2BM6fKvMCtZNtu', 'Administrator', '/static/avatar/default/1.png', 'example@example.com', 1, 1, now(), now());

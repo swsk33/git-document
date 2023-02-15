@@ -10,12 +10,13 @@
 		<result column="email" property="email"/>
 		<result column="gmt_created" property="gmtCreated"/>
 		<result column="gmt_modified" property="gmtModified"/>
+		<association property="setting" select="com.gitee.swsk33.gitdocument.dao.SettingDAO.getById" column="setting_id" fetchType="eager"/>
 		<association property="role" select="com.gitee.swsk33.gitdocument.dao.RoleDAO.getById" column="role_id" fetchType="eager"/>
 	</resultMap>
 
 	<insert id="add" parameterType="com.gitee.swsk33.gitdocument.dataobject.User">
-		insert into `user` (username, `password`, nickname, avatar, email, role_id, gmt_created, gmt_modified)
-		values (#{username}, #{password}, #{nickname}, #{avatar}, #{email}, #{role.id}, now(), now())
+		insert into `user` (username, `password`, nickname, avatar, email, `setting_id`, role_id, gmt_created, gmt_modified)
+		values (#{username}, #{password}, #{nickname}, #{avatar}, #{email}, #{setting.id}, #{role.id}, now(), now())
 	</insert>
 
 	<delete id="delete">
@@ -47,6 +48,12 @@
 		from `user`
 		where username = #{credential}
 		   or email = #{credential}
+	</select>
+
+	<select id="getUserBySettingId" resultMap="userResultMap">
+		select *
+		from `user`
+		where setting_id = #{settingId}
 	</select>
 
 	<select id="getAll" resultMap="userResultMap">
