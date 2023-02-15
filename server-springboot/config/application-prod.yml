@@ -43,6 +43,12 @@ spring:
     url: "jdbc:mysql://127.0.0.1:3306/git_doc?serverTimezone=GMT%2B8"
     username: "用户名"
     password: "密码"
+  data:
+    # Redis
+    redis:
+      host: 127.0.0.1
+      port: 6379
+      password: "密码"
 
 # Sa-Token配置
 sa-token:

@@ -3,8 +3,10 @@ package com.gitee.swsk33.gitdocument.model;
 import com.gitee.swsk33.gitdocument.dataobject.User;
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
-public class CommitInfo {
+public class CommitInfo implements Serializable {
 
 	/**
 	 * 贡献者

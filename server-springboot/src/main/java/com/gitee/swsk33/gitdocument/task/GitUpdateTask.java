@@ -1,7 +1,10 @@
 package com.gitee.swsk33.gitdocument.task;
 
+import com.gitee.swsk33.gitdocument.cache.ArticleTreeCache;
 import com.gitee.swsk33.gitdocument.dao.AnthologyDAO;
+import com.gitee.swsk33.gitdocument.dao.ArticleDAO;
 import com.gitee.swsk33.gitdocument.dataobject.Anthology;
+import com.gitee.swsk33.gitdocument.model.ArticleDirectory;
 import com.gitee.swsk33.gitdocument.strategy.context.FileChangeStrategyContext;
 import lombok.Getter;
 import lombok.Setter;
@@ -42,10 +45,16 @@ public class GitUpdateTask implements Runnable {
 	@Autowired
 	private AnthologyDAO anthologyDAO;
 
+	@Autowired
+	private ArticleDAO articleDAO;
+
+	@Autowired
+	private ArticleTreeCache articleTreeCache;
+
 	@Override
 	public void run() {
+		log.info("正在修改数据库文件信息...");
 		for (DiffEntry entry : diffEntries) {
-			log.info("正在修改数据库文件信息...");
 			FileChangeStrategyContext.executeStrategy(repositoryId, entry);
 		}
 		// 完成更新后，更新文集仓库的最新commitId
@@ -53,6 +62,10 @@ public class GitUpdateTask implements Runnable {
 		anthology.setLatestCommitId(commitId);
 		anthologyDAO.update(anthology);
 		log.info("已完成文集仓库信息更新！");
+		// 刷新文章目录树缓存
+		ArticleDirectory directory = new ArticleDirectory(articleDAO.getByAnthology(repositoryId));
+		articleTreeCache.setOrAdd(repositoryId, directory);
+		log.info("已完成文集仓库文章目录树缓存刷新！");
 	}
 
 }

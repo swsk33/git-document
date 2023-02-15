@@ -69,7 +69,7 @@ public class GitCreateTask implements Runnable {
 		// 刷新文集仓库信息
 		anthology.setLatestCommitId(commitId);
 		anthologyDAO.update(anthology);
-		log.info("已完成文集仓库信息更新！");
+		log.info("已完成文集仓库信息创建！");
 	}
 
 }

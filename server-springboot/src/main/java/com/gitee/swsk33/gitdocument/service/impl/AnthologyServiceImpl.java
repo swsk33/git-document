@@ -56,6 +56,7 @@ public class AnthologyServiceImpl implements AnthologyService {
 	private void startRepositoryUpdateTask() throws Exception {
 		// 打开任务队列
 		GitTaskContext.getInstance().start();
+		log.info("已开启任务队列！");
 		List<Anthology> anthologies;
 		try {
 			anthologies = anthologyDAO.getAll();
@@ -64,12 +65,14 @@ public class AnthologyServiceImpl implements AnthologyService {
 			return;
 		}
 		log.info("共获取到：" + anthologies.size() + "个文集仓库！");
+		// 对比本地仓库和数据库中的仓库，若有不同则进行更新
 		// 开始监听每个仓库
 		for (Anthology anthology : anthologies) {
 			listenerContext.addObserver(anthology.getId(), anthology.getRepoPath());
 		}
 		// 开启监听者
 		listenerContext.start();
+		log.info("已开启全部文集仓库监听！");
 		log.info("所有仓库位于：" + configProperties.getRepoPath());
 	}
 
