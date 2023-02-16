@@ -1,5 +1,6 @@
 package com.gitee.swsk33.gitdocument.strategy.context;
 
+import com.gitee.swsk33.gitdocument.model.ArticleDiff;
 import com.gitee.swsk33.gitdocument.strategy.GitFileChangeStrategy;
 import com.gitee.swsk33.gitdocument.strategy.impl.FileAddStrategy;
 import com.gitee.swsk33.gitdocument.strategy.impl.FileDeleteStrategy;
@@ -46,7 +47,7 @@ public class FileChangeStrategyContext {
 	 * @param repositoryId 仓库id
 	 * @param entry        差异对象
 	 */
-	public static void executeStrategy(long repositoryId, DiffEntry entry) {
+	public static void executeStrategy(long repositoryId, ArticleDiff entry) {
 		strategyMap.get(entry.getChangeType()).doUpdate(repositoryId, entry);
 	}
 

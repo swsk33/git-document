@@ -183,12 +183,27 @@ public class CommonValue {
 		/**
 		 * 收藏更新通知邮件消息队列
 		 */
-		public static final String UPDATE_EMAIL_QUEUE_NAME = PREFIX + ".update-email-queue";
+		public static final String UPDATE_EMAIL_QUEUE = PREFIX + ".update-email-queue";
 
 		/**
-		 * 主题模式交换机名
+		 * 邮件主题模式交换机
 		 */
-		public static final String EMAIL_TOPIC_EXCHANGE_NAME = PREFIX + ".email-topic";
+		public static final String EMAIL_TOPIC_EXCHANGE = PREFIX + ".email-topic";
+
+		/**
+		 * Git创建任务消息队列
+		 */
+		public static final String GIT_CREATE_TASK_QUEUE = PREFIX + ".git-create-queue";
+
+		/**
+		 * Git更新任务消息队列
+		 */
+		public static final String GIT_UPDATE_TASK_QUEUE = PREFIX + ".git-update-queue";
+
+		/**
+		 * Git仓库任务交换机
+		 */
+		public static final String GIT_TASK_TOPIC_EXCHANGE = PREFIX + ".git-task-topic";
 
 	}
 
@@ -198,14 +213,29 @@ public class CommonValue {
 	public static class RabbitMQRoutingKey {
 
 		/**
-		 * 表示邮件
+		 * 邮件话题
 		 */
-		public static final String EMAIL_TASK_KEY = "email";
+		public static final String EMAIL_TASK = "email";
 
 		/**
-		 * 表示更新通知邮件
+		 * 更新通知邮件
 		 */
-		public static final String UPDATE_EMAIL = EMAIL_TASK_KEY + ".update";
+		public static final String UPDATE_EMAIL = EMAIL_TASK + ".update";
+
+		/**
+		 * Git仓库任务话题
+		 */
+		public static final String GIT_TASK = "git-task";
+
+		/**
+		 * Git创建任务
+		 */
+		public static final String GIT_CREATE = GIT_TASK + ".create";
+
+		/**
+		 * Git更新任务
+		 */
+		public static final String GIT_UPDATE = GIT_TASK + ".update";
 
 	}
 

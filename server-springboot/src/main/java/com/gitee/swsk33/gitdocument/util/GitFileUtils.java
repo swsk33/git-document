@@ -94,12 +94,12 @@ public class GitFileUtils {
 	}
 
 	/**
-	 * 比较两次仓库的文件变化
+	 * 比较两次文集仓库的文件变化
 	 *
 	 * @param repositoryPath 仓库位置
 	 * @param oldCommitId    旧的提交Id
 	 * @param newCommitId    新的提交Id
-	 * @return 变化对象，只返回增加、删除和修改文件名这几种变化
+	 * @return 变化对象，只返回增加、删除、内容更改和修改文件的文件名这几种变化
 	 */
 	public static List<DiffEntry> compareDiffBetweenTwoCommits(String repositoryPath, String oldCommitId, String newCommitId) throws Exception {
 		// 初始化仓库

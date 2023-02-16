@@ -50,9 +50,7 @@ public class ArticleDiff implements Serializable {
 	 */
 	public static List<ArticleDiff> toArticleDiff(List<DiffEntry> diffEntries) {
 		List<ArticleDiff> diffs = new ArrayList<>();
-		for (DiffEntry entry : diffEntries) {
-			diffs.add(new ArticleDiff(entry));
-		}
+		diffEntries.forEach(diff -> diffs.add(new ArticleDiff(diff)));
 		return diffs;
 	}
 

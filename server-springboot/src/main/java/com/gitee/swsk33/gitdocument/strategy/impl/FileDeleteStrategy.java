@@ -1,9 +1,9 @@
 package com.gitee.swsk33.gitdocument.strategy.impl;
 
 import com.gitee.swsk33.gitdocument.dao.ArticleDAO;
+import com.gitee.swsk33.gitdocument.model.ArticleDiff;
 import com.gitee.swsk33.gitdocument.strategy.GitFileChangeStrategy;
 import lombok.extern.slf4j.Slf4j;
-import org.eclipse.jgit.diff.DiffEntry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -18,10 +18,10 @@ public class FileDeleteStrategy implements GitFileChangeStrategy {
 	private ArticleDAO articleDAO;
 
 	@Override
-	public void doUpdate(long repositoryId, DiffEntry diffEntry) {
+	public void doUpdate(long repositoryId, ArticleDiff diff) {
 		// 从数据库删除
-		articleDAO.deleteByPath(diffEntry.getOldPath());
-		log.info("删除文件：" + diffEntry.getOldPath());
+		articleDAO.deleteByPath(diff.getOldPath());
+		log.info("删除文件：" + diff.getOldPath());
 	}
 
 }

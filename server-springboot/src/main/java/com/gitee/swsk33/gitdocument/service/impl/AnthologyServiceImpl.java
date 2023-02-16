@@ -2,19 +2,19 @@ package com.gitee.swsk33.gitdocument.service.impl;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.gitee.swsk33.gitdocument.context.GitFileListenerContext;
-import com.gitee.swsk33.gitdocument.context.GitTaskContext;
 import com.gitee.swsk33.gitdocument.dao.AnthologyDAO;
 import com.gitee.swsk33.gitdocument.dao.UserDAO;
 import com.gitee.swsk33.gitdocument.dataobject.Anthology;
 import com.gitee.swsk33.gitdocument.dataobject.User;
+import com.gitee.swsk33.gitdocument.message.GitCreateTaskMessage;
+import com.gitee.swsk33.gitdocument.message.GitUpdateTaskMessage;
+import com.gitee.swsk33.gitdocument.model.ArticleDiff;
 import com.gitee.swsk33.gitdocument.model.CommitInfo;
 import com.gitee.swsk33.gitdocument.model.Result;
 import com.gitee.swsk33.gitdocument.param.CommonValue;
 import com.gitee.swsk33.gitdocument.property.ConfigProperties;
 import com.gitee.swsk33.gitdocument.service.AnthologyService;
 import com.gitee.swsk33.gitdocument.service.ImageService;
-import com.gitee.swsk33.gitdocument.task.GitCreateTask;
-import com.gitee.swsk33.gitdocument.task.GitUpdateTask;
 import com.gitee.swsk33.gitdocument.util.ClassExamine;
 import com.gitee.swsk33.gitdocument.util.GitFileUtils;
 import com.gitee.swsk33.gitdocument.util.GitRepositoryUtils;
@@ -25,7 +25,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.revwalk.RevCommit;
-import org.springframework.beans.factory.BeanFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -38,9 +38,6 @@ import java.util.stream.Stream;
 @Slf4j
 @Component
 public class AnthologyServiceImpl implements AnthologyService {
-
-	@Autowired
-	private BeanFactory beanFactory;
 
 	@Autowired
 	private AnthologyDAO anthologyDAO;
@@ -56,6 +53,9 @@ public class AnthologyServiceImpl implements AnthologyService {
 
 	@Autowired
 	private ConfigProperties configProperties;
+
+	@Autowired
+	private RabbitTemplate rabbitTemplate;
 
 	/**
 	 * 启动时，开始监听现有的每个仓库，并开启文件更新任务队列
@@ -73,45 +73,46 @@ public class AnthologyServiceImpl implements AnthologyService {
 		log.info("共获取到：" + anthologies.size() + "个文集仓库！");
 		// 对比本地仓库和数据库中的仓库，若有不同则进行更新
 		log.info("开始对比本地仓库和数据库仓库信息...");
-		for (Anthology anthology : anthologies) {
+		anthologies.forEach(anthology -> {
 			// 若有commitId不同的情况，以本地仓库为准，刷新到数据库
 			String newCommitId;
 			try {
 				newCommitId = GitRepositoryUtils.getHeadCommitId(anthology.getRepoPath());
+				// 如果数据库中commitId为空，说明需要执行创建任务
 				if (anthology.getLatestCommitId() == null && newCommitId != null) {
 					log.warn("发现本地仓库：" + anthology.getName() + "在数据库中的commitId为空，进行创建操作...");
-					GitCreateTask task = beanFactory.getBean(GitCreateTask.class);
-					task.setRepositoryId(anthology.getId());
-					task.setFileList(GitFileUtils.getLatestFileList(anthology.getRepoPath()));
-					task.setCommitId(newCommitId);
-					GitTaskContext.taskQueue.offer(task);
-					log.info("已添加对本地仓库：" + anthology.getName() + " 的创建任务！");
-					continue;
+					GitCreateTaskMessage createTaskMessage = new GitCreateTaskMessage();
+					createTaskMessage.setRepositoryId(anthology.getId());
+					createTaskMessage.setCommitId(newCommitId);
+					createTaskMessage.setFileList(GitFileUtils.getLatestFileList(anthology.getRepoPath()));
+					rabbitTemplate.convertAndSend(CommonValue.MessageQueue.GIT_TASK_TOPIC_EXCHANGE, CommonValue.RabbitMQRoutingKey.GIT_CREATE, createTaskMessage);
+					log.info("已发布对本地仓库：" + anthology.getName() + " 的创建任务消息至消息队列！");
+					return;
 				}
+				// 如果只是单纯的两者不同，说明需要进行更新同步操作
 				if (!anthology.getLatestCommitId().equals(newCommitId)) {
 					log.warn("发现本地仓库：" + anthology.getName() + "与数据库的commit不同，进行更新操作...");
 					// 获取差异
 					List<DiffEntry> diffs = GitFileUtils.compareDiffBetweenTwoCommits(anthology.getRepoPath(), anthology.getLatestCommitId(), newCommitId);
 					if (diffs.size() == 0) {
 						log.info("没有需要更新的差异！");
-						continue;
+						return;
 					}
-					GitUpdateTask task = beanFactory.getBean(GitUpdateTask.class);
-					task.setRepositoryId(anthology.getId());
-					task.setCommitId(newCommitId);
-					task.setDiffEntries(diffs);
-					GitTaskContext.taskQueue.offer(task);
-					log.info("已添加对本地仓库：" + anthology.getName() + " 的更新任务！");
+					GitUpdateTaskMessage updateTaskMessage = new GitUpdateTaskMessage();
+					updateTaskMessage.setRepositoryId(anthology.getId());
+					updateTaskMessage.setCommitId(newCommitId);
+					updateTaskMessage.setDiffs(ArticleDiff.toArticleDiff(diffs));
+					rabbitTemplate.convertAndSend(CommonValue.MessageQueue.GIT_TASK_TOPIC_EXCHANGE, CommonValue.RabbitMQRoutingKey.GIT_UPDATE, updateTaskMessage);
+					log.info("已发布对本地仓库：" + anthology.getName() + " 的更新任务消息至消息队列！");
 				}
 			} catch (Exception e) {
 				log.error("发生错误！本地仓库" + anthology.getName() + "可能不存在！继续！");
 				e.printStackTrace();
+			} finally {
+				// 检查更新完成后，对其加入监听
+				listenerContext.addObserver(anthology.getId(), anthology.getRepoPath());
 			}
-		}
-		// 开始监听每个仓库
-		for (Anthology anthology : anthologies) {
-			listenerContext.addObserver(anthology.getId(), anthology.getRepoPath());
-		}
+		});
 		// 开启监听者
 		listenerContext.start();
 		log.info("已开启全部文集仓库监听！");
