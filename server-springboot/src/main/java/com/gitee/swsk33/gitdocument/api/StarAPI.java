@@ -18,9 +18,9 @@ public class StarAPI {
 	private StarService starService;
 
 	@PostMapping("/add")
-	public Result<Star> add(@Valid @RequestBody Star star, BindingResult errors) {
+	public Result<Void> add(@Valid @RequestBody Star star, BindingResult errors) {
 		if (errors.hasErrors()) {
-			Result<Star> result = new Result<>();
+			Result<Void> result = new Result<>();
 			result.setResultFailed(errors.getFieldError().getDefaultMessage());
 			return result;
 		}
@@ -28,7 +28,7 @@ public class StarAPI {
 	}
 
 	@DeleteMapping("/delete/{id}")
-	public Result<Star> delete(@PathVariable long id) {
+	public Result<Void> delete(@PathVariable long id) {
 		return starService.delete(id);
 	}
 

@@ -5,6 +5,7 @@ import com.gitee.swsk33.gitdocument.model.CommitInfo;
 import com.gitee.swsk33.gitdocument.model.Result;
 import com.gitee.swsk33.gitdocument.param.ValidationRules;
 import com.gitee.swsk33.gitdocument.service.AnthologyService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.validation.BindingResult;
@@ -22,24 +23,29 @@ public class AnthologyAPI {
 	private AnthologyService anthologyService;
 
 	@PostMapping("/add")
-	public Result<Anthology> add(@Validated(ValidationRules.DataAdd.class) @RequestBody Anthology anthology, BindingResult errors) {
+	public Result<Void> add(@Validated(ValidationRules.DataAdd.class) @RequestBody Anthology anthology, BindingResult errors) {
 		if (errors.hasErrors()) {
-			Result<Anthology> result = new Result<>();
+			Result<Void> result = new Result<>();
 			result.setResultFailed(errors.getFieldError().getDefaultMessage());
 			return result;
 		}
 		return anthologyService.add(anthology);
 	}
 
+	@PostMapping("/batch-add")
+	public Result<Void> batchAdd(@RequestBody List<Anthology> anthologies) {
+		return anthologyService.batchAdd(anthologies);
+	}
+
 	@DeleteMapping("/delete/{id}")
-	public Result<Anthology> delete(@PathVariable long id) throws IOException {
+	public Result<Void> delete(@PathVariable long id) throws IOException {
 		return anthologyService.delete(id);
 	}
 
 	@PutMapping("/update")
-	public Result<Anthology> update(@Validated(ValidationRules.DataUpdate.class) @RequestBody Anthology anthology, BindingResult errors) throws Exception {
+	public Result<Void> update(@Validated(ValidationRules.DataUpdate.class) @RequestBody Anthology anthology, BindingResult errors) throws Exception {
 		if (errors.hasErrors()) {
-			Result<Anthology> result = new Result<>();
+			Result<Void> result = new Result<>();
 			result.setResultFailed(errors.getFieldError().getDefaultMessage());
 			return result;
 		}
@@ -68,6 +74,11 @@ public class AnthologyAPI {
 			return null;
 		}
 		return result.getData();
+	}
+
+	@GetMapping("/get-not-in-database")
+	public Result<List<Anthology>> getNotInDB() {
+		return anthologyService.getAnthologyNotInDatabase();
 	}
 
 }

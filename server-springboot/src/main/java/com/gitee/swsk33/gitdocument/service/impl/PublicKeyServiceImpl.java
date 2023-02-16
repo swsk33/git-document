@@ -47,8 +47,8 @@ public class PublicKeyServiceImpl implements PublicKeyService {
 
 	@SaCheckPermission(CommonValue.Permission.EDIT_ANTHOLOGY)
 	@Override
-	public Result<PublicKey> add(PublicKey publicKey) throws Exception {
-		Result<PublicKey> result = new Result<>();
+	public Result<Void> add(PublicKey publicKey) throws Exception {
+		Result<Void> result = new Result<>();
 		if (StringComparer.compareLine(publicKeyFilePath, publicKey.getContent())) {
 			result.setResultFailed("待添加的公钥已存在！无需重复添加！");
 			return result;
@@ -75,8 +75,8 @@ public class PublicKeyServiceImpl implements PublicKeyService {
 
 	@SaCheckPermission(CommonValue.Permission.EDIT_ANTHOLOGY)
 	@Override
-	public Result<PublicKey> delete(int id) throws Exception {
-		Result<PublicKey> result = new Result<>();
+	public Result<Void> delete(int id) throws Exception {
+		Result<Void> result = new Result<>();
 		PublicKey getKey = publicKeyDAO.getById(id);
 		if (getKey == null) {
 			result.setResultFailed("没有这个密钥！");

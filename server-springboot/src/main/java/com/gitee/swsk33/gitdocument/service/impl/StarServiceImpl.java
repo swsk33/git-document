@@ -22,8 +22,8 @@ public class StarServiceImpl implements StarService {
 
 	@SaCheckLogin
 	@Override
-	public Result<Star> add(Star star) {
-		Result<Star> result = new Result<>();
+	public Result<Void> add(Star star) {
+		Result<Void> result = new Result<>();
 		star.setId(SnowflakeIdGenerator.getSnowflakeId());
 		star.setUser((User) StpUtil.getSession().get(CommonValue.SA_USER_SESSION_INFO_KEY));
 		if (starDAO.add(star) < 1) {
@@ -36,8 +36,8 @@ public class StarServiceImpl implements StarService {
 
 	@SaCheckLogin
 	@Override
-	public Result<Star> delete(long id) {
-		Result<Star> result = new Result<>();
+	public Result<Void> delete(long id) {
+		Result<Void> result = new Result<>();
 		Star getStar = starDAO.getById(id);
 		if (getStar == null) {
 			result.setResultFailed("这个收藏不存在！");

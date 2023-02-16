@@ -8,6 +8,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
+
 import java.util.List;
 
 @RestController
@@ -18,9 +19,9 @@ public class PublicKeyAPI {
 	private PublicKeyService publicKeyService;
 
 	@PostMapping("/add")
-	public Result<PublicKey> add(@Valid @RequestBody PublicKey publicKey, BindingResult errors) throws Exception {
+	public Result<Void> add(@Valid @RequestBody PublicKey publicKey, BindingResult errors) throws Exception {
 		if (errors.hasErrors()) {
-			Result<PublicKey> result = new Result<>();
+			Result<Void> result = new Result<>();
 			result.setResultFailed(errors.getFieldError().getDefaultMessage());
 			return result;
 		}
@@ -28,7 +29,7 @@ public class PublicKeyAPI {
 	}
 
 	@DeleteMapping("/delete/{id}")
-	public Result<PublicKey> delete(@PathVariable int id) throws Exception {
+	public Result<Void> delete(@PathVariable int id) throws Exception {
 		return publicKeyService.delete(id);
 	}
 

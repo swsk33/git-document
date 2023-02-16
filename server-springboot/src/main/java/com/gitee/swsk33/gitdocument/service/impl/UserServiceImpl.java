@@ -43,8 +43,8 @@ public class UserServiceImpl implements UserService {
 	private ConfigProperties configProperties;
 
 	@Override
-	public Result<User> register(User user) {
-		Result<User> result = new Result<>();
+	public Result<Void> register(User user) {
+		Result<Void> result = new Result<>();
 		if (!StpUtil.hasPermission(CommonValue.Permission.EDIT_USER) && !configProperties.isAllowPublic()) {
 			result.setResultFailed("本站不允许访客注册！请联系管理员。");
 			return result;
@@ -88,8 +88,8 @@ public class UserServiceImpl implements UserService {
 
 	@SaCheckPermission(CommonValue.Permission.EDIT_USER)
 	@Override
-	public Result<User> delete(int id) {
-		Result<User> result = new Result<>();
+	public Result<Void> delete(int id) {
+		Result<Void> result = new Result<>();
 		User getUser = userDAO.getById(id);
 		if (getUser == null) {
 			result.setResultFailed("用户不存在！");
@@ -109,8 +109,8 @@ public class UserServiceImpl implements UserService {
 
 	@SaCheckLogin
 	@Override
-	public Result<User> update(User user) throws Exception {
-		Result<User> result = new Result<>();
+	public Result<Void> update(User user) throws Exception {
+		Result<Void> result = new Result<>();
 		User getUser = userDAO.getById(user.getId());
 		if (getUser == null) {
 			result.setResultFailed("找不到该用户！");
@@ -166,8 +166,8 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public Result<User> login(User user) {
-		Result<User> result = new Result<>();
+	public Result<Void> login(User user) {
+		Result<Void> result = new Result<>();
 		// 登录传来的用户名可以是用户名也可以是邮箱
 		User getUser = userDAO.getByUsernameOrEmail(user.getUsername());
 		if (getUser == null) {

@@ -21,9 +21,9 @@ public class UserAPI {
 	private UserService userService;
 
 	@PostMapping("/register")
-	public Result<User> register(@RequestBody @Validated(ValidationRules.DataAdd.class) User user, BindingResult errors) {
+	public Result<Void> register(@RequestBody @Validated(ValidationRules.DataAdd.class) User user, BindingResult errors) {
 		if (errors.hasErrors()) {
-			Result<User> result = new Result<>();
+			Result<Void> result = new Result<>();
 			result.setResultFailed(errors.getFieldError().getDefaultMessage());
 			return result;
 		}
@@ -31,14 +31,14 @@ public class UserAPI {
 	}
 
 	@DeleteMapping("/delete/{id}")
-	public Result<User> delete(@PathVariable("id") int id) {
+	public Result<Void> delete(@PathVariable("id") int id) {
 		return userService.delete(id);
 	}
 
 	@PutMapping("/update")
-	public Result<User> update(@RequestBody @Validated(ValidationRules.DataUpdate.class) User user, BindingResult errors) throws Exception {
+	public Result<Void> update(@RequestBody @Validated(ValidationRules.DataUpdate.class) User user, BindingResult errors) throws Exception {
 		if (errors.hasErrors()) {
-			Result<User> result = new Result<>();
+			Result<Void> result = new Result<>();
 			result.setResultFailed(errors.getFieldError().getDefaultMessage());
 			return result;
 		}
@@ -47,9 +47,9 @@ public class UserAPI {
 
 
 	@PostMapping("/login")
-	public Result<User> login(@RequestBody @Validated(ValidationRules.UserLogin.class) User user, BindingResult errors) {
+	public Result<Void> login(@RequestBody @Validated(ValidationRules.UserLogin.class) User user, BindingResult errors) {
 		if (errors.hasErrors()) {
-			Result<User> result = new Result<>();
+			Result<Void> result = new Result<>();
 			result.setResultFailed(errors.getFieldError().getDefaultMessage());
 			return result;
 		}
@@ -57,9 +57,9 @@ public class UserAPI {
 	}
 
 	@GetMapping("/logout")
-	public Result<User> logout() {
+	public Result<Void> logout() {
 		StpUtil.logout();
-		Result<User> result = new Result<>();
+		Result<Void> result = new Result<>();
 		result.setResultSuccess("退出登录成功！");
 		return result;
 	}

@@ -17,14 +17,14 @@ public interface StarService {
 	 *
 	 * @param star 收藏信息
 	 */
-	Result<Star> add(Star star);
+	Result<Void> add(Star star);
 
 	/**
 	 * 取消收藏
 	 *
 	 * @param id 取消的收藏id
 	 */
-	Result<Star> delete(long id);
+	Result<Void> delete(long id);
 
 	/**
 	 * 查询一个用户所有的收藏

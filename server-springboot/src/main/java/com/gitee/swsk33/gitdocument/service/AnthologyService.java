@@ -19,21 +19,28 @@ public interface AnthologyService {
 	 *
 	 * @param anthology 文集对象
 	 */
-	Result<Anthology> add(Anthology anthology);
+	Result<Void> add(Anthology anthology);
+
+	/**
+	 * 批量添加文集
+	 *
+	 * @param anthologies 文集对象
+	 */
+	Result<Void> batchAdd(List<Anthology> anthologies);
 
 	/**
 	 * 删除一个文集
 	 *
 	 * @param id 文集id
 	 */
-	Result<Anthology> delete(long id) throws IOException;
+	Result<Void> delete(long id) throws IOException;
 
 	/**
 	 * 修改一个文集
 	 *
 	 * @param anthology 文集对象
 	 */
-	Result<Anthology> update(Anthology anthology) throws Exception;
+	Result<Void> update(Anthology anthology) throws Exception;
 
 	/**
 	 * 根据id获取文集
@@ -61,5 +68,12 @@ public interface AnthologyService {
 	 * @param imageFilePath 图片文件在文集仓库中的绝对路径
 	 */
 	Result<byte[]> getImageData(long id, String imageFilePath);
+
+	/**
+	 * 获取在本地但是不在数据库中的文集列表
+	 *
+	 * @return 在本地但是不在数据库中的文集仓库
+	 */
+	Result<List<Anthology>> getAnthologyNotInDatabase();
 
 }

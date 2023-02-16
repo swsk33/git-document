@@ -14,14 +14,14 @@ public interface PublicKeyService {
 	 *
 	 * @param publicKey 公钥对象
 	 */
-	Result<PublicKey> add(PublicKey publicKey) throws Exception;
+	Result<Void> add(PublicKey publicKey) throws Exception;
 
 	/**
 	 * 删除公钥
 	 *
 	 * @param id 公钥id
 	 */
-	Result<PublicKey> delete(int id) throws Exception;
+	Result<Void> delete(int id) throws Exception;
 
 	/**
 	 * 获取一个用户的公钥
