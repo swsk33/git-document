@@ -8,6 +8,15 @@ import org.springframework.stereotype.Service;
 public interface EmailService {
 
 	/**
+	 * 发送文本通知邮件
+	 *
+	 * @param email 目的邮件地址
+	 * @param title 邮件标题
+	 * @param text  邮件内容
+	 */
+	void sendNotifyMail(String email, String title, String text);
+
+	/**
 	 * 给所有管理员发送错误信息
 	 *
 	 * @param errorReport 错误报告对象

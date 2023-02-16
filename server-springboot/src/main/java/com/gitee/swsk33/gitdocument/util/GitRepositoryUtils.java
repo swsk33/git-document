@@ -53,6 +53,16 @@ public class GitRepositoryUtils {
 	}
 
 	/**
+	 * 获取一个仓库的头指针的提交消息
+	 *
+	 * @param repositoryPath 仓库位置
+	 * @return commit的消息
+	 */
+	public static String getHeadCommitMessage(String repositoryPath) throws Exception {
+		return getHeadCommit(repositoryPath).getFullMessage();
+	}
+
+	/**
 	 * 获得一个仓库头指针的提交id（通常是最新提交）
 	 *
 	 * @param repositoryPath 仓库位置

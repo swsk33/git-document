@@ -2,7 +2,12 @@ package com.gitee.swsk33.gitdocument.listener;
 
 import com.gitee.swsk33.gitdocument.context.GitTaskContext;
 import com.gitee.swsk33.gitdocument.dao.AnthologyDAO;
+import com.gitee.swsk33.gitdocument.dao.UserDAO;
 import com.gitee.swsk33.gitdocument.dataobject.Anthology;
+import com.gitee.swsk33.gitdocument.dataobject.User;
+import com.gitee.swsk33.gitdocument.message.UpdateEmailMessage;
+import com.gitee.swsk33.gitdocument.param.CommonValue;
+import com.gitee.swsk33.gitdocument.property.ConfigProperties;
 import com.gitee.swsk33.gitdocument.task.GitCreateTask;
 import com.gitee.swsk33.gitdocument.task.GitUpdateTask;
 import com.gitee.swsk33.gitdocument.util.GitFileUtils;
@@ -13,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
 import org.eclipse.jgit.diff.DiffEntry;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -47,6 +53,15 @@ public class GitRepositoryListener extends FileAlterationListenerAdaptor {
 
 	@Autowired
 	private AnthologyDAO anthologyDAO;
+
+	@Autowired
+	private UserDAO userDAO;
+
+	@Autowired
+	private RabbitTemplate rabbitTemplate;
+
+	@Autowired
+	private ConfigProperties configProperties;
 
 	@Override
 	public void onStart(FileAlterationObserver observer) {
@@ -109,6 +124,21 @@ public class GitRepositoryListener extends FileAlterationListenerAdaptor {
 			task.setCommitId(newId);
 			task.setDiffEntries(diffs);
 			GitTaskContext.taskQueue.offer(task);
+			// 通知收藏这个文集的用户
+			List<User> starUser = userDAO.getByStarAnthology(id);
+			for (User user : starUser) {
+				if (!user.getSetting().getReceiveUpdateEmail()) {
+					continue;
+				}
+				UpdateEmailMessage message = new UpdateEmailMessage();
+				message.setTitle("GitDocument · " + configProperties.getOrganizationName() + " - 文集更新通知");
+				message.setEmail(user.getEmail());
+				message.setName(getAnthology.getName());
+				message.setCommitMessage(GitRepositoryUtils.getHeadCommitMessage(path));
+				message.setDiffEntries(diffs);
+				rabbitTemplate.convertAndSend(CommonValue.MessageQueue.EMAIL_TOPIC_EXCHANGE_NAME, CommonValue.RabbitMQRoutingKey.UPDATE_EMAIL, message);
+				log.info("已传送通知任务到消息队列！通知用户名：" + user.getUsername());
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

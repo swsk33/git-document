@@ -36,4 +36,12 @@ public interface UserDAO {
 
 	List<User> getAllAdmin();
 
+	/**
+	 * 根据一个文集id获取收藏这个文集的用户列表
+	 *
+	 * @param anthologyId 文集id
+	 * @return 收藏这个文集的用户列表
+	 */
+	List<User> getByStarAnthology(long anthologyId);
+
 }

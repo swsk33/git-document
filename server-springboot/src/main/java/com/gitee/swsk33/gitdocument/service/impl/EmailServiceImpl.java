@@ -32,14 +32,8 @@ public class EmailServiceImpl implements EmailService {
 	@Autowired
 	private UserDAO userDAO;
 
-	/**
-	 * 发送文本通知邮件
-	 *
-	 * @param email 目的邮件地址
-	 * @param title 邮件标题
-	 * @param text  邮件内容
-	 */
 	@Async
+	@Override
 	public void sendNotifyMail(String email, String title, String text) {
 		SimpleMailMessage message = new SimpleMailMessage();
 		message.setFrom(sender);

@@ -66,4 +66,11 @@
 		from `user`
 		where role_id = (select `id` from `role` where name = 'ROLE_ADMIN')
 	</select>
+
+	<select id="getByStarAnthology" resultMap="userResultMap">
+		select `user`.*
+		from `user`
+				 left join `star` on `user`.id = `star`.user_id
+		where `star`.anthology_id = #{anthologyId}
+	</select>
 </mapper>
