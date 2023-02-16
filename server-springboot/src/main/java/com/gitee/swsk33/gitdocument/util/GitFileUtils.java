@@ -118,14 +118,9 @@ public class GitFileUtils {
 		newTree.reset(objectReader, walk.parseTree(newCommit));
 		// 执行diff命令
 		Git git = new Git(repository);
-		List<DiffEntry> origin = git.diff().setShowNameAndStatusOnly(true).setOldTree(oldTree).setNewTree(newTree).call();
+		List<DiffEntry> diffs = git.diff().setShowNameAndStatusOnly(true).setOldTree(oldTree).setNewTree(newTree).call();
 		List<DiffEntry> result = new ArrayList<>();
-		for (DiffEntry entry : origin) {
-			if (entry.getChangeType() == DiffEntry.ChangeType.MODIFY || entry.getChangeType() == DiffEntry.ChangeType.COPY) {
-				continue;
-			}
-			result.add(entry);
-		}
+		diffs.stream().filter(diff -> diff.getChangeType() != DiffEntry.ChangeType.COPY).forEach(result::add);
 		return result;
 	}
 

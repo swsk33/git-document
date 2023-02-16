@@ -51,15 +51,15 @@ public class GitCreateTask implements Runnable {
 		log.info("新建文件正在编入数据库...");
 		Anthology anthology = anthologyDAO.getById(repositoryId);
 		List<Article> articles = new ArrayList<>();
-		for (String path : fileList) {
+		fileList.forEach(path -> {
 			Article article = new Article();
 			article.setId(SnowflakeIdGenerator.getSnowflakeId());
 			article.setAnthology(anthology);
 			article.setFilePath(path);
 			articles.add(article);
-		}
+		});
 		if (articles.size() == 0) {
-			log.info("没有可用的新文件，退出！");
+			log.info("没有可录入的新文件，退出！");
 			return;
 		}
 		articleDAO.batchAdd(articles);

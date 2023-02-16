@@ -6,6 +6,7 @@ import com.gitee.swsk33.gitdocument.dao.UserDAO;
 import com.gitee.swsk33.gitdocument.dataobject.Anthology;
 import com.gitee.swsk33.gitdocument.dataobject.User;
 import com.gitee.swsk33.gitdocument.message.UpdateEmailMessage;
+import com.gitee.swsk33.gitdocument.model.ArticleDiff;
 import com.gitee.swsk33.gitdocument.param.CommonValue;
 import com.gitee.swsk33.gitdocument.property.ConfigProperties;
 import com.gitee.swsk33.gitdocument.task.GitCreateTask;
@@ -135,7 +136,7 @@ public class GitRepositoryListener extends FileAlterationListenerAdaptor {
 				message.setEmail(user.getEmail());
 				message.setName(getAnthology.getName());
 				message.setCommitMessage(GitRepositoryUtils.getHeadCommitMessage(path));
-				message.setDiffEntries(diffs);
+				message.setDiffEntries(ArticleDiff.toArticleDiff(diffs));
 				rabbitTemplate.convertAndSend(CommonValue.MessageQueue.EMAIL_TOPIC_EXCHANGE_NAME, CommonValue.RabbitMQRoutingKey.UPDATE_EMAIL, message);
 				log.info("已传送通知任务到消息队列！通知用户名：" + user.getUsername());
 			}

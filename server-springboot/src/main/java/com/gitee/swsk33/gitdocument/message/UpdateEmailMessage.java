@@ -1,8 +1,9 @@
 package com.gitee.swsk33.gitdocument.message;
 
+import com.gitee.swsk33.gitdocument.message.prototype.EmailMessage;
+import com.gitee.swsk33.gitdocument.model.ArticleDiff;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.eclipse.jgit.diff.DiffEntry;
 
 import java.util.List;
 
@@ -26,6 +27,6 @@ public class UpdateEmailMessage extends EmailMessage {
 	/**
 	 * 变更列表
 	 */
-	private List<DiffEntry> diffEntries;
+	private List<ArticleDiff> diffEntries;
 
 }

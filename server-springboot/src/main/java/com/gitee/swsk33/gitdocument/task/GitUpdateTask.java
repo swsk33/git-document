@@ -52,9 +52,9 @@ public class GitUpdateTask implements Runnable {
 	@Override
 	public void run() {
 		log.info("正在修改数据库文件信息...");
-		for (DiffEntry entry : diffEntries) {
-			FileChangeStrategyContext.executeStrategy(repositoryId, entry);
-		}
+		diffEntries.stream().filter(diff -> diff.getChangeType() != DiffEntry.ChangeType.MODIFY).forEach(diff -> {
+			FileChangeStrategyContext.executeStrategy(repositoryId, diff);
+		});
 		// 完成更新后，更新文集仓库的最新commitId
 		Anthology anthology = anthologyDAO.getById(repositoryId);
 		anthology.setLatestCommitId(commitId);
