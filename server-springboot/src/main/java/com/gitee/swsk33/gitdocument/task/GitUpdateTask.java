@@ -6,8 +6,7 @@ import com.gitee.swsk33.gitdocument.dao.ArticleDAO;
 import com.gitee.swsk33.gitdocument.dataobject.Anthology;
 import com.gitee.swsk33.gitdocument.model.ArticleDirectory;
 import com.gitee.swsk33.gitdocument.strategy.context.FileChangeStrategyContext;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +19,8 @@ import java.util.List;
 /**
  * HEAD被修改时触发的更新任务
  */
-@Getter
-@Setter
 @Slf4j
+@Data
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 @Component
 public class GitUpdateTask implements Runnable {

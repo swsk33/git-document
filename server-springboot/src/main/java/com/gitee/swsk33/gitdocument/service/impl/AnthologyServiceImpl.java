@@ -13,6 +13,7 @@ import com.gitee.swsk33.gitdocument.param.CommonValue;
 import com.gitee.swsk33.gitdocument.property.ConfigProperties;
 import com.gitee.swsk33.gitdocument.service.AnthologyService;
 import com.gitee.swsk33.gitdocument.service.ImageService;
+import com.gitee.swsk33.gitdocument.task.GitCreateTask;
 import com.gitee.swsk33.gitdocument.task.GitUpdateTask;
 import com.gitee.swsk33.gitdocument.util.ClassExamine;
 import com.gitee.swsk33.gitdocument.util.GitFileUtils;
@@ -61,9 +62,6 @@ public class AnthologyServiceImpl implements AnthologyService {
 	 */
 	@PostConstruct
 	private void startRepositoryUpdateTask() throws Exception {
-		// 打开任务队列
-		GitTaskContext.getInstance().start();
-		log.info("已开启任务队列！");
 		// 从数据库获取文集仓库信息
 		List<Anthology> anthologies;
 		try {
@@ -80,6 +78,16 @@ public class AnthologyServiceImpl implements AnthologyService {
 			String newCommitId;
 			try {
 				newCommitId = GitRepositoryUtils.getHeadCommitId(anthology.getRepoPath());
+				if (anthology.getLatestCommitId() == null && newCommitId != null) {
+					log.warn("发现本地仓库：" + anthology.getName() + "在数据库中的commitId为空，进行创建操作...");
+					GitCreateTask task = beanFactory.getBean(GitCreateTask.class);
+					task.setRepositoryId(anthology.getId());
+					task.setFileList(GitFileUtils.getLatestFileList(anthology.getRepoPath()));
+					task.setCommitId(newCommitId);
+					GitTaskContext.taskQueue.offer(task);
+					log.info("已添加对本地仓库：" + anthology.getName() + " 的创建任务！");
+					continue;
+				}
 				if (!anthology.getLatestCommitId().equals(newCommitId)) {
 					log.warn("发现本地仓库：" + anthology.getName() + "与数据库的commit不同，进行更新操作...");
 					// 获取差异
@@ -93,7 +101,7 @@ public class AnthologyServiceImpl implements AnthologyService {
 					task.setCommitId(newCommitId);
 					task.setDiffEntries(diffs);
 					GitTaskContext.taskQueue.offer(task);
-					log.info("已添加对本地仓库：" + anthology.getName() + " 启动更新任务！");
+					log.info("已添加对本地仓库：" + anthology.getName() + " 的更新任务！");
 				}
 			} catch (Exception e) {
 				log.error("发生错误！本地仓库" + anthology.getName() + "可能不存在！继续！");

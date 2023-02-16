@@ -49,6 +49,12 @@ spring:
       host: 127.0.0.1
       port: 6379
       password: "密码"
+  # RabbitMQ
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: "用户名"
+    password: "密码"
 
 # Sa-Token配置
 sa-token:

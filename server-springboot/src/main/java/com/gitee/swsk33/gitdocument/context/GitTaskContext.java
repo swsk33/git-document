@@ -1,6 +1,8 @@
 package com.gitee.swsk33.gitdocument.context;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -9,9 +11,8 @@ import java.util.Queue;
  * Git仓库文件更新任务上下文（单例）
  */
 @Slf4j
-public class GitTaskContext extends Thread {
-
-	private static final GitTaskContext instance = new GitTaskContext();
+@Component
+public class GitTaskContext {
 
 	/**
 	 * 存放任务的队列
@@ -23,39 +24,17 @@ public class GitTaskContext extends Thread {
 	 */
 	private static Thread currentTask;
 
-	private GitTaskContext() {
-		this.setName("fileUpdateTaskContext");
-	}
-
-	/**
-	 * 获取任务上下文单实例
-	 *
-	 * @return 任务上下文实例
-	 */
-	public static GitTaskContext getInstance() {
-		return instance;
-	}
-
-	@Override
-	public void run() {
-		log.info("启动Git文件数据库刷新任务队列！");
-		while (true) {
-			try {
-				// 延时2s再来进行检查
-				Thread.sleep(2000);
-				// 空闲时或者有任务正在执行时，不进行任何操作
-				if (taskQueue.isEmpty() || (currentTask != null && currentTask.isAlive())) {
-					continue;
-				}
-				// 否则，从任务队列取出下一个任务并执行
-				log.info("从任务队列取出一个任务！");
-				currentTask = new Thread(taskQueue.poll());
-				currentTask.setName("fileUpdateTask");
-				currentTask.start();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+	@Scheduled(fixedRate = 2000)
+	public void taskSchedule() {
+		// 空闲时或者有任务正在执行时，不进行任何操作
+		if (taskQueue.isEmpty() || (currentTask != null && currentTask.isAlive())) {
+			return;
 		}
+		// 否则，从任务队列取出下一个任务并执行
+		log.info("从任务队列取出一个任务！");
+		currentTask = new Thread(taskQueue.poll());
+		currentTask.setName("gitTask");
+		currentTask.start();
 	}
 
 }

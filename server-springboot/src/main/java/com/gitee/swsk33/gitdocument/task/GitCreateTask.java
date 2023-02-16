@@ -5,8 +5,7 @@ import com.gitee.swsk33.gitdocument.dao.ArticleDAO;
 import com.gitee.swsk33.gitdocument.dataobject.Anthology;
 import com.gitee.swsk33.gitdocument.dataobject.Article;
 import com.gitee.swsk33.gitdocument.util.SnowflakeIdGenerator;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -20,10 +19,9 @@ import java.util.List;
  * 新建分支时触发的Git更新任务
  */
 @Slf4j
+@Data
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 @Component
-@Getter
-@Setter
 public class GitCreateTask implements Runnable {
 
 	@Autowired

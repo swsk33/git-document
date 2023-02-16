@@ -170,4 +170,43 @@ public class CommonValue {
 
 	}
 
+	/**
+	 * 存放消息队列的一些常量
+	 */
+	public static class MessageQueue {
+
+		/**
+		 * 名称前缀
+		 */
+		public static final String PREFIX = "git-document";
+
+		/**
+		 * 收藏更新通知邮件消息队列
+		 */
+		public static final String UPDATE_EMAIL_QUEUE_NAME = PREFIX + ".update-email-queue";
+
+		/**
+		 * 主题模式交换机名
+		 */
+		public static final String EMAIL_TOPIC_EXCHANGE_NAME = PREFIX + ".email-topic";
+
+	}
+
+	/**
+	 * 存放RabbitMQ中的一些RoutingKey
+	 */
+	public static class RabbitMQRoutingKey {
+
+		/**
+		 * 表示邮件
+		 */
+		public static final String EMAIL_TASK_KEY = "email";
+
+		/**
+		 * 表示更新通知邮件
+		 */
+		public static final String UPDATE_EMAIL = EMAIL_TASK_KEY + ".update";
+
+	}
+
 }
