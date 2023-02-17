@@ -57,6 +57,11 @@ async function userLogout() {
 	);
 	await router.push('/login');
 }
+
+// 定义组件引用暴露
+defineExpose({
+	menuControl
+});
 </script>
 
 <style lang="scss" scoped>

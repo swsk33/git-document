@@ -6,7 +6,7 @@
 		<div class="image-edit">
 			<img class="preview" :src="previewImage" alt="无法显示"/>
 			<!-- 通过拿到input组件的dom对象可以直接执行其点击方法即为click方法，这样就可以用自己的按钮触发上传事件 -->
-			<el-button class="upload" type="success" plain @click="uploadCover.value.click()">上传</el-button>
+			<el-button class="upload" type="success" plain @click="uploadCover.click()">上传</el-button>
 			<input ref="uploadCover" type="file" @change="getImageFile($event)"/>
 			<el-button class="random" type="warning" plain @click="getRandom">随机</el-button>
 		</div>
@@ -17,13 +17,14 @@
 import { REQUEST_METHOD, sendRequest } from '../../../utils/request';
 import { ElNotification } from 'element-plus';
 import { ref, onMounted } from 'vue';
+import axios from 'axios';
 
 const uploadCover = ref(null);
 
 // 预上传图片
-let beforeUploadImage = ref(undefined);
+const beforeUploadImage = ref(undefined);
 // 预览图
-let previewImage = ref(undefined);
+const previewImage = ref(undefined);
 
 // 分别是：上传API、随机获取API、初始图像、上传表单项名，initImage传入'init-random'时将使用随机获取的图片
 const props = defineProps(['uploadUrl', 'randomUrl', 'initImage', 'uploadName']);
@@ -67,7 +68,7 @@ async function getRandom(showTip = true) {
 			duration: 1000
 		});
 	}
-	return previewImage;
+	return previewImage.value;
 }
 
 /**
@@ -76,13 +77,21 @@ async function getRandom(showTip = true) {
  */
 async function uploadAndGetUrl() {
 	if (beforeUploadImage.value === undefined) {
-		return previewImage;
+		return previewImage.value;
 	}
 	// 创建表单对象
 	let form = new FormData();
 	form.append(props.uploadName, beforeUploadImage.value);
-	const response = await sendRequest(props.uploadUrl, REQUEST_METHOD.POST, form);
-	if (!response.success) {
+	let requestParam = {
+		url: props.uploadUrl,
+		method: 'POST',
+		headers: {
+			'content-type': 'multipart/form-data'
+		},
+		data: form
+	};
+	const response = await axios(requestParam);
+	if (!response.data.success) {
 		ElNotification({
 			title: '失败',
 			message: response.message,
@@ -97,8 +106,13 @@ async function uploadAndGetUrl() {
 		type: 'success',
 		duration: 1000
 	});
-	return response.data;
+	return response.data.data;
 }
+
+// 定义组件暴露
+defineExpose({
+	uploadAndGetUrl
+});
 
 onMounted(async () => {
 	previewImage.value = props.initImage;

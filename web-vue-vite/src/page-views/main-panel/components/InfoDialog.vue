@@ -17,7 +17,13 @@
 <script setup>
 import { ref } from 'vue';
 
-let frameShow = ref(false);
+// 自定义响应式变量
+const frameShow = ref(false);
+
+// 定义组件暴露
+defineExpose({
+	frameShow
+});
 </script>
 
 <style lang="scss">

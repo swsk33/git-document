@@ -131,7 +131,12 @@ public class UserServiceImpl implements UserService {
 			}
 			// 不允许修改保留管理员的权限
 			if (getUser.getRole().getName().equals(CommonValue.Role.PRESERVE_ADMIN)) {
-				result.setResultFailed("不能修改保留管理员用户的权限！");
+				result.setResultFailed("不能修改预留管理员用户的权限！");
+				return result;
+			}
+			// 不能把用户修改成预留管理员
+			if (user.getRole().getId() == 1) {
+				result.setResultFailed("不能把用户修改成预留管理员！");
 				return result;
 			}
 			roleChanged = true;

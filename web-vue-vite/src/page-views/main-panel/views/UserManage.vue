@@ -2,7 +2,7 @@
 	<div class="user-manage" v-loading="!loadingDone" element-loading-text="正在拉取用户列表...">
 		<div class="head">
 			<div class="title">用户管理</div>
-			<el-button class="add-user-button" type="success" @click="addUserDialog.value.frameShow = true">添加用户</el-button>
+			<el-button class="add-user-button" type="success" @click="addUserDialog.frameShow = true">添加用户</el-button>
 		</div>
 		<el-table class="user-list" :data="userList" border row-class-name="user-list-row" empty-text="没有用户">
 			<el-table-column prop="id" label="id" width="60" align="center"/>
@@ -24,7 +24,7 @@
 						</div>
 						<template #dropdown>
 							<el-dropdown-menu>
-								<el-dropdown-item v-for="item in roleList" :command="{userId:scope.row.id, roleId: item.id}" style="user-select: none">{{ item.showName }}</el-dropdown-item>
+								<el-dropdown-item v-for="item in userStore.roleList" :command="{userId:scope.row.id, roleId: item.id}" style="user-select: none">{{ item.showName }}</el-dropdown-item>
 							</el-dropdown-menu>
 						</template>
 					</el-dropdown>
@@ -49,6 +49,7 @@
 		<InfoDialog class="add-user-dialog" ref="addUserDialog">
 			<template v-slot:title>添加用户</template>
 			<template v-slot:content>
+				<!-- 头像上传组件 -->
 				<UploadImage class="avatar" ref="addUserAvatar" upload-url="/api/image/upload-avatar" random-url="/api/image/random-avatar" upload-name="avatar" init-image="init-random">
 					<template v-slot:text>设定头像</template>
 				</UploadImage>
@@ -71,13 +72,13 @@
 				<div class="role">
 					<div class="text">角色：</div>
 					<el-radio-group v-model="addUserData.role.id" class="input">
-						<el-radio v-for="item in roleList" :label="item.id" size="large">{{ item.showName }}</el-radio>
+						<el-radio v-for="item in userStore.roleList" :label="item.id" size="large">{{ item.showName }}</el-radio>
 					</el-radio-group>
 				</div>
 			</template>
 			<template v-slot:button-box>
 				<el-button class="ok" type="success" @click="addUser">确定</el-button>
-				<el-button class="cancel" type="warning" @click="addUserDialog.value.frameShow = false">取消</el-button>
+				<el-button class="cancel" type="warning" @click="addUserDialog.frameShow = false">取消</el-button>
 			</template>
 		</InfoDialog>
 	</div>
@@ -88,6 +89,7 @@ import { sendRequest, REQUEST_METHOD } from '../../../utils/request';
 import { ElNotification } from 'element-plus';
 import { ArrowDown } from '@element-plus/icons-vue';
 import { onMounted, reactive, ref } from 'vue';
+
 // 组件引入
 import InfoDialog from '../components/InfoDialog.vue';
 import UploadImage from '../components/UploadImage.vue';
@@ -249,7 +251,7 @@ async function addUser() {
 
 onMounted(async () => {
 	await getUserList();
-	await getRoleList();
+	await userStore.getRoleList();
 });
 </script>
 
