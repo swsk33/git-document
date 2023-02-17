@@ -13,12 +13,16 @@
 				<User class="icon"/>
 				<div class="text">用户管理</div>
 			</li>
+			<li v-if="userStore.hasPermission('alter_system_setting')" @click="router.push('/system-setting')">
+				<Operation class="icon"/>
+				<div class="text">系统设置</div>
+			</li>
 		</ul>
 	</div>
 </template>
 
 <script setup>
-import { Guide, Box, User } from '@element-plus/icons-vue';
+import { Guide, Box, User, Operation } from '@element-plus/icons-vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();

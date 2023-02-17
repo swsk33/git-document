@@ -94,7 +94,7 @@ async function uploadAndGetUrl() {
 	if (!response.data.success) {
 		ElNotification({
 			title: '失败',
-			message: response.message,
+			message: response.data.message,
 			type: 'error',
 			duration: 1000
 		});

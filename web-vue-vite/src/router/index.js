@@ -41,6 +41,10 @@ const mainPanelRouter = {
 			component: () => import('../page-views/main-panel/views/UserManage.vue')
 		},
 		{
+			path: 'system-setting',
+			component: () => import('../page-views/main-panel/views/SystemSetting.vue')
+		},
+		{
 			path: 'my',
 			component: () => import('../page-views/main-panel/views/MyInfoEdit.vue')
 		},
