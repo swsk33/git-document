@@ -5,11 +5,11 @@
 			<div class="title">Navigator</div>
 		</div>
 		<ul class="content">
-			<li v-if="hasPermission('browse_article')" @click="this.$router.push('/interior-anthology')">
+			<li v-if="userStore.hasPermission('browse_article')" @click="router.push('/interior-anthology')">
 				<Box class="icon"/>
 				<div class="text">内部文章集</div>
 			</li>
-			<li v-if="hasPermission('edit_user')" @click="this.$router.push('/user-manage')">
+			<li v-if="userStore.hasPermission('edit_user')" @click="router.push('/user-manage')">
 				<User class="icon"/>
 				<div class="text">用户管理</div>
 			</li>
@@ -17,27 +17,16 @@
 	</div>
 </template>
 
-<script>
-import { createNamespacedHelpers } from 'vuex';
-
+<script setup>
 import { Guide, Box, User } from '@element-plus/icons-vue';
+import { useRouter } from 'vue-router';
 
-const { mapGetters: userGetters } = createNamespacedHelpers('user');
+const router = useRouter();
 
-export default {
-	components: {
-		Guide,
-		Box,
-		User
-	},
-	data() {
-		return {};
-	},
-	computed: {
-		...userGetters(['hasPermission'])
-	},
-	methods: {}
-};
+// pinia
+import { useUserStore } from '../../../store/user';
+
+const userStore = useUserStore();
 </script>
 
 <style lang="scss" scoped>

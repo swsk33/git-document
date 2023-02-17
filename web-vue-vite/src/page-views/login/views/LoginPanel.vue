@@ -13,106 +13,104 @@
 	</div>
 </template>
 
-<script>
-import { createNamespacedHelpers } from 'vuex';
-import { shallowRef } from 'vue';
-
+<script setup>
 import { Avatar, Lock } from '@element-plus/icons-vue';
 import { REQUEST_METHOD, sendRequest } from '../../../utils/request';
 import { ElNotification } from 'element-plus';
+import { reactive, shallowRef } from 'vue';
+import { useRouter } from 'vue-router';
 
-// vuex
-const { mapActions: userActions } = createNamespacedHelpers('user');
-const { mapState: pathState } = createNamespacedHelpers('url-path');
-const { mapState: metaState } = createNamespacedHelpers('meta-data');
+const router = useRouter();
 
-export default {
-	data() {
-		return {
-			userData: {
-				username: undefined,
-				password: undefined
-			},
-			icons: {
-				avatar: shallowRef(Avatar),
-				lock: shallowRef(Lock)
-			}
-		};
-	},
-	computed: {
-		...pathState(['path']),
-		...metaState(['allowPublic'])
-	},
-	methods: {
-		...userActions(['checkLogin']),
-		/**
-		 * 跳转至注册页视图
-		 */
-		toRegister() {
-			if (!this.allowPublic) {
-				ElNotification(
-						{
-							title: '错误！',
-							message: '本站不允许访客注册！请联系管理员！',
-							type: 'error',
-							duration: 1000
-						}
-				);
-				return;
-			}
-			this.$router.push('/login/register');
-		},
-		/**
-		 * 登录方法
-		 */
-		async login() {
-			let response = await sendRequest('/api/user/login', REQUEST_METHOD.POST, this.userData);
-			if (!response.success) {
-				ElNotification({
+// pinia
+import { useUserStore } from '../../../store/user';
+import { useMetaDataStore } from '../../../store/meta-data';
+import { useUrlPathStore } from '../../../store/url-path';
+
+const userStore = useUserStore();
+const metaStore = useMetaDataStore();
+const pathStore = useUrlPathStore();
+
+// 自定义响应式变量
+const userData = reactive({
+	username: undefined,
+	password: undefined
+});
+const icons = reactive({
+	avatar: shallowRef(Avatar),
+	lock: shallowRef(Lock)
+});
+
+// 自定义方法
+/**
+ * 跳转至注册页视图
+ */
+function toRegister() {
+	if (!metaStore.allowPublic) {
+		ElNotification(
+				{
 					title: '错误！',
-					message: response.message,
+					message: '本站不允许访客注册！请联系管理员！',
 					type: 'error',
 					duration: 1000
-				});
-				return;
-			}
-			ElNotification({
-				title: '成功！',
-				message: '登录成功！',
-				type: 'success',
-				duration: 750
-			});
-			// 获取用户信息
-			await this.checkLogin();
-			// 跳转至用户访问的页面
-			// 防止跳转到登录页自己
-			if (this.path.startsWith('/login')) {
-				this.$router.push('/');
-				return;
-			}
-			this.$router.push(this.path);
-		},
-		/**
-		 * 忘记密码
-		 */
-		forgetPassword() {
-			ElNotification({
-				title: '提示',
-				message: '请联系管理员重置密码！',
-				type: 'warning',
-				duration: 1000
-			});
-		},
-		/**
-		 * 在密码输入框按下enter键时也执行登录
-		 */
-		enterKeyLogin(e) {
-			if (e.key === 'Enter') {
-				this.login(this.userData);
-			}
-		}
+				}
+		);
+		return;
 	}
-};
+	router.push('/login/register');
+}
+
+/**
+ * 登录方法
+ */
+async function login() {
+	let response = await sendRequest('/api/user/login', REQUEST_METHOD.POST, userData);
+	if (!response.success) {
+		ElNotification({
+			title: '错误！',
+			message: response.message,
+			type: 'error',
+			duration: 1000
+		});
+		return;
+	}
+	ElNotification({
+		title: '成功！',
+		message: '登录成功！',
+		type: 'success',
+		duration: 750
+	});
+	// 获取用户信息
+	await userStore.checkLogin();
+	// 跳转至用户访问的页面
+	// 防止跳转到登录页自己
+	if (pathStore.path.startsWith('/login')) {
+		await router.push('/');
+		return;
+	}
+	await router.push(this.path);
+}
+
+/**
+ * 忘记密码
+ */
+function forgetPassword() {
+	ElNotification({
+		title: '提示',
+		message: '请联系管理员重置密码！',
+		type: 'warning',
+		duration: 1000
+	});
+}
+
+/**
+ * 在密码输入框按下enter键时也执行登录
+ */
+function enterKeyLogin(e) {
+	if (e.key === 'Enter') {
+		login(userData);
+	}
+}
 </script>
 
 <style lang="scss" scoped>

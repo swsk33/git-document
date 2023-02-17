@@ -1,45 +1,40 @@
 <template>
 	<div class="main-panel">
-		<top-bar ref="topBar"></top-bar>
-		<side-menu ref="sideMenu" @closeAvatarMenu="closeAvatarMenu"></side-menu>
+		<TopBar ref="topBar"/>
+		<SideMenu ref="sideMenu" @closeAvatarMenu="closeAvatarMenu"/>
 		<router-view ref="controlPanel" @click="closeAvatarMenu" class="panel-content"/>
 	</div>
 </template>
 
-<script>
-import { createNamespacedHelpers } from 'vuex';
+<script setup>
+import { ref, watch } from 'vue';
 
-import topBar from './components/TopBar.vue';
-import sideMenu from './components/SideMenu.vue';
+// 组件及其ref
+import TopBar from './components/TopBar.vue';
+import SideMenu from './components/SideMenu.vue';
 
-const { mapState: metaState, mapActions: metaActions } = createNamespacedHelpers('meta-data');
+const topBar = ref(null);
+const sideMenu = ref(null);
+const controlPanel = ref(null);
 
-export default {
-	components: {
-		'side-menu': sideMenu,
-		'top-bar': topBar
-	},
-	computed: {
-		...metaState(['organizationName'])
-	},
-	methods: {
-		...metaActions(['setTitle']),
-		/**
-		 * 关闭头像菜单
-		 */
-		closeAvatarMenu() {
-			this.$refs.topBar.menuControl(false);
-		}
-	},
-	watch: {
-		organizationName: {
-			handler() {
-				this.setTitle('GitDocument');
-			},
-			immediate: true
-		}
-	}
-};
+// pinia
+import { useMetaDataStore } from '../../store/meta-data';
+
+const metaStore = useMetaDataStore();
+
+/**
+ * 关闭头像菜单
+ */
+function closeAvatarMenu() {
+	topBar.value.menuControl(false);
+}
+
+// 监听标题
+watch(() => metaStore.organizationName, () => {
+	metaStore.setTitle('GitDocument');
+}, {
+	immediate: true
+});
 </script>
 
 <style lang="scss" scoped>

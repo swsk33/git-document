@@ -1,8 +1,8 @@
 <template>
-	<div class="top-bar" v-if="userData !== undefined">
-		<el-avatar class="avatar" :src="userData.avatar" @click.stop="menuControl(true)"></el-avatar>
+	<div class="top-bar" v-if="userStore.userData !== undefined">
+		<el-avatar class="avatar" :src="userStore.userData.avatar" @click.stop="menuControl(true)"></el-avatar>
 		<div class="menu" v-if="menuShow">
-			<div class="info">{{ userData.nickname }} <br> <span class="role-name">{{ userData.role.showName }}</span></div>
+			<div class="info">{{ userStore.userData.nickname }} <br> <span class="role-name">{{ userStore.userData.role.showName }}</span></div>
 			<ul class="menu-body">
 				<li @click="toUserInfo">个人设置</li>
 				<li @click="userLogout">退出登录</li>
@@ -11,55 +11,52 @@
 	</div>
 </template>
 
-<script>
-import { createNamespacedHelpers } from 'vuex';
-import { sendRequest, REQUEST_METHOD } from '../../../utils/request.js';
+<script setup>
+import { sendRequest, REQUEST_METHOD } from '../../../utils/request';
 import { ElNotification } from 'element-plus';
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 
-const { mapState: userState, mapActions: userActions } = createNamespacedHelpers('user');
+const router = useRouter();
 
-export default {
-	data() {
-		return {
-			menuShow: false
-		};
-	},
-	computed: {
-		...userState(['userData'])
-	},
-	methods: {
-		...userActions(['checkLogin']),
-		/**
-		 * 控制菜单显示隐藏
-		 * @param show 是否显示
-		 */
-		menuControl(show) {
-			this.menuShow = show;
-		},
-		/**
-		 * 进入个人中心页面
-		 */
-		toUserInfo() {
-			this.$router.push('/my');
-			this.menuShow = false;
-		},
-		/**
-		 * 用户退出
-		 */
-		async userLogout() {
-			await sendRequest('/api/user/logout', REQUEST_METHOD.GET);
-			await this.checkLogin();
-			ElNotification({
-						title: '成功',
-						message: '已退出登录！',
-						type: 'success',
-						duration: 750
-					}
-			);
-			this.$router.push('/login');
-		}
-	}
-};
+let menuShow = ref(false);
+
+// pinia
+import { useUserStore } from '../../../store/user';
+
+const userStore = useUserStore();
+
+/**
+ * 控制菜单显示隐藏
+ * @param show 是否显示
+ */
+function menuControl(show) {
+	menuShow.value = show;
+}
+
+/**
+ * 进入个人中心页面
+ */
+function toUserInfo() {
+	router.push('/my');
+	menuShow.value = false;
+}
+
+/**
+ * 用户退出
+ */
+async function userLogout() {
+	await sendRequest('/api/user/logout', REQUEST_METHOD.GET);
+	await userStore.checkLogin();
+	ElNotification({
+				title: '成功',
+				message: '已退出登录！',
+				type: 'success',
+				duration: 750
+			}
+	);
+	await router.push('/login');
+}
 </script>
 
 <style lang="scss" scoped>

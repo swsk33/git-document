@@ -3,28 +3,29 @@
 	<router-view class="root-page"/>
 </template>
 
-<script>
-import { createNamespacedHelpers } from 'vuex';
+<script setup>
+import { useUserStore } from './store/user';
+import { useUrlPathStore } from './store/url-path';
+import { useMetaDataStore } from './store/meta-data';
 
-const { mapActions: userActions } = createNamespacedHelpers('user');
-const { mapActions: metaActions } = createNamespacedHelpers('meta-data');
-const { mapActions: pathActions } = createNamespacedHelpers('url-path');
+// pinia
+const userStore = useUserStore();
+const urlStore = useUrlPathStore();
+const metaStore = useMetaDataStore();
 
-export default {
-	methods: {
-		...userActions(['checkLogin']),
-		...metaActions(['getAllMeta']),
-		...pathActions(['setPath'])
-	},
-	async created() {
-		// 初始化后端配置数据
-		await this.getAllMeta();
-		// 跳转之前，获取第一次用户访问路径
-		this.setPath(location.pathname);
-		// 未登录跳转至登录页
-		if (!await this.checkLogin()) {
-			await this.$router.push('/login');
-		}
+import { onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+
+onMounted(async () => {
+	// 初始化后端配置数据
+	await metaStore.getAllMeta();
+	// 跳转之前，获取第一次用户访问路径
+	urlStore.setPath(location.pathname);
+	// 未登录跳转至登录页
+	if (!await userStore.checkLogin()) {
+		await router.push('/login');
 	}
-};
+});
 </script>

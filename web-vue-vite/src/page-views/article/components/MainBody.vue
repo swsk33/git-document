@@ -16,19 +16,26 @@
 	</div>
 </template>
 
-<script>
+<script setup>
 import { marked } from 'marked';
-import { createNamespacedHelpers } from 'vuex';
 import { ElNotification } from 'element-plus';
-import { REQUEST_METHOD, sendRequest } from '../../../utils/request.js';
-
+import { REQUEST_METHOD, sendRequest } from '../../../utils/request';
 import highlight from 'highlight.js';
 import ClipBoard from 'clipboard';
-import renderMathInElement from 'katex/dist/contrib/auto-render.js';
+import renderMathInElement from 'katex/dist/contrib/auto-render';
+import { onMounted, onUpdated, ref, watch } from 'vue';
+import { useRoute } from 'vue-router';
 
-// vuex模块
-const { mapState: themeState, mapActions: themeActions } = createNamespacedHelpers('article-page-theme');
+const route = useRoute();
 
+const content = ref(null);
+
+// pinia
+import { useArticlePageThemeStore } from '../../../store/article-page-theme';
+
+const themeStore = useArticlePageThemeStore();
+
+// marked.js初始化设定
 marked.setOptions({
 			renderer: new marked.Renderer(),
 			highlight: function (code) {
@@ -45,165 +52,157 @@ marked.setOptions({
 		}
 );
 
-export default {
-	data() {
-		return {
-			// 是否加载完成
-			loadingDone: false,
-			// 正文内容
-			text: undefined,
-			// 菜单项
-			menuItems: [],
-			// 文章是否不存在
-			isArticleNotFound: false
-		};
-	},
-	computed: {
-		...themeState(['menuShow', 'isMobile', 'menuParsed', 'isNight'])
-	},
-	methods: {
-		...themeActions(['setMenuShow', 'setMenuParsedDone']),
-		/**
-		 * 解析标题生成目录树
-		 */
-		parseTitle() {
-			const doms = this.$refs.content.children;
-			// 用于记录最大节点的等级
-			let maxLevel = 6;
-			// 标题锚点索引
-			let index = 0;
-			// 逐个获取节点名nodeName属性，找出标题节点
-			for (let dom of doms) {
-				if (dom.nodeName.startsWith('H')) {
-					// 解析当前标题的层级
-					let level = parseInt(dom.nodeName.substring(1, 2));
-					if (isNaN(level)) {
-						continue;
-					}
-					if (level < maxLevel) {
-						maxLevel = level;
-					}
-					// 设定当前标题id作为锚点
-					dom.id = 'title-' + index;
-					// 加入到目录列表
-					this.menuItems.push({
-						text: dom.innerText,
-						level: level,
-						anchor: '#' + dom.id
-					});
-					index++;
-				}
+// 自定义响应式变量
+const loadingDone = ref(false);
+const text = ref(undefined);
+const menuItems = ref([]);
+const isArticleNotFound = ref(false);
+
+// 自定义方法
+/**
+ * 解析标题生成目录树
+ */
+function parseTitle() {
+	const doms = content.value.children;
+	// 用于记录最大节点的等级
+	let maxLevel = 6;
+	// 标题锚点索引
+	let index = 0;
+	// 逐个获取节点名nodeName属性，找出标题节点
+	for (let dom of doms) {
+		if (dom.nodeName.startsWith('H')) {
+			// 解析当前标题的层级
+			let level = parseInt(dom.nodeName.substring(1, 2));
+			if (isNaN(level)) {
+				continue;
 			}
-			// 根据最大标题设定缩进级别
-			for (let item of this.menuItems) {
-				item.indentation = item.level - maxLevel;
+			if (level < maxLevel) {
+				maxLevel = level;
 			}
-			this.setMenuParsedDone();
-			// 手机端渲染完成隐藏菜单
-			this.setMenuShow(!this.isMobile);
-		},
-		/**
-		 * 获得目录项的缩进长度，css值形式
-		 * @param indentationLevel 该项的缩进级别
-		 */
-		getItemIndentation(indentationLevel) {
-			return 'calc(8% + ' + indentationLevel * 7 + 'px)';
-		},
-		/**
-		 * 改变代码样式
-		 * @param isNight 是否改为夜晚样式
-		 */
-		changeCodeStyle(isNight) {
-			const preDoms = this.$refs.content.querySelectorAll('pre');
-			for (let item of preDoms) {
-				if (isNight) {
-					item.className = 'pre-night';
-				} else {
-					item.className = 'pre-day';
-				}
-			}
-		},
-		/**
-		 * 在代码块中添加代码语言名和复制
-		 */
-		showCodeTypeAndCopy() {
-			const pres = this.$refs.content.querySelectorAll('pre');
-			let index = 0;
-			for (let item of pres) {
-				let codeBlock = item.querySelector('code');
-				codeBlock.id = 'code-block-' + index;
-				let languageName = document.createElement('div');
-				languageName.innerText = codeBlock.className.substring(codeBlock.className.indexOf('-') + 1);
-				languageName.className = 'code-language';
-				let copy = document.createElement('div');
-				copy.innerText = 'copy';
-				copy.className = 'copy-button';
-				copy.setAttribute('data-clipboard-target', '#' + codeBlock.id);
-				// 插入到代码块中
-				item.appendChild(languageName);
-				item.appendChild(copy);
-				index++;
-			}
-			// 实例化剪贴板对象
-			const clipBoard = new ClipBoard('.copy-button');
-			clipBoard.on('success', (e) => {
-				ElNotification({
-					title: '成功！',
-					message: '复制成功！',
-					type: 'success',
-					position: 'top-left',
-					duration: 750
-				});
-				// 清除文本选中状态
-				e.clearSelection();
+			// 设定当前标题id作为锚点
+			dom.id = 'title-' + index;
+			// 加入到目录列表
+			menuItems.value.push({
+				text: dom.innerText,
+				level: level,
+				anchor: '#' + dom.id
 			});
-			clipBoard.on('error', (e) => {
-				ElNotification({
-					title: '错误！',
-					message: '复制失败！请联系开发者！',
-					type: 'error',
-					position: 'top-left',
-					duration: 750
-				});
-				// 清除文本选中状态
-				e.clearSelection();
-			});
+			index++;
 		}
-	},
-	watch: {
-		isNight() {
-			this.changeCodeStyle(this.isNight);
-		}
-	},
-	async created() {
-		// 初始化文本内容
-		const getText = await sendRequest('/api/article/get/' + this.$route.params.id, REQUEST_METHOD.GET);
-		this.loadingDone = true;
-		if (getText === undefined || !getText.success) {
-			this.isArticleNotFound = true;
-			return;
-		}
-		this.text = marked(getText.data.content);
-	},
-	updated() {
-		// 生成目录树，修改代码为代码样式
-		if (!this.menuParsed) {
-			this.parseTitle();
-			this.showCodeTypeAndCopy();
-		}
-		// 根据白天或者夜晚模式改变代码样式
-		this.changeCodeStyle(this.isNight);
-		// 最后渲染公式
-		renderMathInElement(this.$refs.content, {
-			delimiters: [
-				{ left: '$$', right: '$$', display: true },
-				{ left: '$', right: '$', display: false }
-			],
-			strict: false,
-			throwOnError: false
-		});
 	}
-};
+	// 根据最大标题设定缩进级别
+	for (let item of menuItems.value) {
+		item.indentation = item.level - maxLevel;
+	}
+	themeStore.menuParsed = true;
+	// 手机端渲染完成隐藏菜单
+	themeStore.setMenuShow(!this.isMobile);
+}
+
+/**
+ * 获得目录项的缩进长度，css值形式
+ * @param indentationLevel 该项的缩进级别
+ */
+function getItemIndentation(indentationLevel) {
+	return 'calc(8% + ' + indentationLevel * 7 + 'px)';
+}
+
+/**
+ * 改变代码样式
+ * @param isNight 是否改为夜晚样式
+ */
+function changeCodeStyle(isNight) {
+	const preDoms = content.value.querySelectorAll('pre');
+	for (let item of preDoms) {
+		if (isNight) {
+			item.className = 'pre-night';
+		} else {
+			item.className = 'pre-day';
+		}
+	}
+}
+
+/**
+ * 在代码块中添加代码语言名和复制
+ */
+function showCodeTypeAndCopy() {
+	const pres = content.value.querySelectorAll('pre');
+	let index = 0;
+	for (let item of pres) {
+		let codeBlock = item.querySelector('code');
+		codeBlock.id = 'code-block-' + index;
+		let languageName = document.createElement('div');
+		languageName.innerText = codeBlock.className.substring(codeBlock.className.indexOf('-') + 1);
+		languageName.className = 'code-language';
+		let copy = document.createElement('div');
+		copy.innerText = 'copy';
+		copy.className = 'copy-button';
+		copy.setAttribute('data-clipboard-target', '#' + codeBlock.id);
+		// 插入到代码块中
+		item.appendChild(languageName);
+		item.appendChild(copy);
+		index++;
+	}
+	// 实例化剪贴板对象
+	const clipBoard = new ClipBoard('.copy-button');
+	clipBoard.on('success', (e) => {
+		ElNotification({
+			title: '成功！',
+			message: '复制成功！',
+			type: 'success',
+			position: 'top-left',
+			duration: 750
+		});
+		// 清除文本选中状态
+		e.clearSelection();
+	});
+	clipBoard.on('error', (e) => {
+		ElNotification({
+			title: '错误！',
+			message: '复制失败！请联系开发者！',
+			type: 'error',
+			position: 'top-left',
+			duration: 750
+		});
+		// 清除文本选中状态
+		e.clearSelection();
+	});
+}
+
+// 监听器
+watch(themeStore.isNight, () => {
+	changeCodeStyle(themeStore.isNight);
+});
+
+onMounted(async () => {
+	// 初始化文本内容
+	const getText = await sendRequest('/api/article/get/' + route.params.id, REQUEST_METHOD.GET);
+	loadingDone.value = true;
+	if (getText === undefined || !getText.success) {
+		this.isArticleNotFound = true;
+		return;
+	}
+	text.value = marked(getText.data.content);
+});
+
+onUpdated(() => {
+	// 生成目录树，修改代码为代码样式
+	if (!themeStore.menuParsed) {
+		parseTitle();
+		showCodeTypeAndCopy();
+	}
+	// 根据白天或者夜晚模式改变代码样式
+	changeCodeStyle(themeStore.isNight);
+	// 最后渲染公式
+	renderMathInElement(content.value, {
+		delimiters: [
+			{ left: '$$', right: '$$', display: true },
+			{ left: '$', right: '$', display: false }
+		],
+		strict: false,
+		throwOnError: false
+	});
+});
 </script>
 
 <style lang="scss">

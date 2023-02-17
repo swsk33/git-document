@@ -14,14 +14,10 @@
 	</div>
 </template>
 
-<script>
-export default {
-	data() {
-		return {
-			frameShow: false
-		};
-	}
-};
+<script setup>
+import { ref } from 'vue';
+
+let frameShow = ref(false);
 </script>
 
 <style lang="scss">

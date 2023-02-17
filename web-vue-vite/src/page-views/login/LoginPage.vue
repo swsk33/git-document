@@ -1,39 +1,36 @@
 <template>
 	<div class="login-page">
-		<div class="welcome-text">Welcome Back! 来自{{ organizationName }}的成员</div>
+		<div class="welcome-text">Welcome Back! 来自{{ metaStore.organizationName }}的成员</div>
 		<router-view class="panel"/>
 	</div>
 </template>
 
-<script>
-import { createNamespacedHelpers } from 'vuex';
+<script setup>
+import { onMounted, watch } from 'vue';
+import { useRouter } from 'vue-router';
 
-const { mapState: metaState, mapActions: metaActions } = createNamespacedHelpers('meta-data');
-const { mapActions: userActions } = createNamespacedHelpers('user');
+const router = useRouter();
 
-export default {
-	computed: {
-		...metaState(['organizationName'])
-	},
-	methods: {
-		...metaActions(['setTitle']),
-		...userActions(['checkLogin'])
-	},
-	async created() {
-		// 若用户已登录则访问这个页面时跳转至/
-		if (await this.checkLogin()) {
-			await this.$router.push('/');
-		}
-	},
-	watch: {
-		organizationName: {
-			handler() {
-				this.setTitle('GitDocument - 用户登录');
-			},
-			immediate: true
-		}
+// pinia
+import { useMetaDataStore } from '../../store/meta-data';
+import { useUserStore } from '../../store/user';
+
+const metaStore = useMetaDataStore();
+const userStore = useUserStore();
+
+// 监听器
+watch(() => metaStore.organizationName, () => {
+	metaStore.setTitle('GitDocument - 用户登录');
+}, {
+	immediate: true
+});
+
+onMounted(async () => {
+	// 若用户已登录则访问这个页面时跳转至/
+	if (await userStore.checkLogin()) {
+		await router.push('/');
 	}
-};
+});
 </script>
 
 <style lang="scss" scoped>

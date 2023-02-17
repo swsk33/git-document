@@ -22,41 +22,39 @@
 	</div>
 </template>
 
-<script>
-import { sendRequest, REQUEST_METHOD } from '../../../utils/request.js';
-import { timestampToDateString } from '../../../utils/time-convert.js';
+<script setup>
+import { sendRequest, REQUEST_METHOD } from '../../../utils/request';
+import { timestampToDateString } from '../../../utils/time-convert';
 import { ElNotification } from 'element-plus';
+import { computed, onMounted, ref } from 'vue';
+import { useRoute } from 'vue-router';
 
-export default {
-	data() {
-		return {
-			loadingDone: false,
-			commits: []
-		};
-	},
-	computed: {
-		getUpdateTime() {
-			return (timestamp) => {
-				return timestampToDateString(timestamp);
-			};
-		}
-	},
-	async created() {
-		// 拉取贡献者列表
-		const response = await sendRequest('/api/anthology/get-all-commits/' + this.$route.params.id, REQUEST_METHOD.GET);
-		this.loadingDone = true;
-		if (!response.success) {
-			ElNotification({
-				title: '失败',
-				message: '获取贡献者列表失败！请联系后端开发者！',
-				type: 'error',
-				duration: 1000
-			});
-			return;
-		}
-		this.commits = response.data;
+const route = useRoute();
+
+// 响应式变量
+const loadingDone = ref(false);
+const commits = ref([]);
+
+// 计算属性
+const getUpdateTime = computed(() => (timestamp) => {
+	return timestampToDateString(timestamp);
+});
+
+onMounted(async () => {
+	// 拉取贡献者列表
+	const response = await sendRequest('/api/anthology/get-all-commits/' + route.params.id, REQUEST_METHOD.GET);
+	loadingDone.value = true;
+	if (!response.success) {
+		ElNotification({
+			title: '失败',
+			message: '获取贡献者列表失败！请联系后端开发者！',
+			type: 'error',
+			duration: 1000
+		});
+		return;
 	}
-};
+	commits.value = response.data;
+});
 </script>
 
 <style lang="scss" scoped>

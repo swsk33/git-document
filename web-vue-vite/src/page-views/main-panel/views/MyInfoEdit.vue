@@ -2,26 +2,26 @@
 	<div class="my-info">
 		<div class="title">个人中心</div>
 		<div class="content">
-			<upload-image class="avatar" upload-url="/api/image/upload-avatar" random-url="/api/image/random-avatar" upload-name="avatar" ref="imageUpload">
+			<UploadImage class="avatar" upload-url="/api/image/upload-avatar" random-url="/api/image/random-avatar" upload-name="avatar" ref="imageUpload">
 				<template v-slot:text>头像</template>
-			</upload-image>
+			</UploadImage>
 			<div class="username">
 				<div class="text">用户名</div>
-				<el-input class="input" v-model="editUserdata.username" placeholder="请输入用户名"/>
+				<el-input class="input" v-model="editUserData.username" placeholder="请输入用户名"/>
 			</div>
 			<div class="password">
 				<div class="text">密码</div>
-				<el-input class="input" v-model="editUserdata.password" show-password placeholder="不修改则留空"/>
+				<el-input class="input" v-model="editUserData.password" show-password placeholder="不修改则留空"/>
 			</div>
 			<div class="nickname">
 				<div class="text">昵称</div>
-				<el-input class="input" v-model="editUserdata.nickname" placeholder="请输入昵称"/>
+				<el-input class="input" v-model="editUserData.nickname" placeholder="请输入昵称"/>
 			</div>
 			<div class="email">
 				<div class="text">邮箱</div>
-				<el-input class="input" v-model="editUserdata.email" placeholder="请输入邮箱"/>
+				<el-input class="input" v-model="editUserData.email" placeholder="请输入邮箱"/>
 			</div>
-			<div class="public-key" v-if="hasPermission('edit_anthology')">
+			<div class="public-key" v-if="userStore.hasPermission('edit_anthology')">
 				<div class="header">
 					<div class="text">公钥</div>
 					<el-popover width="750" placement="left" title="添加SSH公钥" v-model:visible="popOverShow.publicKeyAdd">
@@ -54,145 +54,152 @@
 	</div>
 </template>
 
-<script>
-import { createNamespacedHelpers } from 'vuex';
-import { sendRequest, REQUEST_METHOD } from '../../../utils/request.js';
-
-import uploadImage from '../components/UploadImage.vue';
+<script setup>
+import { sendRequest, REQUEST_METHOD } from '../../../utils/request';
 import { ElNotification } from 'element-plus';
+import { onMounted, reactive, ref } from 'vue';
+import { useRouter } from 'vue-router';
 
-const { mapState: userState, mapActions: userActions, mapGetters: userGetters } = createNamespacedHelpers('user');
+const router = useRouter();
 
-export default {
-	data() {
-		return {
-			editUserdata: {
-				id: undefined,
-				avatar: undefined,
-				email: undefined,
-				username: undefined,
-				nickname: undefined,
-				password: undefined
-			},
-			publicKeys: [],
-			addPublicKey: undefined,
-			popOverShow: {
-				publicKeyAdd: false
-			}
-		};
-	},
-	components: {
-		'upload-image': uploadImage
-	},
-	computed: {
-		...userState(['userData']),
-		...userGetters(['hasPermission'])
-	},
-	methods: {
-		...userActions(['checkLogin']),
-		/**
-		 * 删除公钥
-		 * @param id 公钥id
-		 */
-		async deleteKey(id) {
-			const response = await sendRequest('/api/public-key/delete/' + id, REQUEST_METHOD.DELETE);
-			if (!response.success) {
-				ElNotification({
-					title: '失败',
-					message: response.message,
-					type: 'error',
-					duration: 1000
-				});
-				return;
-			}
-			ElNotification({
-				title: '成功',
-				message: '删除成功！',
-				type: 'success',
-				duration: 1000
-			});
-			await this.getPublicKeyList();
-		},
-		/**
-		 * 发送增加公钥请求
-		 */
-		async addPublicKeyRequest() {
-			const response = await sendRequest('/api/public-key/add', REQUEST_METHOD.POST, {
-				content: this.addPublicKey
-			});
-			if (!response.success) {
-				ElNotification({
-					title: '失败',
-					message: response.message,
-					type: 'error',
-					duration: 1000
-				});
-				return;
-			}
-			ElNotification({
-				title: '成功',
-				message: '添加SSH公钥成功！',
-				type: 'success',
-				duration: 1000
-			});
-			this.popOverShow.publicKeyAdd = false;
-			this.addPublicKey = '';
-			await this.getPublicKeyList();
-		},
-		/**
-		 * 发送修改用户信息请求
-		 */
-		async updateUserData() {
-			this.editUserdata.avatar = await this.$refs.imageUpload.uploadAndGetUrl();
-			const response = await sendRequest('/api/user/update', REQUEST_METHOD.PUT, this.editUserdata);
-			if (!response.success) {
-				ElNotification({
-					title: '失败',
-					message: response.message,
-					type: 'error',
-					duration: 1000
-				});
-				return;
-			}
-			ElNotification({
-				title: '成功',
-				message: '修改用户信息成功！',
-				type: 'success',
-				duration: 1000
-			});
-			await this.$router.push('/');
-			// 刷新用户信息
-			await this.checkLogin();
-		},
-		/**
-		 * 获取公钥列表
-		 */
-		async getPublicKeyList() {
-			const response = await sendRequest('/api/public-key/get-by-user', REQUEST_METHOD.GET);
-			if (!response.success) {
-				ElNotification({
-					title: '失败',
-					message: response.message,
-					type: 'error',
-					duration: 1000
-				});
-				return;
-			}
-			this.publicKeys = response.data;
-		}
-	},
-	async mounted() {
-		if (this.userData === undefined) {
-			await this.checkLogin();
-		}
-		this.editUserdata = { ...this.userData };
-		this.$refs.imageUpload.previewImage = this.editUserdata.avatar;
-		// 管理员用户获取公钥
-		if (this.hasPermission('edit_anthology')) {
-			await this.getPublicKeyList();
-		}
+// 组件
+import UploadImage from '../components/UploadImage';
+
+const imageUpload = ref(null);
+
+// pinia
+import { useUserStore } from '../../../store/user';
+
+const userStore = useUserStore();
+
+// 自定义响应式变量
+const editUserData = reactive({
+	id: undefined,
+	avatar: undefined,
+	email: undefined,
+	username: undefined,
+	nickname: undefined,
+	password: undefined
+});
+const publicKeys = ref([]);
+const addPublicKey = ref(undefined);
+const popOverShow = reactive({
+	publicKeyAdd: false
+});
+
+// 自定义方法
+
+/**
+ * 删除公钥
+ * @param id 公钥id
+ */
+async function deleteKey(id) {
+	const response = await sendRequest('/api/public-key/delete/' + id, REQUEST_METHOD.DELETE);
+	if (!response.success) {
+		ElNotification({
+			title: '失败',
+			message: response.message,
+			type: 'error',
+			duration: 1000
+		});
+		return;
 	}
-};
+	ElNotification({
+		title: '成功',
+		message: '删除成功！',
+		type: 'success',
+		duration: 1000
+	});
+	await getPublicKeyList();
+}
+
+/**
+ * 发送增加公钥请求
+ */
+async function addPublicKeyRequest() {
+	const response = await sendRequest('/api/public-key/add', REQUEST_METHOD.POST, {
+		content: addPublicKey.value
+	});
+	if (!response.success) {
+		ElNotification({
+			title: '失败',
+			message: response.message,
+			type: 'error',
+			duration: 1000
+		});
+		return;
+	}
+	ElNotification({
+		title: '成功',
+		message: '添加SSH公钥成功！',
+		type: 'success',
+		duration: 1000
+	});
+	popOverShow.publicKeyAdd = false;
+	addPublicKey.value = '';
+	await getPublicKeyList();
+}
+
+/**
+ * 发送修改用户信息请求
+ */
+async function updateUserData() {
+	editUserData.avatar = await imageUpload.value.uploadAndGetUrl();
+	const response = await sendRequest('/api/user/update', REQUEST_METHOD.PUT, editUserData);
+	if (!response.success) {
+		ElNotification({
+			title: '失败',
+			message: response.message,
+			type: 'error',
+			duration: 1000
+		});
+		return;
+	}
+	ElNotification({
+		title: '成功',
+		message: '修改用户信息成功！',
+		type: 'success',
+		duration: 1000
+	});
+	await router.push('/');
+	// 刷新用户信息
+	await userStore.checkLogin();
+}
+
+/**
+ * 获取公钥列表
+ */
+async function getPublicKeyList() {
+	const response = await sendRequest('/api/public-key/get-by-user', REQUEST_METHOD.GET);
+	if (!response.success) {
+		ElNotification({
+			title: '失败',
+			message: response.message,
+			type: 'error',
+			duration: 1000
+		});
+		return;
+	}
+	publicKeys.value = response.data;
+}
+
+onMounted(async () => {
+	if (userStore.userData === undefined) {
+		await userStore.checkLogin();
+	}
+	// 填充现有用户信息
+	editUserData.id = userStore.userData.id;
+	editUserData.avatar = userStore.userData.avatar;
+	editUserData.email = userStore.userData.email;
+	editUserData.username = userStore.userData.username;
+	editUserData.nickname = userStore.userData.nickname;
+	// 用户头像
+	imageUpload.value.previewImage = editUserData.avatar;
+	// 管理员用户获取公钥
+	if (userStore.hasPermission('edit_anthology')) {
+		await getPublicKeyList();
+	}
+});
 </script>
 
 <style lang="scss" scoped>

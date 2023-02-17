@@ -16,16 +16,17 @@ export default defineConfig({
 			resolvers: [ElementPlusResolver()]
 		})],
 	server: {
+		host: '0.0.0.0',
 		// 跨域配置
 		proxy: {
 			// 请求代理
 			'/api': {
-				target: 'http://127.0.0.1:8800/',
+				target: 'http://localhost:8801/',
 				changeOrigin: true
 			},
 			// 静态资源代理
 			'/static': {
-				target: 'http://127.0.0.1:8800/',
+				target: 'http://localhost:8801/',
 				changeOrigin: true
 			}
 		}

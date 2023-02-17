@@ -1,64 +1,51 @@
 <template>
 	<div :class="{page: true, 'page-night': isNight, 'page-pink': pageColor.pink, 'page-blue': pageColor.blue, 'page-green': pageColor.green, 'page-orange': pageColor.orange, 'page-gray': pageColor.gray}">
-		<top-bar ref="topBar"></top-bar>
-		<main-body></main-body>
+		<TopBar ref="topBar"></TopBar>
+		<MainBody></MainBody>
 	</div>
 </template>
 
-<script>
-// element-plus消息
-import { ElTooltip } from 'element-plus';
-import { createNamespacedHelpers } from 'vuex';
+<script setup>
+import { onMounted, ref, watch } from 'vue';
 
 // 引入组件
-import topBar from './components/TopBar.vue';
-import mainBody from './components/MainBody.vue';
+import TopBar from './components/TopBar.vue';
+import MainBody from './components/MainBody.vue';
 
-// vuex模块
-const { mapState: themeState, mapActions: themeActions } = createNamespacedHelpers('article-page-theme');
-const { mapState: metaState, mapActions: metaActions } = createNamespacedHelpers('meta-data');
+const topBar = ref(null);
 
-export default {
-	components: {
-		'el-tooltip': ElTooltip,
-		'top-bar': topBar,
-		'main-body': mainBody
-	},
-	computed: {
-		...themeState(['menuShow', 'isNight', 'isMobile', 'pageColor']),
-		...metaState(['organizationName'])
-	},
-	methods: {
-		...metaActions(['setTitle']),
-		...themeActions(['setMenuShow', 'setIsNight', 'setIsMobile', 'setPageColor'])
-	},
-	watch: {
-		organizationName: {
-			handler() {
-				this.setTitle('GitDocument - 文档阅读');
-			},
-			immediate: true
-		}
-	},
-	mounted() {
-		// 读取本地缓存记录的主题并切换
-		this.setPageColor(window.localStorage.getItem('color'));
-		// 若没有读取到夜晚模式储存，则读取时间判断是否是晚上
-		let getIsNight = window.localStorage.getItem('night');
-		if (getIsNight == null) {
-			let time = new Date();
-			getIsNight = time.getHours() >= 19 || time.getHours() <= 6;
-		} else {
-			getIsNight = JSON.parse(getIsNight);
-		}
-		this.setIsNight(getIsNight);
-		this.$refs.topBar.night = getIsNight;
-		// 读取设备宽度判断是否是移动设备
-		if (window.innerWidth <= 768) {
-			this.setIsMobile(true);
-		}
+// pinia
+import { useMetaDataStore } from '../../store/meta-data';
+import { useArticlePageThemeStore } from '../../store/article-page-theme';
+
+const metaStore = useMetaDataStore();
+const themeStore = useArticlePageThemeStore();
+
+// 监听器
+watch(() => metaStore.organizationName, () => {
+	metaStore.setTitle('GitDocument - 文档阅读');
+}, {
+	immediate: true
+});
+
+onMounted(() => {
+	// 读取本地缓存记录的主题并切换
+	themeStore.setPageColor(window.localStorage.getItem('color'));
+	// 若没有读取到夜晚模式储存，则读取时间判断是否是晚上
+	let getIsNight = window.localStorage.getItem('night');
+	if (getIsNight == null) {
+		let time = new Date();
+		getIsNight = time.getHours() >= 19 || time.getHours() <= 6;
+	} else {
+		getIsNight = JSON.parse(getIsNight);
 	}
-};
+	themeStore.isNight = getIsNight;
+	topBar.value.night = getIsNight;
+	// 读取设备宽度判断是否是移动设备
+	if (window.innerWidth <= 768) {
+		metaStore.isMobile = true;
+	}
+});
 </script>
 
 <style lang="scss">
