@@ -78,8 +78,13 @@ public class AnthologyServiceImpl implements AnthologyService {
 			String newCommitId;
 			try {
 				newCommitId = GitRepositoryUtils.getHeadCommitId(anthology.getRepoPath());
+				// 如果说刚创建的仓库，则不进行对比
+				if (newCommitId == null) {
+					log.warn("本地仓库：" + anthology.getName() + "的commitId为空！可能是刚创建的仓库，跳过比对！");
+					return;
+				}
 				// 如果数据库中commitId为空，说明需要执行创建任务
-				if (anthology.getLatestCommitId() == null && newCommitId != null) {
+				if (anthology.getLatestCommitId() == null) {
 					log.warn("发现本地仓库：" + anthology.getName() + "在数据库中的commitId为空，进行创建操作...");
 					GitCreateTaskMessage createTaskMessage = new GitCreateTaskMessage();
 					createTaskMessage.setRepositoryId(anthology.getId());

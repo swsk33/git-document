@@ -1,10 +1,10 @@
 <template>
 	<!-- 主体 -->
-	<div class="main-body" v-loading="!loadingDone" element-loading-text="正在拉取文章内容...">
+	<div class="main-body" v-loading="!loadingDone" :element-loading-text="loadingText">
 		<!-- 正文内容 -->
-		<div class="content" v-html="text" ref="content" @click="setMenuShow(false)"></div>
+		<div class="content" v-html="text" ref="content" @click="themeStore.setMenuShow(false)"></div>
 		<!-- 菜单 -->
-		<div class="menu" v-show="menuShow">
+		<div class="menu" v-show="themeStore.menuShow">
 			<el-tooltip placement="right" v-for="item in menuItems" :key="item.text" :content="item.text">
 				<a :style="{paddingLeft: getItemIndentation(item.indentation)}" :href="item.anchor">{{ item.text }}</a>
 			</el-tooltip>
@@ -54,11 +54,13 @@ marked.setOptions({
 
 // 自定义响应式变量
 const loadingDone = ref(false);
+const loadingText = ref('正在拉取文章内容...');
 const text = ref(undefined);
 const menuItems = ref([]);
 const isArticleNotFound = ref(false);
 
 // 自定义方法
+
 /**
  * 解析标题生成目录树
  */
@@ -96,7 +98,19 @@ function parseTitle() {
 	}
 	themeStore.menuParsed = true;
 	// 手机端渲染完成隐藏菜单
-	themeStore.setMenuShow(!this.isMobile);
+	themeStore.setMenuShow(!themeStore.isMobile);
+}
+
+/**
+ * 批量设置超链接为新标签页打开
+ */
+function setLink() {
+	// 找出所有a标签
+	const doms = document.querySelectorAll('a');
+	for (let dom of doms) {
+		// 设置a标签为新标签页打开
+		dom.setAttribute('target', '_blank');
+	}
 }
 
 /**
@@ -170,26 +184,28 @@ function showCodeTypeAndCopy() {
 }
 
 // 监听器
-watch(themeStore.isNight, () => {
+watch(() => themeStore.isNight, () => {
 	changeCodeStyle(themeStore.isNight);
 });
 
 onMounted(async () => {
 	// 初始化文本内容
 	const getText = await sendRequest('/api/article/get/' + route.params.id, REQUEST_METHOD.GET);
-	loadingDone.value = true;
 	if (getText === undefined || !getText.success) {
 		this.isArticleNotFound = true;
 		return;
 	}
+	loadingText.value = '渲染中...';
 	text.value = marked(getText.data.content);
+	loadingDone.value = true;
 });
 
 onUpdated(() => {
-	// 生成目录树，修改代码为代码样式
+	// 生成目录树，修改代码为代码样式等等初始化工作（未解析目录之前就是一些初始化函数运行的时候）
 	if (!themeStore.menuParsed) {
 		parseTitle();
 		showCodeTypeAndCopy();
+		setLink();
 	}
 	// 根据白天或者夜晚模式改变代码样式
 	changeCodeStyle(themeStore.isNight);

@@ -35,10 +35,10 @@ export const useArticlePageThemeStore = defineStore('article-page-theme', {
 	actions: {
 		/**
 		 * 设定菜单是否显示
-		 * @param show 布尔值，表示菜单是否显示
+		 * @param {boolean} show 布尔值，表示菜单是否显示
 		 */
 		setMenuShow(show) {
-			if (!this.isMobile && show === false) {
+			if (!this.isMobile && !show) {
 				return;
 			}
 			this.menuShow = show;

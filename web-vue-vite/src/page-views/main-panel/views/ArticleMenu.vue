@@ -3,23 +3,23 @@
 		<div class="path">
 			<div class="head">
 				<div class="text">当前位置：</div>
-				<el-button class="committer" type="success" size="small" plain @click="router.push('/committer/' + route.params.id)">贡献者</el-button>
-				<el-button class="last" type="primary" size="small" :icon="icons.top" @click="goToLast" circle/>
+				<el-button class="last" type="primary" @click="goToLast">上一级</el-button>
+				<el-button class="committer" type="success" plain @click="router.push('/committer/' + route.params.id)">贡献者</el-button>
 			</div>
 			<ul class="menu-tree">
-				<li class="root" @click="depth = -1">/&ensp;</li>
-				<li v-for="(item, index) in menuTree.value">
+				<li class="root" @click="depth = -1">/root&ensp;&gt&ensp;</li>
+				<li v-for="(item, index) in menuTree">
 					<div class="arrow" v-if="index !== 0">&ensp;&gt;&ensp;</div>
-					<div class="name" @click="depth.value = index">{{ item }}</div>
+					<div class="name" @click="depth = index">{{ item }}</div>
 				</li>
 			</ul>
 		</div>
 		<ul class="menu-content">
-			<li class="directory" v-for="item in currentPathHandler.value.directories" @click="enterDirectory(item.name)">
+			<li class="directory" v-for="item in currentPathHandler.directories" @click="enterDirectory(item.name)">
 				<Folder class="icon"/>
 				<div class="text">{{ item.name }}</div>
 			</li>
-			<li class="article" v-for="item in currentPathHandler.value.articles" @click="enterArticle(item.id)">
+			<li class="article" v-for="item in currentPathHandler.articles" @click="enterArticle(item.id)">
 				<Document class="icon"/>
 				<div class="text">{{ item.name }}</div>
 			</li>
@@ -43,7 +43,7 @@ const loadingDone = ref(false);
 const icons = reactive({
 	top: shallowRef(Top)
 });
-const total = ref({
+const total = reactive({
 	directories: [],
 	articles: []
 });
@@ -61,7 +61,7 @@ const currentPathHandler = computed({
 	 * @returns {{directories: [], articles: []}} 目录列表与文件列表
 	 */
 	get() {
-		let pointer = total.value();
+		let pointer = total;
 		let paths = currentPath.value.split('/');
 		for (let path of paths) {
 			if (path === '') {
@@ -77,7 +77,7 @@ const currentPathHandler = computed({
 	},
 	/**
 	 * 设定当前路径
-	 * @param value 设定路径
+	 * @param {string} value 设定路径
 	 */
 	set(value) {
 		currentPath.value = value;
@@ -105,7 +105,7 @@ const menuTree = computed({
 	},
 	/**
 	 * 设定当前目录树位置
-	 * @param value 传入一个数值表示目录深度，表示跳转到数组形式路径中的哪一级
+	 * @param {number} value 传入一个数值表示目录深度，表示跳转到数组形式路径中的哪一级
 	 */
 	set(value) {
 		if (value === -1) {
@@ -125,7 +125,7 @@ const menuTree = computed({
  * 控制空仓库提示字的显示
  */
 const isEmpty = computed(() => {
-	return this.total.directories.length === 0 && this.total.articles.length === 0;
+	return total.directories.length === 0 && total.articles.length === 0;
 });
 
 // 监听
@@ -180,7 +180,8 @@ onMounted(async () => {
 		});
 		return;
 	}
-	total.value = response.data;
+	total.directories = response.data.directories;
+	total.articles = response.data.articles;
 });
 </script>
 
@@ -197,19 +198,16 @@ onMounted(async () => {
 			height: 3.5vh;
 			display: flex;
 			align-items: center;
+			justify-content: end;
 
 			.text {
+				position: absolute;
+				left: 2%;
 				line-height: 3.5vh;
 			}
 
-			.committer {
-				position: absolute;
-				right: 6%;
-			}
-
-			.last {
-				position: absolute;
-				right: 2%;
+			.last, .committer {
+				position: relative;
 			}
 		}
 

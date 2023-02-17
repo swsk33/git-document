@@ -63,7 +63,7 @@ import { useRouter } from 'vue-router';
 const router = useRouter();
 
 // 组件
-import UploadImage from '../components/UploadImage';
+import UploadImage from '../components/UploadImage.vue';
 
 const imageUpload = ref(null);
 

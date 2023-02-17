@@ -22,7 +22,7 @@ onMounted(async () => {
 	// 初始化后端配置数据
 	await metaStore.getAllMeta();
 	// 跳转之前，获取第一次用户访问路径
-	urlStore.setPath(location.pathname);
+	urlStore.path = location.pathname;
 	// 未登录跳转至登录页
 	if (!await userStore.checkLogin()) {
 		await router.push('/login');

@@ -29,7 +29,7 @@ import { useUrlPathStore } from '../../../store/url-path';
 
 const userStore = useUserStore();
 const metaStore = useMetaDataStore();
-const pathStore = useUrlPathStore();
+const urlStore = useUrlPathStore();
 
 // 自定义响应式变量
 const userData = reactive({
@@ -84,11 +84,11 @@ async function login() {
 	await userStore.checkLogin();
 	// 跳转至用户访问的页面
 	// 防止跳转到登录页自己
-	if (pathStore.path.startsWith('/login')) {
+	if (urlStore.path.startsWith('/login')) {
 		await router.push('/');
 		return;
 	}
-	await router.push(this.path);
+	await router.push(urlStore.path);
 }
 
 /**

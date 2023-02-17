@@ -2,7 +2,7 @@
 	<div class="anthology-panel" v-loading="!loadingDone" element-loading-text="正在拉取文集列表...">
 		<div class="top-box">
 			<div class="title">文集列表</div>
-			<el-button type="primary" plain class="add" v-if="userStore.hasPermission('edit_anthology')" @click="addAnthologyRef.value.frameShow.value = true">增加文集</el-button>
+			<el-button type="primary" plain class="add" v-if="userStore.hasPermission('edit_anthology')" @click="addAnthologyRef.frameShow = true">增加文集</el-button>
 		</div>
 		<ul class="anthology-list">
 			<li v-for="item in list" :key="item.id">
@@ -38,7 +38,7 @@
 			</template>
 			<template v-slot:button-box>
 				<el-button class="ok" type="success" @click="addAnthology">确定</el-button>
-				<el-button class="cancel" type="warning" @click="addAnthologyRef.frameShow.value = false">取消</el-button>
+				<el-button class="cancel" type="warning" @click="addAnthologyRef.frameShow = false">取消</el-button>
 			</template>
 		</InfoDialog>
 		<!-- 信息弹窗 - 修改文集 -->
@@ -55,7 +55,7 @@
 			</template>
 			<template v-slot:button-box>
 				<el-button class="ok" type="success" @click="editAnthology">确定</el-button>
-				<el-button class="cancel" type="warning" @click="editAnthologyRef.value.frameShow.value = false">取消</el-button>
+				<el-button class="cancel" type="warning" @click="editAnthologyRef.frameShow = false">取消</el-button>
 				<el-popconfirm @confirm="deleteAnthology" title="确认删除这个文集？" cancel-button-text="取消" confirm-button-text="确认" cancel-button-type="primary" confirm-button-type="danger">
 					<template #reference>
 						<el-button type="danger" size="small" class="delete-button" plain>删除</el-button>
@@ -171,7 +171,7 @@ async function addAnthology() {
 		type: 'success',
 		duration: 1000
 	});
-	addAnthologyRef.value.frameShow.value = false;
+	addAnthologyRef.value.frameShow = false;
 	// 重新获取文集列表
 	await getAnthologyList();
 }
@@ -184,7 +184,7 @@ function showEditDialog(anthology) {
 	editAnthologyInfo.id = anthology.id;
 	editAnthologyInfo.showName = anthology.showName;
 	editAnthologyInfo.cover = anthology.cover;
-	editAnthologyRef.value.frameShow.value = true;
+	editAnthologyRef.value.frameShow = true;
 }
 
 /**
@@ -209,7 +209,7 @@ async function editAnthology() {
 		type: 'success',
 		duration: 1000
 	});
-	editAnthology.value.frameShow = false;
+	editAnthologyRef.value.frameShow = false;
 	// 刷新列表
 	await getAnthologyList();
 }
@@ -234,7 +234,7 @@ async function deleteAnthology() {
 		type: 'success',
 		duration: 1000
 	});
-	editAnthology.value.frameShow.value = false;
+	editAnthologyRef.value.frameShow = false;
 	// 刷新列表
 	await getAnthologyList();
 }

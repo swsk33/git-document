@@ -9,14 +9,5 @@ export const useUrlPathStore = defineStore('url-path', {
 			 */
 			path: '/'
 		};
-	},
-	actions: {
-		/**
-		 * 设定路径
-		 * @param path 设定的路径
-		 */
-		setPath(path) {
-			this.path = path;
-		}
 	}
 });

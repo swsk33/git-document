@@ -55,7 +55,6 @@ public class ImageServiceImpl implements ImageService {
 		return result;
 	}
 
-	@SaCheckLogin
 	@Override
 	public Result<String> getRandomAvatar() {
 		Result<String> result = new Result<>();
@@ -73,7 +72,6 @@ public class ImageServiceImpl implements ImageService {
 		return result;
 	}
 
-	@SaCheckLogin
 	@Override
 	public Result<String> getRandomCover() {
 		Result<String> result = new Result<>();

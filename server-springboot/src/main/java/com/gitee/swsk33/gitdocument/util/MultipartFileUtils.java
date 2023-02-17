@@ -51,7 +51,7 @@ public class MultipartFileUtils {
 			result.setResultFailed("图片转存失败！请联系开发者！");
 			return result;
 		}
-		result.setResultSuccess("上传图片成功！", fileName);
+		result.setResultSuccess("上传图片成功！", fileName + "." + fileFormat);
 		return result;
 	}
 

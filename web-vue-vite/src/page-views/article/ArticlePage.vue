@@ -1,5 +1,5 @@
 <template>
-	<div :class="{page: true, 'page-night': isNight, 'page-pink': pageColor.pink, 'page-blue': pageColor.blue, 'page-green': pageColor.green, 'page-orange': pageColor.orange, 'page-gray': pageColor.gray}">
+	<div :class="{page: true, 'page-night': themeStore.isNight, 'page-pink': themeStore.pageColor.pink, 'page-blue': themeStore.pageColor.blue, 'page-green': themeStore.pageColor.green, 'page-orange': themeStore.pageColor.orange, 'page-gray': themeStore.pageColor.gray}">
 		<TopBar ref="topBar"></TopBar>
 		<MainBody></MainBody>
 	</div>
@@ -43,7 +43,7 @@ onMounted(() => {
 	topBar.value.night = getIsNight;
 	// 读取设备宽度判断是否是移动设备
 	if (window.innerWidth <= 768) {
-		metaStore.isMobile = true;
+		themeStore.isMobile = true;
 	}
 });
 </script>

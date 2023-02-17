@@ -111,7 +111,7 @@ async function uploadAndGetUrl() {
 
 // 定义组件暴露
 defineExpose({
-	uploadAndGetUrl
+	uploadAndGetUrl, previewImage
 });
 
 onMounted(async () => {

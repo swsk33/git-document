@@ -45,13 +45,27 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public Result<Void> register(User user) {
 		Result<Void> result = new Result<>();
-		if (!StpUtil.hasPermission(CommonValue.Permission.EDIT_USER) && !configProperties.isAllowPublic()) {
-			result.setResultFailed("本站不允许访客注册！请联系管理员。");
-			return result;
-		}
-		if (user.getRole().getId() == 1) {
-			result.setResultFailed("不允许增加预留管理员角色的用户！");
-			return result;
+		// 没有登录的时候，是用户注册行为
+		if (!StpUtil.isLogin()) {
+			// 根据配置判断是否运行注册
+			if (!configProperties.isAllowPublic()) {
+				result.setResultFailed("本站不允许访客注册！请联系管理员！");
+				return result;
+			}
+			// 注册权限检查
+			if (user.getRole().getId() == 1 || user.getRole().getId() == 2) {
+				result.setResultFailed("不允许注册成管理员！");
+				return result;
+			}
+		} else { // 登录的时候，是管理员添加用户行为
+			if (!StpUtil.hasPermission(CommonValue.Permission.EDIT_USER)) {
+				result.setResultFailed("您没有添加用户的权限！");
+				return result;
+			}
+			if (user.getRole().getId() == 1) {
+				result.setResultFailed("不允许增加预留管理员角色的用户！");
+				return result;
+			}
 		}
 		// 先检查用户是否已存在
 		User getUser = userDAO.getByUsernameOrEmail(user.getUsername());
@@ -63,11 +77,6 @@ public class UserServiceImpl implements UserService {
 		getUser = userDAO.getByUsernameOrEmail(user.getEmail());
 		if (getUser != null) {
 			result.setResultFailed("该邮箱已被注册！");
-			return result;
-		}
-		// 权限对比
-		if (!StpUtil.hasPermission(CommonValue.Permission.EDIT_USER) && (user.getRole().getId() == 1 || user.getRole().getId() == 2)) {
-			result.setResultFailed("不允许注册成管理员！");
 			return result;
 		}
 		// 加密密码，存入数据库

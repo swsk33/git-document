@@ -2,7 +2,7 @@
 	<!-- 顶栏 -->
 	<div class="top-bar">
 		<!-- 手机模式显示菜单 -->
-		<div class="show-menu-button" @click="setMenuShow(true)">
+		<div class="show-menu-button" @click="themeStore.setMenuShow(true)">
 			<div></div>
 			<div></div>
 			<div></div>
@@ -12,83 +12,73 @@
 			<div class="text">主题</div>
 			<el-tooltip placement="bottom" content="切换为粉色">
 				<div class="color-button pink-button" @click="changePageColor('pink')">
-					<check class="checked" v-if="pageColor.pink"/>
+					<Check class="checked" v-if="themeStore.pageColor.pink"/>
 				</div>
 			</el-tooltip>
 			<el-tooltip placement="bottom" content="切换为蓝色">
 				<div class="color-button blue-button" @click="changePageColor('blue')">
-					<check class="checked" v-if="pageColor.blue"/>
+					<Check class="checked" v-if="themeStore.pageColor.blue"/>
 				</div>
 			</el-tooltip>
 			<el-tooltip placement="bottom" content="切换为橙色">
 				<div class="color-button orange-button" @click="changePageColor('orange')">
-					<check class="checked" v-if="pageColor.orange"/>
+					<Check class="checked" v-if="themeStore.pageColor.orange"/>
 				</div>
 			</el-tooltip>
 			<el-tooltip placement="bottom" content="切换为绿色">
 				<div class="color-button green-button" @click="changePageColor('green')">
-					<check class="checked" v-if="pageColor.green"/>
+					<Check class="checked" v-if="themeStore.pageColor.green"/>
 				</div>
 			</el-tooltip>
 			<el-tooltip placement="bottom" content="切换为灰色">
 				<div class="color-button gray-button" @click="changePageColor('gray')">
-					<check class="checked" v-if="pageColor.gray"/>
+					<Check class="checked" v-if="themeStore.pageColor.gray"/>
 				</div>
 			</el-tooltip>
 		</div>
 		<!-- 夜晚模式按钮 -->
-		<el-switch class="switch-theme" v-model="night" :active-icon="elementIcon.moon" :inactive-icon="elementIcon.sunny"/>
+		<el-switch class="switch-theme" v-model="themeStore.isNight" :active-icon="elementIcon.moon" :inactive-icon="elementIcon.sunny"/>
 	</div>
 </template>
 
-<script>
+<script setup>
 import { ElNotification } from 'element-plus';
-import { shallowRef } from 'vue';
-import { createNamespacedHelpers } from 'vuex';
+import { reactive, shallowRef, watch } from 'vue';
 
 // element-plus图标
 import { Check, Moon, Sunny } from '@element-plus/icons-vue';
 
-// vuex模块
-const { mapState: themeState, mapActions: themeActions } = createNamespacedHelpers('article-page-theme');
+// pinia
+import { useArticlePageThemeStore } from '../../../store/article-page-theme';
 
-export default {
-	components: {
-		check: Check
-	},
-	data() {
-		return {
-			// 是否为夜晚（按钮绑定值）
-			night: false,
-			// 引入的图标
-			elementIcon: {
-				moon: shallowRef(Moon),
-				sunny: shallowRef(Sunny)
-			}
-		};
-	},
-	computed: {
-		...themeState(['isNight', 'pageColor'])
-	},
-	methods: {
-		...themeActions(['setIsNight', 'setMenuShow', 'setPageColor']),
-		changePageColor(color) {
-			this.setPageColor(color);
-			ElNotification({
-				title: '成功！',
-				message: '更换主题成功！',
-				type: 'success',
-				position: 'top-left',
-				duration: 750
-			});
-		}
-	},
-	watch: {
-		night() {
-			this.setIsNight(this.night);
-		}
-	}
-};
+const themeStore = useArticlePageThemeStore();
+
+// 自定义响应式变量
+const elementIcon = reactive({
+	moon: shallowRef(Moon),
+	sunny: shallowRef(Sunny)
+});
+
+// 自定义方法
+
+/**
+ * 改变页面颜色主题
+ */
+function changePageColor(color) {
+	themeStore.setPageColor(color);
+	ElNotification({
+		title: '成功！',
+		message: '更换主题成功！',
+		type: 'success',
+		position: 'top-left',
+		duration: 750
+	});
+}
+
+// 监听器
+watch(() => themeStore.isNight, () => {
+	localStorage.setItem('night', JSON.stringify(themeStore.isNight));
+});
 </script>
 
 <style lang="scss">
