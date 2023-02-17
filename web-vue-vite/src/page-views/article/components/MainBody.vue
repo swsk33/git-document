@@ -20,6 +20,7 @@
 import { marked } from 'marked';
 import { ElNotification } from 'element-plus';
 import { REQUEST_METHOD, sendRequest } from '../../../utils/request';
+import { joinPath } from '../../../utils/file-path';
 import highlight from 'highlight.js';
 import ClipBoard from 'clipboard';
 import renderMathInElement from 'katex/dist/contrib/auto-render';
@@ -114,6 +115,23 @@ function setLink() {
 }
 
 /**
+ * 处理所有相对路径的图片
+ */
+function alterRelativePathImage() {
+	// 找出所有img标签
+	const doms = document.querySelectorAll('img');
+	for (let dom of doms) {
+		let imagePath = dom.getAttribute('src');
+		console.log(imagePath);
+		console.log(article.value.filePath);
+		// 对相对路径的图片进行路径替换
+		if (!imagePath.startsWith('http')) {
+			console.log(joinPath(imagePath, article.value.filePath));
+		}
+	}
+}
+
+/**
  * 获得目录项的缩进长度，css值形式
  * @param indentationLevel 该项的缩进级别
  */
@@ -202,11 +220,12 @@ onMounted(async () => {
 });
 
 onUpdated(() => {
-	// 生成目录树，修改代码为代码样式等等初始化工作（未解析目录之前就是一些初始化函数运行的时候）
+	// 生成目录树
 	if (!themeStore.menuParsed) {
 		parseTitle();
 		showCodeTypeAndCopy();
 		setLink();
+		alterRelativePathImage();
 	}
 	// 根据白天或者夜晚模式改变代码样式
 	changeCodeStyle(themeStore.isNight);
