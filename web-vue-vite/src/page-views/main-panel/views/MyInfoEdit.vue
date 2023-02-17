@@ -21,6 +21,15 @@
 				<div class="text">邮箱</div>
 				<el-input class="input" v-model="editUserData.email" placeholder="请输入邮箱"/>
 			</div>
+			<!-- 偏好设置 -->
+			<div class="setting">
+				<div class="text">个人偏好设置</div>
+				<div class="update-email-setting">
+					<div class="text">收藏的文集更新时邮件通知我</div>
+					<el-switch class="switch" v-model="editSetting.receiveUpdateEmail" inline-prompt :active-icon="Check" :inactive-icon="Close"/>
+				</div>
+			</div>
+			<!-- 公钥管理 -->
 			<div class="public-key" v-if="userStore.hasPermission('edit_anthology')">
 				<div class="header">
 					<div class="text">公钥</div>
@@ -57,6 +66,7 @@
 <script setup>
 import { sendRequest, REQUEST_METHOD } from '../../../utils/request';
 import { ElNotification } from 'element-plus';
+import { Check, Close } from '@element-plus/icons-vue';
 import { onMounted, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
@@ -80,6 +90,10 @@ const editUserData = reactive({
 	username: undefined,
 	nickname: undefined,
 	password: undefined
+});
+const editSetting = reactive({
+	id: undefined,
+	receiveUpdateEmail: undefined
 });
 const publicKeys = ref([]);
 const addPublicKey = ref(undefined);
@@ -145,11 +159,12 @@ async function addPublicKeyRequest() {
  */
 async function updateUserData() {
 	editUserData.avatar = await imageUpload.value.uploadAndGetUrl();
-	const response = await sendRequest('/api/user/update', REQUEST_METHOD.PUT, editUserData);
-	if (!response.success) {
+	const updateUserInfo = await sendRequest('/api/user/update', REQUEST_METHOD.PUT, editUserData);
+	const updateUserSetting = await sendRequest('/api/setting/update', REQUEST_METHOD.PUT, editSetting);
+	if (!updateUserInfo.success || !updateUserSetting.success) {
 		ElNotification({
 			title: '失败',
-			message: response.message,
+			message: updateUserInfo.message,
 			type: 'error',
 			duration: 1000
 		});
@@ -193,6 +208,9 @@ onMounted(async () => {
 	editUserData.email = userStore.userData.email;
 	editUserData.username = userStore.userData.username;
 	editUserData.nickname = userStore.userData.nickname;
+	// 填充偏好设置
+	editSetting.id = userStore.userData.setting.id;
+	editSetting.receiveUpdateEmail = userStore.userData.setting.receiveUpdateEmail;
 	// 用户头像
 	imageUpload.value.previewImage = editUserData.avatar;
 	// 管理员用户获取公钥
@@ -248,9 +266,35 @@ onMounted(async () => {
 			height: 100px;
 		}
 
+		.setting {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			width: 75%;
+			margin-top: 2%;
+
+			> .text {
+				color: #9000c9;
+				font-size: 18px;
+			}
+
+			.update-email-setting {
+				display: flex;
+				align-items: center;
+				width: 97%;
+				margin-top: 1.5%;
+
+				.switch {
+					position: relative;
+					left: 3%;
+				}
+			}
+		}
+
 		.public-key {
 			display: block;
 			height: auto;
+			margin-top: 3%;
 
 			.header {
 				display: flex;
@@ -264,7 +308,6 @@ onMounted(async () => {
 					color: #4f43b7;
 				}
 			}
-
 
 			.data {
 				position: relative;

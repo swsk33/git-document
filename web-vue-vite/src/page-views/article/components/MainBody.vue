@@ -192,7 +192,8 @@ onMounted(async () => {
 	// 初始化文本内容
 	const getText = await sendRequest('/api/article/get/' + route.params.id, REQUEST_METHOD.GET);
 	if (getText === undefined || !getText.success) {
-		this.isArticleNotFound = true;
+		isArticleNotFound.value = true;
+		loadingDone.value = true;
 		return;
 	}
 	loadingText.value = '渲染中...';

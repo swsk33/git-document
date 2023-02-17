@@ -115,12 +115,12 @@ create table `star`
 	`anthology_id` bigint       not null,
 	`gmt_created`  datetime,
 	`gmt_modified` datetime,
+	unique (`user_id`, `anthology_id`),
 	primary key (`id`),
 	foreign key (`user_id`) references `user` (`id`) on delete cascade on update cascade,
 	foreign key (`anthology_id`) references `anthology` (`id`) on delete cascade on update cascade
 ) engine InnoDB
   default charset = utf8mb4;
-
 
 -- 初始化一些数据
 insert into `role` (`name`, `show_name`, `gmt_created`, `gmt_modified`)

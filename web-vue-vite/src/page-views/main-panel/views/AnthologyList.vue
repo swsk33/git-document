@@ -4,6 +4,7 @@
 			<div class="title">文集列表</div>
 			<el-button type="primary" plain class="add" v-if="userStore.hasPermission('edit_anthology')" @click="addAnthologyRef.frameShow = true">增加文集</el-button>
 		</div>
+		<!-- 文集列表 -->
 		<ul class="anthology-list">
 			<li v-for="item in list" :key="item.id">
 				<div class="image">
@@ -16,6 +17,7 @@
 					<div class="update-time">{{ getUpdateTime(item.updateTime) }}</div>
 				</el-tooltip>
 				<div class="button-box">
+					<el-button type="info" plain class="star" :icon="containStar(item.id) ? StarFilled : Star" @click="containStar(item.id) ? cancelStar(item.id) : doStar(item.id)" circle/>
 					<el-button type="primary" plain class="copy-ssh" :id="'copy-ssh-' + item.id" v-if="userStore.hasPermission('edit_anthology')" @click="copySSH(item.id, item.systemUser, item.repoPath, item.sshPort)">复制Git SSH地址</el-button>
 					<el-button type="warning" plain class="edit" v-if="userStore.hasPermission('edit_anthology')" @click="showEditDialog(item)">编辑</el-button>
 					<el-button type="success" plain class="go-to-read" @click="router.push('/article-menu/' + item.id)">去阅读</el-button>
@@ -73,6 +75,7 @@ import { sendRequest, REQUEST_METHOD } from '../../../utils/request';
 import { timestampToDateString } from '../../../utils/time-convert';
 import { ElNotification } from 'element-plus';
 import { reactive, ref, computed, onMounted } from 'vue';
+import { Star, StarFilled } from '@element-plus/icons-vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
@@ -102,10 +105,29 @@ const editAnthologyInfo = reactive({
 	showName: undefined,
 	cover: undefined
 });
+// 用户收藏的文集列表
+const userStar = ref([]);
 
 // 计算属性
+/**
+ * 将时间戳转换为标准时间
+ */
 const getUpdateTime = computed(() => (timestamp) => {
 	return timestampToDateString(timestamp);
+});
+
+/**
+ * 判断传入的文集id是否是当前用户收藏的文集
+ * @param {number} anthologyId 文集id
+ * @return {boolean} 是否是当前用户收藏的
+ */
+const containStar = computed(() => (anthologyId) => {
+	for (let item of userStar.value) {
+		if (item.anthology.id === anthologyId) {
+			return true;
+		}
+	}
+	return false;
 });
 
 /**
@@ -239,9 +261,84 @@ async function deleteAnthology() {
 	await getAnthologyList();
 }
 
+/**
+ * 获取当前用户收藏的文集
+ */
+async function getUserStar() {
+	const response = await sendRequest('/api/star/get-by-user', REQUEST_METHOD.GET);
+	if (response.success) {
+		userStar.value = response.data;
+	}
+}
+
+/**
+ * 收藏文集
+ * @param anthologyId 要收藏的文集id
+ */
+async function doStar(anthologyId) {
+	const response = await sendRequest('/api/star/add', REQUEST_METHOD.POST, {
+		user: {
+			id: userStore.userData.id
+		},
+		anthology: {
+			id: anthologyId
+		}
+	});
+	if (!response.success) {
+		ElNotification({
+			title: '失败',
+			message: response.message,
+			type: 'error',
+			duration: 1000
+		});
+		return;
+	}
+	ElNotification({
+		title: '成功',
+		message: '收藏文集成功！',
+		type: 'success',
+		duration: 1000
+	});
+	// 刷新列表
+	await getUserStar();
+}
+
+/**
+ * 取消收藏文集
+ * @param anthologyId 取消收藏的文集id
+ */
+async function cancelStar(anthologyId) {
+	let starId;
+	for (let item of userStar.value) {
+		if (item.anthology.id === anthologyId) {
+			starId = item.id;
+			break;
+		}
+	}
+	const response = await sendRequest('/api/star/delete/' + starId, REQUEST_METHOD.DELETE);
+	if (!response.success) {
+		ElNotification({
+			title: '失败',
+			message: response.message,
+			type: 'error',
+			duration: 1000
+		});
+		return;
+	}
+	ElNotification({
+		title: '成功',
+		message: '取消收藏文集成功！',
+		type: 'success',
+		duration: 1000
+	});
+	// 刷新列表
+	await getUserStar();
+}
+
 onMounted(async () => {
 	// 挂载组件时获取文集列表
 	await getAnthologyList();
+	await getUserStar();
 });
 </script>
 
