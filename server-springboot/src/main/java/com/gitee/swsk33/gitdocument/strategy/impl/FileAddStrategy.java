@@ -22,6 +22,11 @@ public class FileAddStrategy implements GitFileChangeStrategy {
 
 	@Override
 	public void doUpdate(long repositoryId, ArticleDiff diff) {
+		// 排除掉增加的非md文件
+		if (!diff.getNewPath().endsWith(".md")) {
+			log.info(diff.getNewPath() + "不是一个md文件，不录入数据库！");
+			return;
+		}
 		// 把文件信息录入数据库
 		Anthology anthology = new Anthology();
 		anthology.setId(repositoryId);
