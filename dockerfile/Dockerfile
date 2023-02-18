@@ -1,11 +1,11 @@
-FROM swsk33/jre-17-nginx-alpine
+FROM swsk33/jre-17-nginx-debian
 # 初始化容器系统
 RUN mkdir -p /app/config /app/log /app/external-resource/avatar/user /app/external-resource/cover/custom /git-doc \
-	&& adduser -D git \
-	&& apk add --no-cache sudo openssh-server git \
-	&& cd /etc/ssh \
-	&& ssh-keygen -A \
-	&& rm -rf /usr/share/nginx/html/* /var/cache/apk/*
+	&& useradd -s /bin/bash -m git \
+	&& apt update \
+	&& apt install -y --no-install-recommends sudo openssh-server git \
+	&& apt clean \
+	&& rm -rf /usr/share/nginx/html/* /var/lib/apt/lists/*
 # 添加必要文件
 ADD springboot.tar /app/
 ADD application.yml /app/config/
