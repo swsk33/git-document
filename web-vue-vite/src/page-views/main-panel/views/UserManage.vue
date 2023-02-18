@@ -88,7 +88,7 @@
 import { sendRequest, REQUEST_METHOD } from '../../../utils/request';
 import { ElNotification } from 'element-plus';
 import { ArrowDown } from '@element-plus/icons-vue';
-import { onMounted, reactive, ref } from 'vue';
+import { onBeforeMount, reactive, ref } from 'vue';
 
 // 组件引入
 import InfoDialog from '../components/InfoDialog.vue';
@@ -249,7 +249,7 @@ async function addUser() {
 	addUserDialog.value.frameShow = false;
 }
 
-onMounted(async () => {
+onBeforeMount(async () => {
 	await getUserList();
 	await userStore.getRoleList();
 });

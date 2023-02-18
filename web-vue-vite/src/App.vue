@@ -13,12 +13,12 @@ const userStore = useUserStore();
 const urlStore = useUrlPathStore();
 const metaStore = useMetaDataStore();
 
-import { onMounted } from 'vue';
+import { onBeforeMount } from 'vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
 
-onMounted(async () => {
+onBeforeMount(async () => {
 	// 初始化后端配置数据
 	await metaStore.getAllMeta();
 	// 跳转之前，获取第一次用户访问路径

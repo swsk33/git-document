@@ -6,7 +6,7 @@
 </template>
 
 <script setup>
-import { onMounted, watch } from 'vue';
+import { onBeforeMount, watch } from 'vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
@@ -25,7 +25,7 @@ watch(() => metaStore.organizationName, () => {
 	immediate: true
 });
 
-onMounted(async () => {
+onBeforeMount(async () => {
 	// 若用户已登录则访问这个页面时跳转至/
 	if (await userStore.checkLogin()) {
 		await router.push('/');

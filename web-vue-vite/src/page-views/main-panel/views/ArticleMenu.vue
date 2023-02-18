@@ -32,7 +32,7 @@
 import { sendRequest, REQUEST_METHOD } from '../../../utils/request.js';
 import { ElNotification } from 'element-plus';
 import { Folder, Document, Top } from '@element-plus/icons-vue';
-import { computed, onMounted, reactive, ref, shallowRef, watch } from 'vue';
+import { computed, onBeforeMount, reactive, ref, shallowRef, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 
 const router = useRouter();
@@ -52,6 +52,7 @@ const currentPath = ref('/');
 const depth = ref(-1);
 
 // 计算属性
+
 /**
  * 用于设定或者获取当前目录
  */
@@ -168,7 +169,7 @@ function goToLast() {
 	depth.value--;
 }
 
-onMounted(async () => {
+onBeforeMount(async () => {
 	const response = await sendRequest('/api/article/get-article-list/' + route.params.id, REQUEST_METHOD.GET);
 	loadingDone.value = true;
 	if (!response.success) {

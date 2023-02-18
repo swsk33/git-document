@@ -9,6 +9,7 @@
 function joinPath(relative, filePathInRepo) {
 	const relativeArray = relative.split('/');
 	const filePathArray = filePathInRepo.split('/');
+	filePathArray.pop();
 	for (let i = 0; i < relativeArray.length; i++) {
 		if (relativeArray[i] === '..') {
 			relativeArray.shift();
@@ -23,7 +24,7 @@ function joinPath(relative, filePathInRepo) {
 		}
 		break;
 	}
-	return filePathArray.join('/') + '/' + relativeArray.join('/');
+	return filePathArray.length !== 0 ? filePathArray.join('/') + '/' + relativeArray.join('/') : relativeArray.join('/');
 }
 
 export { joinPath };

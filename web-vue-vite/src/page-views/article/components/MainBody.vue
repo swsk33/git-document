@@ -2,7 +2,7 @@
 	<!-- 主体 -->
 	<div class="main-body" v-loading="!loadingDone" :element-loading-text="loadingText">
 		<!-- 正文内容 -->
-		<div class="content" v-html="text" ref="content" @click="themeStore.setMenuShow(false)"></div>
+		<div class="content" ref="content" @click="themeStore.setMenuShow(false)"></div>
 		<!-- 菜单 -->
 		<div class="menu" v-show="themeStore.menuShow">
 			<el-tooltip placement="right" v-for="item in menuItems" :key="item.text" :content="item.text">
@@ -24,7 +24,7 @@ import { joinPath } from '../../../utils/file-path';
 import highlight from 'highlight.js';
 import ClipBoard from 'clipboard';
 import renderMathInElement from 'katex/dist/contrib/auto-render';
-import { onMounted, onUpdated, ref, watch } from 'vue';
+import { onBeforeMount, onUpdated, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
 const route = useRoute();
@@ -53,20 +53,33 @@ marked.setOptions({
 		}
 );
 
+// 文章的文本节点
+let textDom;
+// 获取到的文章对象
+let articleObject;
+
 // 自定义响应式变量
 const loadingDone = ref(false);
 const loadingText = ref('正在拉取文章内容...');
-const text = ref(undefined);
 const menuItems = ref([]);
 const isArticleNotFound = ref(false);
 
 // 自定义方法
 
 /**
- * 解析标题生成目录树
+ * 获得目录项的缩进长度，css值形式
+ * @param indentationLevel 该项的缩进级别
  */
-function parseTitle() {
-	const doms = content.value.children;
+function getItemIndentation(indentationLevel) {
+	return 'calc(8% + ' + indentationLevel * 7 + 'px)';
+}
+
+/**
+ * 初始化方法-解析标题生成目录树
+ * @param contentNode {HTMLBodyElement} 内容所在节点
+ */
+function parseTitle(contentNode) {
+	const doms = contentNode.children;
 	// 用于记录最大节点的等级
 	let maxLevel = 6;
 	// 标题锚点索引
@@ -103,11 +116,12 @@ function parseTitle() {
 }
 
 /**
- * 批量设置超链接为新标签页打开
+ * 初始化方法-批量设置超链接为新标签页打开
+ * @param contentNode {HTMLBodyElement} 内容节点
  */
-function setLink() {
+function setLink(contentNode) {
 	// 找出所有a标签
-	const doms = document.querySelectorAll('a');
+	const doms = contentNode.querySelectorAll('a');
 	for (let dom of doms) {
 		// 设置a标签为新标签页打开
 		dom.setAttribute('target', '_blank');
@@ -115,50 +129,27 @@ function setLink() {
 }
 
 /**
- * 处理所有相对路径的图片
+ * 初始化方法-处理所有相对路径的图片
+ * @param contentNode {HTMLBodyElement} 内容节点
  */
-function alterRelativePathImage() {
+function alterRelativePathImage(contentNode) {
 	// 找出所有img标签
-	const doms = document.querySelectorAll('img');
+	const doms = contentNode.querySelectorAll('img');
 	for (let dom of doms) {
 		let imagePath = dom.getAttribute('src');
-		console.log(imagePath);
-		console.log(article.value.filePath);
 		// 对相对路径的图片进行路径替换
 		if (!imagePath.startsWith('http')) {
-			console.log(joinPath(imagePath, article.value.filePath));
+			dom.setAttribute('src', '/api/anthology/get-image/id/' + articleObject.anthology.id + '?path=' + joinPath(imagePath, articleObject.filePath));
 		}
 	}
 }
 
 /**
- * 获得目录项的缩进长度，css值形式
- * @param indentationLevel 该项的缩进级别
+ * 初始化方法-在代码块中添加代码语言名和复制
+ * @param contentNode {HTMLBodyElement} 内容节点
  */
-function getItemIndentation(indentationLevel) {
-	return 'calc(8% + ' + indentationLevel * 7 + 'px)';
-}
-
-/**
- * 改变代码样式
- * @param isNight 是否改为夜晚样式
- */
-function changeCodeStyle(isNight) {
-	const preDoms = content.value.querySelectorAll('pre');
-	for (let item of preDoms) {
-		if (isNight) {
-			item.className = 'pre-night';
-		} else {
-			item.className = 'pre-day';
-		}
-	}
-}
-
-/**
- * 在代码块中添加代码语言名和复制
- */
-function showCodeTypeAndCopy() {
-	const pres = content.value.querySelectorAll('pre');
+function showCodeTypeAndCopy(contentNode) {
+	const pres = contentNode.querySelectorAll('pre');
 	let index = 0;
 	for (let item of pres) {
 		let codeBlock = item.querySelector('code');
@@ -201,36 +192,12 @@ function showCodeTypeAndCopy() {
 	});
 }
 
-// 监听器
-watch(() => themeStore.isNight, () => {
-	changeCodeStyle(themeStore.isNight);
-});
-
-onMounted(async () => {
-	// 初始化文本内容
-	const getText = await sendRequest('/api/article/get/' + route.params.id, REQUEST_METHOD.GET);
-	if (getText === undefined || !getText.success) {
-		isArticleNotFound.value = true;
-		loadingDone.value = true;
-		return;
-	}
-	loadingText.value = '渲染中...';
-	text.value = marked(getText.data.content);
-	loadingDone.value = true;
-});
-
-onUpdated(() => {
-	// 生成目录树
-	if (!themeStore.menuParsed) {
-		parseTitle();
-		showCodeTypeAndCopy();
-		setLink();
-		alterRelativePathImage();
-	}
-	// 根据白天或者夜晚模式改变代码样式
-	changeCodeStyle(themeStore.isNight);
-	// 最后渲染公式
-	renderMathInElement(content.value, {
+/**
+ * 初始化方法-渲染公式
+ * @param contentNode {HTMLBodyElement} 内容节点
+ */
+function renderKatex(contentNode) {
+	renderMathInElement(contentNode, {
 		delimiters: [
 			{ left: '$$', right: '$$', display: true },
 			{ left: '$', right: '$', display: false }
@@ -238,6 +205,71 @@ onUpdated(() => {
 		strict: false,
 		throwOnError: false
 	});
+}
+
+/**
+ * 改变代码样式
+ * @param isNight 是否改为夜晚样式
+ */
+function changeCodeStyle(isNight) {
+	const preDoms = content.value.querySelectorAll('pre');
+	for (let item of preDoms) {
+		if (isNight) {
+			item.className = 'pre-night';
+		} else {
+			item.className = 'pre-day';
+		}
+	}
+}
+
+// 监听器
+
+// 监听白天/夜晚模式的变化
+watch(() => themeStore.isNight, () => {
+	changeCodeStyle(themeStore.isNight);
+});
+
+/**
+ * 监听是否解析文档节点完成
+ */
+const parseWatcher = watch(() => themeStore.contentParsed, (newValue) => {
+	// 解析文档节点完成后，将节点添加到主体中并结束监听
+	if (newValue) {
+		content.value.innerHTML = textDom.innerHTML;
+		loadingDone.value = true;
+		parseWatcher();
+	}
+});
+
+onBeforeMount(async () => {
+	// 拉取文本内容
+	const getText = await sendRequest('/api/article/get/' + route.params.id, REQUEST_METHOD.GET);
+	if (getText === undefined || !getText.success) {
+		isArticleNotFound.value = true;
+		loadingDone.value = true;
+		return;
+	}
+	// 赋值给文章对象
+	articleObject = getText.data;
+	// 预处理文本
+	loadingText.value = '渲染中...';
+	const htmlText = marked(articleObject.content);
+	// 解析为Dom节点
+	const parser = new DOMParser();
+	textDom = parser.parseFromString(htmlText, 'text/html').querySelector('body');
+	// 执行预处理
+	parseTitle(textDom);
+	showCodeTypeAndCopy(textDom);
+	setLink(textDom);
+	alterRelativePathImage(textDom);
+	renderKatex(textDom);
+	// 设定渲染完成
+	themeStore.contentParsed = true;
+});
+
+onUpdated(() => {
+	// 根据白天或者夜晚模式改变代码样式
+	changeCodeStyle(themeStore.isNight);
 });
 </script>
 

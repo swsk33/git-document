@@ -74,7 +74,7 @@ import ClipBoard from 'clipboard';
 import { sendRequest, REQUEST_METHOD } from '../../../utils/request';
 import { timestampToDateString } from '../../../utils/time-convert';
 import { ElNotification } from 'element-plus';
-import { reactive, ref, computed, onMounted } from 'vue';
+import { reactive, ref, computed, onBeforeMount } from 'vue';
 import { Star, StarFilled } from '@element-plus/icons-vue';
 import { useRouter } from 'vue-router';
 
@@ -335,7 +335,7 @@ async function cancelStar(anthologyId) {
 	await getUserStar();
 }
 
-onMounted(async () => {
+onBeforeMount(async () => {
 	// 挂载组件时获取文集列表
 	await getAnthologyList();
 	await getUserStar();

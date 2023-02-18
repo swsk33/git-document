@@ -5,13 +5,13 @@ export const useArticlePageThemeStore = defineStore('article-page-theme', {
 	state() {
 		return {
 			/**
+			 * 记录网页是否被解析完成
+			 */
+			contentParsed: false,
+			/**
 			 * 是否显示菜单（手机端）
 			 */
 			menuShow: true,
-			/**
-			 * 记录目录是否被解析完成，防止updated无限递归
-			 */
-			menuParsed: false,
 			/**
 			 * 是否是夜晚样式
 			 */
