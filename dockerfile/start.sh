@@ -1,4 +1,4 @@
-#!/bin/bash
-/etc/init.d/ssh restart
+#!/bin/sh
+/usr/sbin/sshd
 nginx
 sudo -u git java -jar git-document-*.jar

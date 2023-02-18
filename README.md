@@ -142,14 +142,28 @@ docker pull swsk33/git-document
 拉取镜像并创建容器之前，为了方便我们修改配置文件，我们先要为容器内的Spring Boot和Nginx的配置文件目录创建数据卷：
 
 ```bash
-docker volume create git-doc-springboot
-docker volume create git-doc-nginx
+docker volume create git-doc-springboot-config
+docker volume create git-doc-nginx-config
+docker volume create git-doc-repo
+docker volume create git-doc-user-avatar
+docker volume create git-doc-anthology-cover
+docker volume create git-doc-log
+docker volume create git-doc-nginx-log
 ```
 
 然后创建容器并挂载数据卷：
 
 ```bash
-docker run -id --name=git-doc -p 80:80 -p 443:443 -p 23:22 -v git-doc-springboot:/app/config -v git-doc-nginx:/usr/local/nginx/conf swsk33/git-document
+docker run -id --name=git-doc \
+-p 80:80 -p 443:443 -p 23:22 \
+-v git-doc-springboot-config:/app/config \
+-v git-doc-nginx-config:/etc/nginx \
+-v git-doc-repo:/git-doc \
+-v git-doc-user-avatar:/app/external-resource/avatar/user \
+-v git-doc-anthology-cover:/app/external-resource/cover/custom \
+-v git-doc-log:/app/log \
+-v git-doc-nginx-log:/var/log/nginx \
+swsk33/git-document
 ```
 
 > 这里数据卷使用的是**具名挂载**方式，防止容器内配置文件被覆盖。
