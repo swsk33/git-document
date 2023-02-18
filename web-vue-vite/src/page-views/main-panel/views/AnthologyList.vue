@@ -2,11 +2,13 @@
 	<div class="anthology-panel" v-loading="!loadingDone" element-loading-text="正在拉取文集列表...">
 		<div class="top-box">
 			<div class="title">文集列表</div>
+			<el-switch v-model="showStarOnly" class="show-star-only-switch" size="large" inline-prompt active-text="仅显示收藏" inactive-text="显示全部"/>
 			<el-button type="primary" plain class="add" v-if="userStore.hasPermission('edit_anthology')" @click="addAnthologyRef.frameShow = true">增加文集</el-button>
 		</div>
 		<!-- 文集列表 -->
 		<ul class="anthology-list">
-			<li v-for="item in list" :key="item.id">
+			<!-- 每个文集 -->
+			<li v-for="item in list" :key="item.id" v-show="!showStarOnly || (showStarOnly && containStar(item.id))">
 				<div class="image">
 					<img :src="item.cover" alt="undefined"/>
 				</div>
@@ -74,7 +76,7 @@ import ClipBoard from 'clipboard';
 import { sendRequest, REQUEST_METHOD } from '../../../utils/request';
 import { timestampToDateString } from '../../../utils/time-convert';
 import { ElNotification } from 'element-plus';
-import { reactive, ref, computed, onBeforeMount } from 'vue';
+import { reactive, ref, computed, onBeforeMount, watch } from 'vue';
 import { Star, StarFilled } from '@element-plus/icons-vue';
 import { useRouter } from 'vue-router';
 
@@ -107,8 +109,11 @@ const editAnthologyInfo = reactive({
 });
 // 用户收藏的文集列表
 const userStar = ref([]);
+// 是否只显示收藏
+const showStarOnly = ref(false);
 
 // 计算属性
+
 /**
  * 将时间戳转换为标准时间
  */
@@ -335,10 +340,22 @@ async function cancelStar(anthologyId) {
 	await getUserStar();
 }
 
+// 监听器
+
+// 监听是否只显示收藏按钮，将结果存入本地缓存
+watch(showStarOnly, (newValue) => {
+	localStorage.setItem('show-star-only', JSON.stringify(newValue));
+});
+
 onBeforeMount(async () => {
 	// 挂载组件时获取文集列表
 	await getAnthologyList();
 	await getUserStar();
+	// 获取本地缓存中的显示全部/仅显示收藏选项
+	let item = localStorage.getItem('show-star-only');
+	if (item != null) {
+		showStarOnly.value = JSON.parse(item);
+	}
 });
 </script>
 
@@ -356,6 +373,11 @@ onBeforeMount(async () => {
 		.title {
 			position: relative;
 			padding-left: 3%;
+		}
+
+		.show-star-only-switch {
+			position: relative;
+			--el-switch-off-color: #008800;
 		}
 
 		.add {
