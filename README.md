@@ -135,7 +135,7 @@ source 下载的sql文件位置
 
 这里提供**通过Docker镜像部署运行**和**源码编译安装**两种方式，两种方式都写在这里，大家可以根据实际情况自行选择其中一种方式。
 
-#### 1. 通过拉取Docker镜像（推荐）
+#### 1. 通过Docker镜像安装部署（推荐）
 
 使用Docker镜像的方式部署的话，请先确保服务器的`80`、`443`和`23`端口可以被外网正常访问，即需要确保这几个端口加入到服务器防火墙白名单。
 
@@ -149,7 +149,7 @@ source 下载的sql文件位置
 docker pull swsk33/git-document
 ```
 
-##### ② 创建容器并修改配置文件
+##### ② 创建容器并指定配置参数
 
 拉取镜像并创建容器之前，为了方便我们修改配置文件，我们先要为容器内的Spring Boot和Nginx的配置文件目录创建数据卷：
 
@@ -185,60 +185,64 @@ docker run -id --name=git-doc \
 -v git-doc-anthology-cover:/app/external-resource/cover/custom \
 -v git-doc-log:/app/log \
 -v git-doc-nginx-log:/var/log/nginx \
+-e MYSQL_HOST=MySQL数据库地址 \
+-e MYSQL_PORT=MySQL数据库端口 \
+-e MYSQL_USER=MySQL用户名 \
+-e MYSQL_PASSWORD=MySQL密码 \
+-e REDIS_HOST=Redis地址 \
+-e REDIS_PORT=Redis端口 \
+-e REDIS_PASSWORD=Redis密码 \
+-e RABBIT_MQ_HOST=RabbitMQ地址 \
+-e RABBIT_MQ_PORT=RabbitMQ端口 \
+-e RABBIT_MQ_USER=RabbitMQ用户 \
+-e RABBIT_MQ_PASSWORD=RabbitMQ密码 \
+-e EMAIL_SMTP_HOST=邮件SMTP服务器 \
+-e EMAIL_USER=邮箱地址 \
+-e EMAIL_PASSWORD=邮箱授权码 \
 swsk33/git-document
 ```
 
+可见启动命令中，我们指定了很多环境变量，这些环境变量是**用于整个系统的配置**的，需要在你执行命令时先自行修改为实际值，例如给系统配置MySQL数据库地址等等，上述所有环境变量及其意义如下：
+
+|      环境变量名      |           意义           |      默认值      |
+| :------------------: | :----------------------: | :--------------: |
+|     `MYSQL_HOST`     |     MySQL数据库地址      |   `127.0.0.1`    |
+|     `MYSQL_PORT`     |     MySQL数据库端口      |      `3306`      |
+|     `MYSQL_USER`     |       MySQL用户名        |      `root`      |
+|   `MYSQL_PASSWORD`   |        MySQL密码         |     `123456`     |
+|     `REDIS_HOST`     |     Redis数据库地址      |   `127.0.0.1`    |
+|     `REDIS_PORT`     |     Redis数据库端口      |      `6379`      |
+|   `REDIS_PASSWORD`   |     Redis数据库密码      | `""`（空字符串） |
+|   `RABBIT_MQ_HOST`   |       RabbitMQ地址       |   `127.0.0.1`    |
+|   `RABBIT_MQ_PORT`   |       RabbitMQ端口       |      `5672`      |
+|   `RABBIT_MQ_USER`   |      RabbitMQ用户名      |      `root`      |
+| `RABBIT_MQ_PASSWORD` |       RabbitMQ密码       |     `123456`     |
+|  `EMAIL_SMTP_HOST`   |       邮箱SMTP地址       |  `smtp.163.com`  |
+|     `EMAIL_USER`     | 配置用于发通知邮件的邮箱 | `""`（空字符串） |
+|   `EMAIL_PASSWORD`   |        邮箱授权码        | `""`（空字符串） |
+
+建议在命令行中，使用英文双引号`"`包围配置值。
+
+上述邮件是用于系统自动发送通知邮件的，需要先去注册一个邮箱例如QQ、163等等，并开启`SMTP`服务。
+
 > 这里数据卷使用的是**具名挂载**方式，防止容器内配置文件被覆盖。
 
-这样，便创建好了容器。由于是第一次创建容器，但是一些关键配置例如数据库等等还没配置，这时程序是没有正常运行的，因此我们需要修改关键配置。
+执行完成命令后，容器便启动了！
+
+如果你要配置的某一项的值和上述的默认值相同，则可以在命令中省去这一条变量。
+
+**如果不想通过环境变量来配置，还可以通过修改Spring Boot配置文件的方式完成配置**，Spring Boot的配置文件是[YAML](https://yaml.org/)格式的，若语法不太熟悉可以先参考：[菜鸟教程](https://www.runoob.com/w3cnote/yaml-intro.html)。
+
+在Spring Boot配置文件中，也有相应的注释，根据注释可以快速定位到需要修改的项，配置完成后记得重启容器。
 
 按照上述步骤挂载数据卷之后，配置文件应当位于宿主机如下位置：
 
 - **Spring Boot配置文件**：`/var/lib/docker/volumes/git-doc-springboot-config/_data/application.yml`
 - **Nginx配置文件**：`/var/lib/docker/volumes/git-doc-nginx-config/_data/conf.d/default.conf`
 
-可以通过`vim`等等文本编辑器编辑配置，下列配置修改都是基于这两个文件，Spring Boot的配置文件是[YAML](https://yaml.org/)格式的，若语法不太熟悉可以先参考：[菜鸟教程](https://www.runoob.com/w3cnote/yaml-intro.html)。
+##### ③ 开启`https`
 
-在Spring Boot配置文件中，也有相应的注释，根据注释可以快速定位到需要修改的项。
-
-###### a. MySQL数据库
-
-这一项配置是修改**Spring Boot配置文件**，是**必须**要配置的部分。
-
-- `spring.datasource.url` MySQL地址，把`127.0.0.1:3306`这部分替换成你自己数据库的地址和端口，若数据库和GitDocument部署在同一台服务器且端口没改的话则无需修改
-- `spring.datasource.username` MySQL用户名
-- `spring.datasource.password` MySQL用户对应的密码
-
-###### b. Redis数据库
-
-这一项配置是修改**Spring Boot配置文件**，是**必须**要配置的部分。
-
-- `spring.data.redis.host` Redis的地址，把`127.0.0.1`替换成自己的Redis的地址，若Redis和GitDocument部署在同一台服务器的话则无需修改
-- `spring.data.redis.port` Redis的端口，默认是`6379`
-- `spring.data.redis.password` Redis的密码
-
-###### c. RabbitMQ消息队列
-
-这一项配置是修改**Spring Boot配置文件**，是**必须**要配置的部分。
-
-- `spring.rabbitmq.host` RabbitMQ的地址，把`127.0.0.1`替换成自己的RabbitMQ的地址，若RabbitMQ和GitDocument部署在同一台服务器的话则无需修改
-- `spring.rabbitmq.port` RabbitMQ的端口，默认是`5672`
-- `spring.rabbitmq.username` RabbitMQ的用户名
-- `spring.rabbitmq.password` RabbitMQ的密码
-
-###### d. 邮箱
-
-这一项配置是修改**Spring Boot配置文件**。
-
-用于发送通知邮件，需要先去注册一个邮箱例如QQ、163等等，并开启`SMTP`服务。
-
-- `spring.mail.host` 邮箱`smtp`服务器地址，可以在对应的邮箱网站找到
-- `spring.mail.username` 你的邮箱地址
-- `spring.mail.password` 邮箱授权码（注意不是密码！）
-
-###### e. 开启`https`
-
-这一项配置是修改**Nginx配置文件**，是**非必须**的配置部分。
+这一项配置是修改**Nginx配置文件**，是**非必须**的配置部分，**如果不想配置可以跳过这一步**。
 
 如果你需要开启https服务，你需要准备好**SSL证书文件**和**证书密钥文件**，然后修改Nginx配置。
 
@@ -270,9 +274,6 @@ server {
 	rewrite ^(.*)$ https://$host$1 permanent;
 }
 ```
-
-
-##### ③ 重新启动容器
 
 修改完成所有配置后，需要重新启动容器：
 
@@ -329,13 +330,8 @@ systemctl restart sshd
 ```bash
 docker run -id --name=git-doc \
 -p 80:80 -p 443:443 -p 22:22 \
--v git-doc-springboot-config:/app/config \
--v git-doc-nginx-config:/etc/nginx \
--v git-doc-repo:/git-doc \
--v git-doc-user-avatar:/app/external-resource/avatar/user \
--v git-doc-anthology-cover:/app/external-resource/cover/custom \
--v git-doc-log:/app/log \
--v git-doc-nginx-log:/var/log/nginx \
+# 省略-v参数部分... \
+# 省略-e参数部分... \
 swsk33/git-document
 ```
 
@@ -690,4 +686,4 @@ git push origin master
 
 修改配置项`com.gitee.swsk33.git-doc.allow-public`为`false`即可关闭访客注册。
 
-> 最后更新：2023.2.18
+> 最后更新：2023.2.19
