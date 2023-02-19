@@ -15,7 +15,7 @@ RUN mkdir -p /app/log /app/external-resource/avatar/user /app/external-resource/
 	&& rm -rf /usr/share/nginx/html/* /var/lib/apt/lists/*
 # 添加前端网页资源
 ADD vue.tar /usr/share/nginx/html/
-# 调整文件权限
+# 工作目录
 WORKDIR /app
 # 环境变量
 ENV LANG C.UTF-8

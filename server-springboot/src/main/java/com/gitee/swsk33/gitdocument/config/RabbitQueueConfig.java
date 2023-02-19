@@ -65,6 +65,7 @@ public class RabbitQueueConfig {
 	/**
 	 * 绑定Git创建队列
 	 */
+	@Bean
 	public Binding createQueueBinding(Queue gitCreateQueue, TopicExchange gitTaskExchange) {
 		return BindingBuilder.bind(gitCreateQueue).to(gitTaskExchange).with(CommonValue.RabbitMQRoutingKey.GIT_CREATE);
 	}
@@ -72,6 +73,7 @@ public class RabbitQueueConfig {
 	/**
 	 * 绑定Git更新队列
 	 */
+	@Bean
 	public Binding updateQueueBinding(Queue gitUpdateQueue, TopicExchange gitTaskExchange) {
 		return BindingBuilder.bind(gitUpdateQueue).to(gitTaskExchange).with(CommonValue.RabbitMQRoutingKey.GIT_UPDATE);
 	}
