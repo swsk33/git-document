@@ -173,7 +173,7 @@ docker volume create git-doc-nginx-log
 - `git-doc-log` 后端日志文件目录
 - `git-doc-nginx-log` Nginx日志文件目录
 
-然后创建容器并挂载数据卷：
+然后创建并启动容器：
 
 ```bash
 docker run -id --name=git-doc \
@@ -230,10 +230,6 @@ swsk33/git-document
 执行完成命令后，容器便启动了！
 
 如果你要配置的某一项的值和上述的默认值相同，则可以在命令中省去这一条变量。
-
-**如果不想通过环境变量来配置，还可以通过修改Spring Boot配置文件的方式完成配置**，Spring Boot的配置文件是[YAML](https://yaml.org/)格式的，若语法不太熟悉可以先参考：[菜鸟教程](https://www.runoob.com/w3cnote/yaml-intro.html)。
-
-在Spring Boot配置文件中，也有相应的注释，根据注释可以快速定位到需要修改的项，配置完成后记得重启容器。
 
 按照上述步骤挂载数据卷之后，配置文件应当位于宿主机如下位置：
 
@@ -672,7 +668,11 @@ git push origin master
 
 ## 4，其余配置项
 
-在GitDocument中，也提供了其它的一些配置项。
+在GitDocument中，也提供了其它的一些配置项，主要是通过修改**Spring Boot配置文件**完成，在上面挂载数据卷的时候就已经得知了配置文件位置了。
+
+Spring Boot的配置文件是[YAML](https://yaml.org/)格式的，若语法不太熟悉可以先参考：[菜鸟教程](https://www.runoob.com/w3cnote/yaml-intro.html)。
+
+在Spring Boot配置文件中，也有相应的注释，根据注释可以快速定位到需要修改的项，配置完成后记得重启容器。
 
 ### (1) 组织名
 
