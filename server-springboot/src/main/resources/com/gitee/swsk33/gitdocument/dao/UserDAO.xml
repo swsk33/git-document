@@ -15,20 +15,20 @@
 	</resultMap>
 
 	<insert id="add" parameterType="com.gitee.swsk33.gitdocument.dataobject.User">
-		insert into `user` (username, `password`, nickname, avatar, email, `setting_id`, role_id, gmt_created, gmt_modified)
+		insert into "user" (username, "password", nickname, avatar, email, "setting_id", role_id, gmt_created, gmt_modified)
 		values (#{username}, #{password}, #{nickname}, #{avatar}, #{email}, #{setting.id}, #{role.id}, now(), now())
 	</insert>
 
 	<delete id="delete">
 		delete
-		from `user`
+		from "user"
 		where id = #{id}
 	</delete>
 
 	<update id="update" parameterType="com.gitee.swsk33.gitdocument.dataobject.User">
-		update `user`
+		update "user"
 		set username     = #{username},
-			`password`   = #{password},
+			"password"   = #{password},
 			nickname     = #{nickname},
 			avatar       = #{avatar},
 			email        = #{email},
@@ -39,38 +39,38 @@
 
 	<select id="getById" resultMap="userResultMap">
 		select *
-		from `user`
+		from "user"
 		where id = #{id}
 	</select>
 
 	<select id="getByUsernameOrEmail" resultMap="userResultMap">
 		select *
-		from `user`
+		from "user"
 		where username = #{credential}
 		   or email = #{credential}
 	</select>
 
 	<select id="getUserBySettingId" resultMap="userResultMap">
 		select *
-		from `user`
+		from "user"
 		where setting_id = #{settingId}
 	</select>
 
 	<select id="getAll" resultMap="userResultMap">
 		select *
-		from `user`
+		from "user"
 	</select>
 
 	<select id="getAllAdmin" resultMap="userResultMap">
 		select *
-		from `user`
-		where role_id = (select `id` from `role` where name = 'ROLE_ADMIN')
+		from "user"
+		where role_id = (select "id" from "role" where "name" = 'ROLE_ADMIN')
 	</select>
 
 	<select id="getByStarAnthology" resultMap="userResultMap">
-		select `user`.*
-		from `user`
-				 left join `star` on `user`.id = `star`.user_id
-		where `star`.anthology_id = #{anthologyId}
+		select "user".*
+		from "user"
+				 left join "star" on "user".id = "star".user_id
+		where "star".anthology_id = #{anthologyId}
 	</select>
 </mapper>

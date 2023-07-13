@@ -10,7 +10,6 @@ import com.gitee.swsk33.gitdocument.message.GitUpdateTaskMessage;
 import com.gitee.swsk33.gitdocument.model.ArticleDirectory;
 import com.gitee.swsk33.gitdocument.param.CommonValue;
 import com.gitee.swsk33.gitdocument.strategy.context.FileChangeStrategyContext;
-import com.gitee.swsk33.gitdocument.util.SnowflakeIdGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;

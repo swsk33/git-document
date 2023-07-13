@@ -4,12 +4,12 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.0.2</version>
+		<version>3.1.1</version>
 		<relativePath/>
 	</parent>
 	<groupId>com.gitee.swsk33</groupId>
 	<artifactId>git-document</artifactId>
-	<version>2.0.1</version>
+	<version>3.0.0</version>
 	<name>git-document</name>
 	<description>基于Git版本管理工具的轻便的文档管理系统，使用Git管理Markdown文档</description>
 
@@ -18,16 +18,10 @@
 		<maven.compiler.source>${java.version}</maven.compiler.source>
 		<maven.compiler.targer>${java.version}</maven.compiler.targer>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<skipTests>true</skipTests>
+		<sa-token.version>1.35.0.RC</sa-token.version>
 	</properties>
 
 	<dependencies>
-		<!-- Spring Boot邮件发送 -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-mail</artifactId>
-		</dependency>
-
 		<!-- Spring Boot校验 -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -44,13 +38,13 @@
 		<dependency>
 			<groupId>org.mybatis.spring.boot</groupId>
 			<artifactId>mybatis-spring-boot-starter</artifactId>
-			<version>3.0.1</version>
+			<version>3.0.2</version>
 		</dependency>
 
-		<!-- MySQL驱动 -->
+		<!-- PostgreSQL驱动 -->
 		<dependency>
-			<groupId>com.mysql</groupId>
-			<artifactId>mysql-connector-j</artifactId>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
 			<scope>runtime</scope>
 		</dependency>
 
@@ -80,32 +74,25 @@
 			<optional>true</optional>
 		</dependency>
 
-		<!-- Spring Boot测试 -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-
 		<!-- Sa-Token安全框架 -->
 		<dependency>
 			<groupId>cn.dev33</groupId>
 			<artifactId>sa-token-spring-boot3-starter</artifactId>
-			<version>1.34.0</version>
+			<version>${sa-token.version}</version>
 		</dependency>
 
 		<!-- Sa-Token整合SpringAOP实现注解鉴权 -->
 		<dependency>
 			<groupId>cn.dev33</groupId>
 			<artifactId>sa-token-spring-aop</artifactId>
-			<version>1.34.0</version>
+			<version>${sa-token.version}</version>
 		</dependency>
 
 		<!-- Sa-Token整合Redis（使用JDK序列化方式）-->
 		<dependency>
 			<groupId>cn.dev33</groupId>
-			<artifactId>sa-token-dao-redis</artifactId>
-			<version>1.34.0</version>
+			<artifactId>sa-token-redis</artifactId>
+			<version>${sa-token.version}</version>
 		</dependency>
 
 		<!-- 读写实用类 -->
@@ -115,31 +102,39 @@
 			<version>7.0.1</version>
 		</dependency>
 
-		<!-- 雪花id生成器 -->
+		<!-- Hutool实用工具 -->
 		<dependency>
-			<groupId>com.github.yitter</groupId>
-			<artifactId>yitter-idgenerator</artifactId>
-			<version>1.0.6</version>
-		</dependency>
-
-		<!-- commons-lang3 - 实用工具 -->
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-		</dependency>
-
-		<!-- Commons IO -->
-		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>2.11.0</version>
+			<groupId>cn.hutool</groupId>
+			<artifactId>hutool-all</artifactId>
+			<version>5.8.20</version>
 		</dependency>
 
 		<!-- JGit操作Git仓库 -->
 		<dependency>
 			<groupId>org.eclipse.jgit</groupId>
 			<artifactId>org.eclipse.jgit</artifactId>
-			<version>6.4.0.202211300538-r</version>
+			<version>6.6.0.202305301015-r</version>
+		</dependency>
+
+		<!-- SQL自动初始化 -->
+		<dependency>
+			<groupId>io.github.swsk33</groupId>
+			<artifactId>sql-initialize-spring-boot-starter</artifactId>
+			<version>1.1.0</version>
+		</dependency>
+
+		<!-- 邮件验证码框架 -->
+		<dependency>
+			<groupId>io.github.swsk33</groupId>
+			<artifactId>code-post-spring-boot-starter</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+
+		<!-- 小文件上传框架 -->
+		<dependency>
+			<groupId>io.github.swsk33</groupId>
+			<artifactId>file-lift-spring-boot-starter</artifactId>
+			<version>1.0.0</version>
 		</dependency>
 	</dependencies>
 

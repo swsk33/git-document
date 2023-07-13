@@ -3,6 +3,7 @@ package com.gitee.swsk33.gitdocument.service.impl;
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.core.util.RandomUtil;
 import com.gitee.swsk33.gitdocument.dao.SettingDAO;
 import com.gitee.swsk33.gitdocument.dao.UserDAO;
 import com.gitee.swsk33.gitdocument.dataobject.Setting;
@@ -16,7 +17,6 @@ import com.gitee.swsk33.gitdocument.service.UserService;
 import com.gitee.swsk33.gitdocument.util.BCryptEncoder;
 import com.gitee.swsk33.gitdocument.util.ClassExamine;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -81,10 +81,6 @@ public class UserServiceImpl implements UserService {
 		}
 		// 加密密码，存入数据库
 		user.setPassword(BCryptEncoder.encode(user.getPassword()));
-		// 设定默认头像
-		if (user.getAvatar() == null) {
-			user.setAvatar(imageService.getRandomAvatar().getData());
-		}
 		// 新建默认用户配置
 		Setting setting = new Setting();
 		setting.setReceiveUpdateEmail(true);
@@ -207,26 +203,6 @@ public class UserServiceImpl implements UserService {
 		Result<List<User>> result = new Result<>();
 		List<User> users = userDAO.getAll();
 		result.setResultSuccess("查询全部用户成功！", users);
-		return result;
-	}
-
-	@SaCheckPermission(CommonValue.Permission.EDIT_USER)
-	@Override
-	public Result<User> adminResetPassword(int id) {
-		Result<User> result = new Result<>();
-		User getUser = userDAO.getById(id);
-		if (getUser == null) {
-			result.setResultFailed("待重置密码的用户不存在！");
-			return result;
-		}
-		// 生成随机密码
-		String newPassword = RandomStringUtils.random(16, true, true);
-		// 修改用户密码
-		getUser.setPassword(BCryptEncoder.encode(newPassword));
-		userDAO.update(getUser);
-		// 发送通知
-		emailService.sendPasswordResetEmail(getUser.getEmail(), newPassword);
-		result.setResultSuccess("重置用户密码完成！");
 		return result;
 	}
 

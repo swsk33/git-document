@@ -23,7 +23,15 @@ public class RabbitQueueConfig {
 	}
 
 	/**
-	 * 邮件主题交换机
+	 * 新文集创建邮件消息队列
+	 */
+	@Bean
+	public Queue createEmailQueue() {
+		return new Queue(CommonValue.MessageQueue.CREATE_EMAIL_QUEUE);
+	}
+
+	/**
+	 * 邮件通知主题交换机
 	 */
 	@Bean
 	public TopicExchange emailExchange() {
@@ -31,11 +39,19 @@ public class RabbitQueueConfig {
 	}
 
 	/**
-	 * 绑定邮件通知队列
+	 * 绑定更新邮件通知队列
 	 */
 	@Bean
-	public Binding emailQueueBinding(Queue updateEmailQueue, TopicExchange emailExchange) {
+	public Binding emailUpdateQueueBinding(Queue updateEmailQueue, TopicExchange emailExchange) {
 		return BindingBuilder.bind(updateEmailQueue).to(emailExchange).with(CommonValue.RabbitMQRoutingKey.UPDATE_EMAIL);
+	}
+
+	/**
+	 * 绑定创建邮件通知队列
+	 */
+	@Bean
+	public Binding emailCreateQueueBinding(Queue createEmailQueue, TopicExchange emailExchange) {
+		return BindingBuilder.bind(createEmailQueue).to(emailExchange).with(CommonValue.RabbitMQRoutingKey.CREATE_EMAIL);
 	}
 
 	/**

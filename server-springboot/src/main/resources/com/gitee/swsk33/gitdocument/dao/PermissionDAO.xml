@@ -17,15 +17,15 @@
 	</resultMap>
 
 	<select id="getById" resultMap="permissionResultMap">
-		select `permission`.*,
-			   `role`.id           as role_id,
-			   `role`.name         as role_name,
-			   `role`.show_name    as role_show_name,
-			   `role`.gmt_created  as role_gmt_created,
-			   `role`.gmt_modified as role_gmt_modified
-		from `permission`
-				 inner join `role_permission` on `permission`.id = `role_permission`.permission_id
-				 inner join `role` on `role_permission`.role_id = `role`.id
-		where `permission`.id = #{id}
+		select "permission".*,
+			   "role".id           as role_id,
+			   "role".name         as role_name,
+			   "role".show_name    as role_show_name,
+			   "role".gmt_created  as role_gmt_created,
+			   "role".gmt_modified as role_gmt_modified
+		from "permission"
+				 inner join "role_permission" on "permission".id = "role_permission".permission_id
+				 inner join "role" on "role_permission".role_id = "role".id
+		where "permission".id = #{id}
 	</select>
 </mapper>

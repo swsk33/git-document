@@ -28,7 +28,7 @@ public class GitRepositoryUtils {
 			dir.mkdirs();
 		}
 		try {
-			Git.init().setDirectory(dir).setBare(true).call();
+			Git.init().setDirectory(dir).setBare(true).call().close();
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
@@ -44,12 +44,16 @@ public class GitRepositoryUtils {
 	 */
 	public static RevCommit getHeadCommit(String repositoryPath) throws Exception {
 		// 读取现有仓库
-		Repository repository = new FileRepositoryBuilder().setGitDir(new File(repositoryPath)).build();
-		ObjectId headId = repository.resolve("HEAD");
-		if (headId == null) {
-			return null;
+		ObjectId headId;
+		RevCommit headCommit;
+		try (Repository repository = new FileRepositoryBuilder().setGitDir(new File(repositoryPath)).build()) {
+			headId = repository.resolve("HEAD");
+			if (headId == null) {
+				return null;
+			}
+			headCommit = repository.parseCommit(headId);
 		}
-		return repository.parseCommit(headId);
+		return headCommit;
 	}
 
 	/**
@@ -69,12 +73,14 @@ public class GitRepositoryUtils {
 	 * @return 仓库头指针所在的commit的id，若仓库中没有任何提交则返回null
 	 */
 	public static String getHeadCommitId(String repositoryPath) throws Exception {
+		ObjectId headCommitId;
 		// 读取现有仓库
-		Repository repository = new FileRepositoryBuilder().setGitDir(new File(repositoryPath)).build();
-		// 得到HEAD指针的提交ID
-		ObjectId headCommitId = repository.resolve("HEAD");
-		if (headCommitId == null) {
-			return null;
+		try (Repository repository = new FileRepositoryBuilder().setGitDir(new File(repositoryPath)).build()) {
+			// 得到HEAD指针的提交ID
+			headCommitId = repository.resolve("HEAD");
+			if (headCommitId == null) {
+				return null;
+			}
 		}
 		return headCommitId.getName();
 	}

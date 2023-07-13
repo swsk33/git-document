@@ -10,12 +10,12 @@
 	</resultMap>
 
 	<insert id="add" parameterType="com.gitee.swsk33.gitdocument.dataobject.Article">
-		insert into `article`
+		insert into "article"
 		values (#{id}, #{filePath}, #{anthology.id}, now(), now())
 	</insert>
 
 	<insert id="batchAdd" parameterType="java.util.List">
-		insert into `article`
+		insert into "article"
 		values
 		<foreach collection="articles" item="it" separator=",">
 			(#{it.id}, #{it.filePath}, #{it.anthology.id}, now(), now())
@@ -24,18 +24,18 @@
 
 	<delete id="delete">
 		delete
-		from `article`
+		from "article"
 		where id = #{id}
 	</delete>
 
 	<delete id="deleteByPath">
 		delete
-		from `article`
+		from "article"
 		where file_path = #{path}
 	</delete>
 
 	<update id="update" parameterType="com.gitee.swsk33.gitdocument.dataobject.Article">
-		update `article`
+		update "article"
 		set file_path   = #{filePath},
 			gmt_modified=now()
 		where id = #{id}
@@ -43,19 +43,19 @@
 
 	<select id="getById" resultMap="articleResultMap">
 		select *
-		from `article`
+		from "article"
 		where id = #{id}
 	</select>
 
 	<select id="getByPath" resultMap="articleResultMap">
 		select *
-		from `article`
+		from "article"
 		where file_path = #{path}
 	</select>
 
 	<select id="getByAnthology" resultMap="articleResultMap">
 		select *
-		from `article`
+		from "article"
 		where anthology_id = #{anthologyId}
 	</select>
 </mapper>

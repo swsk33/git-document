@@ -1,0 +1,84 @@
+# 服务端配置
+server:
+  port: 8800
+  tomcat:
+    max-http-form-post-size: 20MB
+
+spring:
+  # JSON配置
+  jackson:
+    default-property-inclusion: non_null
+    deserialization:
+      fail-on-unknown-properties: false
+  # 请求大小
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
+  # PostgreSQL数据库
+  datasource:
+    url: "jdbc:postgresql://127.0.0.1:5432/git_doc?TimeZone=Asia/Shanghai"
+    username: "用户名"
+    password: "密码"
+  data:
+    # Redis
+    redis:
+      host: 127.0.0.1
+      port: 6379
+      password: "密码"
+  # RabbitMQ
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: "用户名"
+    password: "密码"
+
+# Sa-Token配置
+sa-token:
+  is-concurrent: true
+  is-share: false
+  timeout: -1
+  token-name: gitdoc-satoken
+  token-style: simple-uuid
+
+io:
+  github:
+    swsk33:
+      # sql-initialize配置
+      sql-init:
+        sql-paths:
+          - "classpath:/sql-init/init-table.sql"
+          - "classpath:/sql-init/init-data.sql"
+      # code-post邮件配置
+      code-post:
+        core:
+          smtp-host: "smtp.163.com"
+          email: "你的邮箱"
+          password: "你的邮箱密码（或者是授权码）"
+          code-storage: "redis"
+          site-name: "GitDocument"
+          template-path: "classpath:/templates"
+          code-template-name: "code-template.txt"
+      # file-list文件上传配置
+      file-lift:
+        core:
+          storage-method: "filesystem"
+          size-limit: 10240
+          auto-rename-format: "snow_flake"
+          allowed-formats:
+            - "jpg"
+            - "jpeg"
+            - "png"
+            - "gif"
+            - "bmp"
+        filesystem:
+          save-folder: "images"
+
+# 自定义配置
+com:
+  gitee:
+    swsk33:
+      git-doc:
+        allow-public: true
+        host-port: 22
+        organization-name: "组织名"

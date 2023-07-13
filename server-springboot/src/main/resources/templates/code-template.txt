@@ -1,0 +1,1 @@
+您的GitDocument密码重置验证码为：${code}，该验证码将在${time}过期！

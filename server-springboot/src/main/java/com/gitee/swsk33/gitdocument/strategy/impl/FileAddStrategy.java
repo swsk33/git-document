@@ -5,7 +5,6 @@ import com.gitee.swsk33.gitdocument.dataobject.Anthology;
 import com.gitee.swsk33.gitdocument.dataobject.Article;
 import com.gitee.swsk33.gitdocument.model.ArticleDiff;
 import com.gitee.swsk33.gitdocument.strategy.GitFileChangeStrategy;
-import com.gitee.swsk33.gitdocument.util.SnowflakeIdGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

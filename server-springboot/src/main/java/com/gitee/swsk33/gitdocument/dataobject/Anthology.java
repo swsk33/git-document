@@ -6,6 +6,7 @@ import lombok.Data;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -37,7 +38,7 @@ public class Anthology implements Serializable {
 	private String showName;
 
 	/**
-	 * 封面
+	 * 封面图片文件名
 	 */
 	private String cover;
 

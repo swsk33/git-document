@@ -1,0 +1,9 @@
+您收藏的文集：${anthology} 今天更新了！
+
+文集提交信息：
+${commitMessage}
+
+文集变动细节：
+<#list diffs as item>
+	- ${item}
+</#list>

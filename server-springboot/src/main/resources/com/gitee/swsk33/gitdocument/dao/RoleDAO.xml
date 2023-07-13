@@ -17,27 +17,27 @@
 	</resultMap>
 
 	<select id="getById" resultMap="roleResultMap">
-		select `role`.*,
-			   `permission`.id           as permission_id,
-			   `permission`.name         as permission_name,
-			   `permission`.show_name    as permission_show_name,
-			   `permission`.gmt_created  as permission_gmt_created,
-			   `permission`.gmt_modified as permission_gmt_modified
-		from `role`
-				 inner join `role_permission` on `role`.id = `role_permission`.role_id
-				 inner join `permission` on `role_permission`.permission_id = `permission`.id
-		where `role`.id = #{id}
+		select "role".*,
+			   "permission".id           as permission_id,
+			   "permission".name         as permission_name,
+			   "permission".show_name    as permission_show_name,
+			   "permission".gmt_created  as permission_gmt_created,
+			   "permission".gmt_modified as permission_gmt_modified
+		from "role"
+				 inner join "role_permission" on "role".id = "role_permission".role_id
+				 inner join "permission" on "role_permission".permission_id = "permission".id
+		where "role".id = #{id}
 	</select>
 
 	<select id="getAll" resultMap="roleResultMap">
-		select `role`.*,
-			   `permission`.id           as permission_id,
-			   `permission`.name         as permission_name,
-			   `permission`.show_name    as permission_show_name,
-			   `permission`.gmt_created  as permission_gmt_created,
-			   `permission`.gmt_modified as permission_gmt_modified
-		from `role`
-				 inner join `role_permission` on `role`.id = `role_permission`.role_id
-				 inner join `permission` on `role_permission`.permission_id = `permission`.id
+		select "role".*,
+			   "permission".id           as permission_id,
+			   "permission".name         as permission_name,
+			   "permission".show_name    as permission_show_name,
+			   "permission".gmt_created  as permission_gmt_created,
+			   "permission".gmt_modified as permission_gmt_modified
+		from "role"
+				 inner join "role_permission" on "role".id = "role_permission".role_id
+				 inner join "permission" on "role_permission".permission_id = "permission".id
 	</select>
 </mapper>

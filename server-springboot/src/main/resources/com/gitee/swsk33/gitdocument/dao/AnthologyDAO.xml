@@ -13,18 +13,18 @@
 	</resultMap>
 
 	<insert id="add" parameterType="com.gitee.swsk33.gitdocument.dataobject.Anthology">
-		insert into `anthology`
+		insert into "anthology"
 		values (#{id}, #{name}, #{showName}, #{cover}, #{repoPath}, #{latestCommitId}, now(), now())
 	</insert>
 
 	<delete id="delete">
 		delete
-		from `anthology`
+		from "anthology"
 		where id = #{id}
 	</delete>
 
 	<update id="update" parameterType="com.gitee.swsk33.gitdocument.dataobject.Anthology">
-		update `anthology`
+		update "anthology"
 		set show_name        = #{showName},
 			cover            = #{cover},
 			latest_commit_id = #{latestCommitId},
@@ -34,18 +34,18 @@
 
 	<select id="getById" resultMap="anthologyResultMap">
 		select *
-		from `anthology`
+		from "anthology"
 		where id = #{id}
 	</select>
 
 	<select id="getByName" resultMap="anthologyResultMap">
 		select *
-		from `anthology`
+		from "anthology"
 		where name = #{name}
 	</select>
 
 	<select id="getAll" resultMap="anthologyResultMap">
 		select *
-		from `anthology`
+		from "anthology"
 	</select>
 </mapper>

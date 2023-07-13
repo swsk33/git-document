@@ -2,13 +2,13 @@ package com.gitee.swsk33.gitdocument.service.impl;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.core.util.IdUtil;
 import com.gitee.swsk33.gitdocument.dao.StarDAO;
 import com.gitee.swsk33.gitdocument.dataobject.Star;
 import com.gitee.swsk33.gitdocument.dataobject.User;
 import com.gitee.swsk33.gitdocument.model.Result;
 import com.gitee.swsk33.gitdocument.param.CommonValue;
 import com.gitee.swsk33.gitdocument.service.StarService;
-import com.gitee.swsk33.gitdocument.util.SnowflakeIdGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +24,7 @@ public class StarServiceImpl implements StarService {
 	@Override
 	public Result<Void> add(Star star) {
 		Result<Void> result = new Result<>();
-		star.setId(SnowflakeIdGenerator.getSnowflakeId());
+		star.setId(IdUtil.getSnowflakeNextId());
 		star.setUser((User) StpUtil.getSession().get(CommonValue.SA_USER_SESSION_INFO_KEY));
 		if (starDAO.add(star) < 1) {
 			result.setResultFailed("收藏失败！请联系开发者！");

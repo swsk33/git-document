@@ -10,31 +10,31 @@
 	</resultMap>
 
 	<insert id="add" parameterType="com.gitee.swsk33.gitdocument.dataobject.Star">
-		insert into `star` (id, user_id, anthology_id, gmt_created, gmt_modified)
+		insert into "star" (id, user_id, anthology_id, gmt_created, gmt_modified)
 		values (#{id}, #{user.id}, #{anthology.id}, now(), now())
 	</insert>
 
 	<delete id="delete">
 		delete
-		from `star`
+		from "star"
 		where id = #{id}
 	</delete>
 
 	<select id="getById" resultMap="starResultMap">
 		select *
-		from `star`
+		from "star"
 		where id = #{id}
 	</select>
 
 	<select id="getByUserId" resultMap="starResultMap">
 		select *
-		from `star`
+		from "star"
 		where user_id = #{userId}
 	</select>
 
 	<select id="getAnthologyStarCount" resultType="java.lang.Integer">
 		select count(*)
-		from `star`
+		from "star"
 		where anthology_id = #{anthologyId}
 	</select>
 </mapper>

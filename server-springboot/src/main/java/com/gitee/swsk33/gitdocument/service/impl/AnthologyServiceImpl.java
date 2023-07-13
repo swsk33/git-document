@@ -1,6 +1,9 @@
 package com.gitee.swsk33.gitdocument.service.impl;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.util.StrUtil;
 import com.gitee.swsk33.gitdocument.context.GitFileListenerContext;
 import com.gitee.swsk33.gitdocument.dao.AnthologyDAO;
 import com.gitee.swsk33.gitdocument.dao.UserDAO;
@@ -18,15 +21,13 @@ import com.gitee.swsk33.gitdocument.service.ImageService;
 import com.gitee.swsk33.gitdocument.util.ClassExamine;
 import com.gitee.swsk33.gitdocument.util.GitFileUtils;
 import com.gitee.swsk33.gitdocument.util.GitRepositoryUtils;
-import com.gitee.swsk33.gitdocument.util.SnowflakeIdGenerator;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -37,6 +38,7 @@ import java.util.stream.Stream;
 
 @Slf4j
 @Component
+@DependsOn("SQLInitializeAutoConfigure")
 public class AnthologyServiceImpl implements AnthologyService {
 
 	@Autowired
@@ -61,7 +63,7 @@ public class AnthologyServiceImpl implements AnthologyService {
 	 * 启动时，开始监听现有的每个仓库，并开启文件更新任务队列
 	 */
 	@PostConstruct
-	private void startRepositoryUpdateTask() throws Exception {
+	private void startRepositoryUpdateTask() {
 		// 从数据库获取文集仓库信息
 		List<Anthology> anthologies;
 		try {
@@ -81,6 +83,7 @@ public class AnthologyServiceImpl implements AnthologyService {
 				// 如果说刚创建的仓库，则不进行对比
 				if (newCommitId == null) {
 					log.warn("本地仓库：" + anthology.getName() + "的commitId为空！可能是刚创建的仓库，跳过比对！");
+					listenerContext.addMonitor(anthology.getId(), anthology.getRepoPath());
 					return;
 				}
 				// 如果数据库中commitId为空，说明需要执行创建任务
@@ -92,6 +95,7 @@ public class AnthologyServiceImpl implements AnthologyService {
 					createTaskMessage.setFileList(GitFileUtils.getLatestFileList(anthology.getRepoPath()));
 					rabbitTemplate.convertAndSend(CommonValue.MessageQueue.GIT_TASK_TOPIC_EXCHANGE, CommonValue.RabbitMQRoutingKey.GIT_CREATE, createTaskMessage);
 					log.info("已发布对本地仓库：" + anthology.getName() + " 的创建任务消息至消息队列！");
+					listenerContext.addMonitor(anthology.getId(), anthology.getRepoPath());
 					return;
 				}
 				// 如果只是单纯的两者不同，说明需要进行更新同步操作
@@ -101,6 +105,7 @@ public class AnthologyServiceImpl implements AnthologyService {
 					List<DiffEntry> diffs = GitFileUtils.compareDiffBetweenTwoCommits(anthology.getRepoPath(), anthology.getLatestCommitId(), newCommitId);
 					if (diffs.size() == 0) {
 						log.info("没有需要更新的差异！");
+						listenerContext.addMonitor(anthology.getId(), anthology.getRepoPath());
 						return;
 					}
 					GitUpdateTaskMessage updateTaskMessage = new GitUpdateTaskMessage();
@@ -115,11 +120,9 @@ public class AnthologyServiceImpl implements AnthologyService {
 				e.printStackTrace();
 			} finally {
 				// 检查更新完成后，对其加入监听
-				listenerContext.addObserver(anthology.getId(), anthology.getRepoPath());
+				listenerContext.addMonitor(anthology.getId(), anthology.getRepoPath());
 			}
 		});
-		// 开启监听者
-		listenerContext.start();
 		log.info("已开启全部文集仓库监听！");
 		log.info("所有仓库位于：" + configProperties.getRepoPath());
 	}
@@ -141,11 +144,10 @@ public class AnthologyServiceImpl implements AnthologyService {
 		}
 		log.info("成功创建文集仓库！位于：" + repoPath);
 		// 补充信息
-		anthology.setId(SnowflakeIdGenerator.getSnowflakeId());
+		anthology.setId(IdUtil.getSnowflakeNextId());
 		anthology.setRepoPath(repoPath);
-		anthology.setCover(imageService.getRandomCover().getData());
 		// 加入监听
-		listenerContext.addObserver(anthology.getId(), repoPath);
+		listenerContext.addMonitor(anthology.getId(), repoPath);
 		// 存入数据库
 		anthologyDAO.add(anthology);
 		result.setResultSuccess("创建文集仓库成功！");
@@ -174,10 +176,9 @@ public class AnthologyServiceImpl implements AnthologyService {
 			return result;
 		}
 		// 停止文件监听
-		listenerContext.removeObserver(id);
+		listenerContext.removeMonitor(id);
 		// 删除仓库文件夹
-		FileUtils.deleteDirectory(new File(getAnthology.getRepoPath()));
-		if (new File(getAnthology.getRepoPath()).exists()) {
+		if (!FileUtil.del(getAnthology.getRepoPath())) {
 			result.setResultFailed("删除文集仓库失败！请联系开发者！");
 			return result;
 		}
@@ -192,7 +193,7 @@ public class AnthologyServiceImpl implements AnthologyService {
 	@Override
 	public Result<Void> update(Anthology anthology) throws Exception {
 		Result<Void> result = new Result<>();
-		if (!StringUtils.isEmpty(anthology.getLatestCommitId())) {
+		if (!StrUtil.isEmpty(anthology.getLatestCommitId())) {
 			result.setResultFailed("不允许手动修改commit id！");
 			return result;
 		}
@@ -241,7 +242,6 @@ public class AnthologyServiceImpl implements AnthologyService {
 			if (getUser == null) {
 				getUser = new User();
 				getUser.setNickname("未知用户");
-				getUser.setAvatar(imageService.getRandomAvatar().getData());
 			}
 			info.setCommitter(getUser);
 			info.setMessage(item.getFullMessage());

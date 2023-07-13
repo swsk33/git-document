@@ -1,86 +1,77 @@
 package com.gitee.swsk33.gitdocument.service.impl;
 
-import com.gitee.swsk33.gitdocument.property.ConfigProperties;
-import com.gitee.swsk33.gitdocument.dao.UserDAO;
+import cn.hutool.core.util.ArrayUtil;
 import com.gitee.swsk33.gitdocument.dataobject.User;
-import com.gitee.swsk33.gitdocument.model.ErrorReport;
+import com.gitee.swsk33.gitdocument.message.CreateEmailMessage;
+import com.gitee.swsk33.gitdocument.message.UpdateEmailMessage;
+import com.gitee.swsk33.gitdocument.model.ArticleDiff;
 import com.gitee.swsk33.gitdocument.service.EmailService;
-import com.gitee.swsk33.readandwrite.param.NewLineCharacter;
+import io.github.swsk33.codepostcore.service.EmailNotifyService;
+import io.github.swsk33.codepostcore.service.EmailVerifyCodeService;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.jgit.diff.DiffEntry;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Component
 public class EmailServiceImpl implements EmailService {
 
-	@Value("${spring.mail.username}")
-	private String sender;
+	@Autowired
+	private EmailVerifyCodeService verifyCodeService;
 
 	@Autowired
-	private ConfigProperties configProperties;
-
-	@Autowired
-	private JavaMailSender mailSender;
-
-	@Autowired
-	private UserDAO userDAO;
-
-	@Async
-	@Override
-	public void sendNotifyMail(String email, String title, String text) {
-		SimpleMailMessage message = new SimpleMailMessage();
-		message.setFrom(sender);
-		message.setTo(email);
-		message.setSubject(title);
-		message.setText(text);
-		try {
-			mailSender.send(message);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	@Override
-	public void sendReportToAdmin(ErrorReport errorReport) {
-		StringBuilder content = new StringBuilder();
-		// 内容头
-		content.append("收到错误报告！").append(NewLineCharacter.defaultNewLineChar);
-		content.append("- 报告名：").append(errorReport.getName()).append(NewLineCharacter.defaultNewLineChar);
-		content.append("- 报告正文：").append(errorReport.getContent()).append(NewLineCharacter.defaultNewLineChar).append(NewLineCharacter.defaultNewLineChar);
-		// 文章信息
-		content.append("错误涉及文章信息：").append(NewLineCharacter.defaultNewLineChar);
-		content.append("- 文章名：").append(errorReport.getArticle().getAnthology().getName()).append(" - ").append(errorReport.getArticle().getFilePath());
-		content.append(NewLineCharacter.defaultNewLineChar).append(NewLineCharacter.defaultNewLineChar);
-		// 报告人信息
-		content.append("来自用户：").append(NewLineCharacter.defaultNewLineChar);
-		content.append("- 用户昵称：").append(errorReport.getUser().getNickname()).append(NewLineCharacter.defaultNewLineChar);
-		content.append("- 用户邮箱：").append(errorReport.getUser().getEmail());
-		List<User> admins = userDAO.getAllAdmin();
-		for (User user : admins) {
-			sendNotifyMail(user.getEmail(), "GitDocument · " + configProperties.getOrganizationName() + " - 错误报告", content.toString());
-			log.info("已向管理员：" + user.getNickname() + " 发送了错误报告通知邮件！");
-		}
-	}
-
-	@Override
-	public void sendPasswordResetEmail(String email, String password) {
-		String content = "您的密码被重置为：" + password + NewLineCharacter.defaultNewLineChar + "请先用该密码登录，然后尽快登录并修改您的密码！";
-		sendNotifyMail(email, "GitDocument · " + configProperties.getOrganizationName() + " - 密码重置", content);
-		log.info("已向邮箱：" + email + " 发送了密码重置邮件！");
-	}
+	private EmailNotifyService notifyService;
 
 	@Override
 	public void sendRoleChangeEmail(User changedUser, User operator) {
-		String content = "您的角色已被管理员：" + operator.getNickname() + " 修改为 " + changedUser.getRole().getShowName() + " ！";
-		sendNotifyMail(changedUser.getEmail(), "GitDocument · " + configProperties.getOrganizationName() + " - 角色更改", content);
-		log.info("已向邮箱：" + changedUser.getEmail() + " 发送了角色更改邮件！");
+		// 设定模板变量
+		Map<String, Object> models = new HashMap<>();
+		models.put("operator", operator.getNickname());
+		models.put("newRole", changedUser.getRole().getShowName());
+		notifyService.sendTemplateNotify("GitDocument - 用户权限变化", "role-changed.txt", models, changedUser.getEmail());
+	}
+
+	@Override
+	public void sendAnthologyUpdateNotify(UpdateEmailMessage message) {
+		// 获取差异信息
+		List<String> diffsMessage = message.getDiffEntries().stream()
+				// 过滤掉非md文件的变动
+				.filter(diff -> diff.getChangeType() == DiffEntry.ChangeType.DELETE || diff.getNewPath().endsWith(".md"))
+				.map(ArticleDiff::toString).toList();
+		// 设定模板变量
+		Map<String, Object> models = new HashMap<>();
+		models.put("anthology", message.getName());
+		models.put("commitMessage", message.getCommitMessage());
+		models.put("diffs", diffsMessage);
+		// 群发通知邮件
+		notifyService.sendTemplateNotify(message.getTitle(), "anthology-update.txt", models, ArrayUtil.toArray(message.getEmailList(), String.class));
+	}
+
+	@Override
+	public void sendAnthologyCreateNotify(CreateEmailMessage message) {
+		// 设定模板变量
+		Map<String, Object> models = new HashMap<>();
+		models.put("publisher", message.getPublisher());
+		models.put("anthologyName", message.getName());
+		// 群发通知邮件
+		notifyService.sendTemplateNotify(message.getTitle(), "anthology-create.txt", models, ArrayUtil.toArray(message.getEmailList(), String.class));
+	}
+
+	@Override
+	public void sendPasswordResetCode(User resetUser) {
+		verifyCodeService.sendCode(resetUser.getId(), resetUser.getEmail(), 5, TimeUnit.MINUTES);
+		log.info("已向" + resetUser.getEmail() + "发送密码重置验证码！");
+	}
+
+	@Override
+	public boolean verifyPasswordResetCode(int userId, String code) {
+		return verifyCodeService.verifyCode(userId, code);
 	}
 
 }

@@ -1,0 +1,1 @@
+${publisher} 发布了新的文集：《${anthologyName}》，快来看看吧！

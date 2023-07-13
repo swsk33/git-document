@@ -45,7 +45,7 @@ public class User implements Serializable {
 	private String nickname;
 
 	/**
-	 * 头像
+	 * 头像文件名
 	 */
 	private String avatar;
 

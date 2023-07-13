@@ -1,35 +1,12 @@
 package com.gitee.swsk33.gitdocument.service;
 
 import com.gitee.swsk33.gitdocument.dataobject.User;
-import com.gitee.swsk33.gitdocument.model.ErrorReport;
+import com.gitee.swsk33.gitdocument.message.CreateEmailMessage;
+import com.gitee.swsk33.gitdocument.message.UpdateEmailMessage;
 import org.springframework.stereotype.Service;
 
 @Service
 public interface EmailService {
-
-	/**
-	 * 发送文本通知邮件
-	 *
-	 * @param email 目的邮件地址
-	 * @param title 邮件标题
-	 * @param text  邮件内容
-	 */
-	void sendNotifyMail(String email, String title, String text);
-
-	/**
-	 * 给所有管理员发送错误信息
-	 *
-	 * @param errorReport 错误报告对象
-	 */
-	void sendReportToAdmin(ErrorReport errorReport);
-
-	/**
-	 * 发送密码重置邮件
-	 *
-	 * @param email    被重置密码的用户邮箱
-	 * @param password 重置后的密码
-	 */
-	void sendPasswordResetEmail(String email, String password);
 
 	/**
 	 * 发送角色更改邮件通知
@@ -38,5 +15,35 @@ public interface EmailService {
 	 * @param operator    操作者
 	 */
 	void sendRoleChangeEmail(User changedUser, User operator);
+
+	/**
+	 * 发送文集更新邮件通知
+	 *
+	 * @param message 从消息队列获取到的更新通知邮件任务
+	 */
+	void sendAnthologyUpdateNotify(UpdateEmailMessage message);
+
+	/**
+	 * 发送新发布文集通知
+	 *
+	 * @param message 从消息队列获取到的新文集创建通知邮件任务
+	 */
+	void sendAnthologyCreateNotify(CreateEmailMessage message);
+
+	/**
+	 * 发送密码重置验证码
+	 *
+	 * @param resetUser 需要重置密码的用户
+	 */
+	void sendPasswordResetCode(User resetUser);
+
+	/**
+	 * 验证密码重置验证码
+	 *
+	 * @param userId 申请密码重置的用户id
+	 * @param code   用户传入的验证码
+	 * @return 是否验证成功
+	 */
+	boolean verifyPasswordResetCode(int userId, String code);
 
 }

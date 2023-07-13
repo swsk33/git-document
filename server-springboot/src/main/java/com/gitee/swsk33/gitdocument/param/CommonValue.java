@@ -1,7 +1,5 @@
 package com.gitee.swsk33.gitdocument.param;
 
-import java.io.File;
-
 /**
  * 存放常用的常量值
  */
@@ -67,110 +65,6 @@ public class CommonValue {
 	}
 
 	/**
-	 * 常用资源路径
-	 */
-	public static class RequestPath {
-
-		/**
-		 * 访问包内部静态资源的资源路径
-		 */
-		public static final String INNER_STATIC = "/";
-
-		/**
-		 * 访问外部静态资源的路径
-		 */
-		public static final String EXTERNAL_REQUEST_PATH = "/static";
-
-		/**
-		 * 用户头像外部访问路径
-		 */
-		public static final String USER_AVATAR_REQUEST_PATH = EXTERNAL_REQUEST_PATH + "/avatar/user/";
-
-		/**
-		 * 默认头像外部访问路径
-		 */
-		public static final String DEFAULT_AVATAR_REQUEST_PATH = EXTERNAL_REQUEST_PATH + "/avatar/default/";
-
-		/**
-		 * 自定义封面外部访问路径
-		 */
-		public static final String CUSTOM_COVER_REQUEST_PATH = EXTERNAL_REQUEST_PATH + "/cover/custom/";
-
-		/**
-		 * 默认封面外部访问路径
-		 */
-		public static final String DEFAULT_COVER_REQUEST_PATH = EXTERNAL_REQUEST_PATH + "/cover/default/";
-
-		/**
-		 * 默认主面板背景图片请求路径
-		 */
-		public static final String DEFAULT_BACKGROUND_REQUEST_PATH = EXTERNAL_REQUEST_PATH + "/background/default/";
-
-		/**
-		 * 自定义主面板背景图片请求路径
-		 */
-		public static final String CUSTOM_BACKGROUND_REQUEST_PATH = EXTERNAL_REQUEST_PATH + "/background/custom.jpg";
-
-		/**
-		 * 默认登录背景图
-		 */
-		public static final String DEFAULT_LOGIN_BACKGROUND_PATH = EXTERNAL_REQUEST_PATH + "/login-background/default/";
-
-		/**
-		 * 自定义登录背景图
-		 */
-		public static final String CUSTOM_LOGIN_BACKGROUND_PATH = EXTERNAL_REQUEST_PATH + "/login-background/custom.jpg";
-
-	}
-
-	/**
-	 * 实际资源相对路径
-	 */
-	public static class ResourcePath {
-
-		/**
-		 * 用户头像存放文件夹
-		 */
-		public static final String USER_AVATAR_FOLDER = "external-resource" + File.separator + "avatar" + File.separator + "user";
-
-		/**
-		 * 默认头像存放文件夹
-		 */
-		public static final String DEFAULT_AVATAR_FOLDER = "external-resource" + File.separator + "avatar" + File.separator + "default";
-
-		/**
-		 * 自定义封面存放文件夹
-		 */
-		public static final String CUSTOM_COVER_FOLDER = "external-resource" + File.separator + "cover" + File.separator + "custom";
-
-		/**
-		 * 默认封面存放文件夹
-		 */
-		public static final String DEFAULT_COVER_FOLDER = "external-resource" + File.separator + "cover" + File.separator + "default";
-
-		/**
-		 * 自定义面板背景图所在目录
-		 */
-		public static final String CUSTOM_BACKGROUND_FOLDER = "external-resource" + File.separator + "background";
-
-		/**
-		 * 自定义主面板背景图片路径
-		 */
-		public static final String CUSTOM_BACKGROUND_FILE = CUSTOM_BACKGROUND_FOLDER + File.separator + "custom.jpg";
-
-		/**
-		 * 自定义登录背景图所在目录
-		 */
-		public static final String CUSTOM_LOGIN_BACKGROUND_FOLDER = "external-resource" + File.separator + "login-background";
-
-		/**
-		 * 自定义登录背景图片路径
-		 */
-		public static final String CUSTOM_LOGIN_BACKGROUND_FILE = CUSTOM_LOGIN_BACKGROUND_FOLDER + File.separator + "custom.jpg";
-
-	}
-
-	/**
 	 * 存放消息队列的一些常量
 	 */
 	public static class MessageQueue {
@@ -184,6 +78,11 @@ public class CommonValue {
 		 * 收藏更新通知邮件消息队列
 		 */
 		public static final String UPDATE_EMAIL_QUEUE = PREFIX + ".update-email-queue";
+
+		/**
+		 * 新文集发布通知邮件消息队列
+		 */
+		public static final String CREATE_EMAIL_QUEUE = PREFIX + ".create-email-queue";
 
 		/**
 		 * 邮件主题模式交换机
@@ -221,6 +120,11 @@ public class CommonValue {
 		 * 更新通知邮件
 		 */
 		public static final String UPDATE_EMAIL = EMAIL_TASK + ".update";
+
+		/**
+		 * 文集创建通知邮件
+		 */
+		public static final String CREATE_EMAIL = EMAIL_TASK + ".create";
 
 		/**
 		 * Git仓库任务话题

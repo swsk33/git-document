@@ -9,12 +9,12 @@
 	</resultMap>
 
 	<insert id="add" parameterType="com.gitee.swsk33.gitdocument.dataobject.Setting" useGeneratedKeys="true" keyProperty="id">
-		insert into `setting` (receive_update_email, gmt_created, gmt_modified)
+		insert into "setting" (receive_update_email, gmt_created, gmt_modified)
 		values (#{receiveUpdateEmail}, now(), now())
 	</insert>
 
 	<update id="update" parameterType="com.gitee.swsk33.gitdocument.dataobject.Setting">
-		update `setting`
+		update "setting"
 		set receive_update_email = #{receiveUpdateEmail},
 			gmt_modified         = now()
 		where id = #{id}
@@ -22,7 +22,7 @@
 
 	<select id="getById" resultMap="settingResultMap">
 		select *
-		from `setting`
+		from "setting"
 		where id = #{id}
 	</select>
 </mapper>
