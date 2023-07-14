@@ -1,78 +1,84 @@
 package com.gitee.swsk33.gitdocument.service.impl;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import com.gitee.swsk33.gitdocument.dao.SystemSettingDAO;
 import com.gitee.swsk33.gitdocument.model.Result;
-import com.gitee.swsk33.gitdocument.param.CommonValue;
+import com.gitee.swsk33.gitdocument.param.PermissionName;
+import com.gitee.swsk33.gitdocument.service.ImageService;
 import com.gitee.swsk33.gitdocument.service.SystemSettingService;
-import com.gitee.swsk33.gitdocument.util.MultipartFileUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
+import static com.gitee.swsk33.gitdocument.param.SystemSettingKey.*;
 
 @Component
 public class SystemSettingServiceImpl implements SystemSettingService {
 
-	@SaCheckPermission(CommonValue.Permission.ALTER_SYSTEM_SETTING)
+	@Autowired
+	private SystemSettingDAO systemSettingDAO;
+
+	@Autowired
+	private ImageService imageService;
+
+	@SaCheckPermission(PermissionName.ALTER_SYSTEM_SETTING)
+	@Override
+	public Result<Void> setOrganizationName(String name) {
+		return systemSettingDAO.set(ORGANIZATION_NAME, name) < 1 ? Result.resultFailed("设定组织名失败！") : Result.resultSuccess("设定组织名成功！");
+	}
+
+	@Override
+	public Result<String> getOrganizationName() {
+		String getName = systemSettingDAO.get(ORGANIZATION_NAME);
+		return getName == null ? Result.resultFailed("获取组织名失败！") : Result.resultSuccess("获取组织名成功！", getName);
+	}
+
+	@SaCheckPermission(PermissionName.ALTER_SYSTEM_SETTING)
+	@Override
+	public Result<Void> setAllowPublic(boolean allow) {
+		return systemSettingDAO.set(ALLOW_PUBLIC, String.valueOf(allow)) < 1 ? Result.resultFailed("设定允许公开失败！") : Result.resultSuccess("设定允许公开成功！");
+	}
+
+	@Override
+	public Result<Boolean> getAllowPublic() {
+		String getAllow = systemSettingDAO.get(ALLOW_PUBLIC);
+		return getAllow == null ? Result.resultFailed("获取是否允许公开失败！") : Result.resultSuccess("获取是否允许公开成功！", Boolean.parseBoolean(getAllow));
+	}
+
+	@SaCheckPermission(PermissionName.ALTER_SYSTEM_SETTING)
 	@Override
 	public Result<Void> resetLoginBackground() {
-		Result<Void> result = new Result<>();
-		File imageFile = new File(CommonValue.ResourcePath.CUSTOM_LOGIN_BACKGROUND_FILE);
-		if (imageFile.exists() && !imageFile.delete()) {
-			result.setResultFailed("重置失败！请联系开发者！");
-			return result;
-		}
-		result.setResultSuccess("重置登录背景图成功！刷新网页生效！");
-		return result;
+		systemSettingDAO.set(LOGIN_BACKGROUND_IMAGE, null);
+		return Result.resultSuccess("重置完成！");
 	}
 
-	@SaCheckPermission(CommonValue.Permission.ALTER_SYSTEM_SETTING)
+	@SaCheckPermission(PermissionName.ALTER_SYSTEM_SETTING)
 	@Override
 	public Result<Void> resetMainBackground() {
-		Result<Void> result = new Result<>();
-		File imageFile = new File(CommonValue.ResourcePath.CUSTOM_BACKGROUND_FILE);
-		if (imageFile.exists() && !imageFile.delete()) {
-			result.setResultFailed("重置失败！请联系开发者！");
-			return result;
-		}
-		result.setResultSuccess("重置主面板背景图成功！刷新网页生效！");
-		return result;
+		systemSettingDAO.set(MAIN_BACKGROUND_IMAGE, null);
+		return Result.resultSuccess("重置完成！");
 	}
 
-	@SaCheckPermission(CommonValue.Permission.ALTER_SYSTEM_SETTING)
+	@SaCheckPermission(PermissionName.ALTER_SYSTEM_SETTING)
 	@Override
 	public Result<Void> customLoginBackground(MultipartFile image) {
-		Result<Void> result = new Result<>();
-		File imageFile = new File(CommonValue.ResourcePath.CUSTOM_LOGIN_BACKGROUND_FILE);
-		if (imageFile.exists() && !imageFile.delete()) {
-			result.setResultFailed("删除旧图片失败！请联系开发者！");
-			return result;
-		}
-		Result<String> uploadResult = MultipartFileUtils.saveFileToDisk(image, CommonValue.ResourcePath.CUSTOM_LOGIN_BACKGROUND_FOLDER, "custom", new String[]{"jpg"}, 10);
+		Result<String> uploadResult = imageService.upload(image);
 		if (!uploadResult.isSuccess()) {
-			result.setResultFailed(uploadResult.getMessage());
-			return result;
+			return Result.resultFailed(uploadResult.getMessage());
 		}
-		result.setResultSuccess("设定登录背景图成功！刷新网页后生效！");
-		return result;
+		systemSettingDAO.set(LOGIN_BACKGROUND_IMAGE, uploadResult.getData());
+		return Result.resultSuccess("设定登录页背景图成功！");
 	}
 
-	@SaCheckPermission(CommonValue.Permission.ALTER_SYSTEM_SETTING)
+	@SaCheckPermission(PermissionName.ALTER_SYSTEM_SETTING)
 	@Override
 	public Result<Void> customMainBackground(MultipartFile image) {
-		Result<Void> result = new Result<>();
-		File imageFile = new File(CommonValue.ResourcePath.CUSTOM_BACKGROUND_FILE);
-		if (imageFile.exists() && !imageFile.delete()) {
-			result.setResultFailed("删除旧图片失败！请联系开发者！");
-			return result;
-		}
-		Result<String> uploadResult = MultipartFileUtils.saveFileToDisk(image, CommonValue.ResourcePath.CUSTOM_BACKGROUND_FOLDER, "custom", new String[]{"jpg"}, 10);
+		Result<String> uploadResult = imageService.upload(image);
 		if (!uploadResult.isSuccess()) {
-			result.setResultFailed(uploadResult.getMessage());
-			return result;
+			return Result.resultFailed(uploadResult.getMessage());
 		}
-		result.setResultSuccess("设定主面板背景图成功！刷新网页后生效！");
-		return result;
+		systemSettingDAO.set(MAIN_BACKGROUND_IMAGE, uploadResult.getData());
+		return Result.resultSuccess("设定主页背景图成功！");
 	}
 
 }

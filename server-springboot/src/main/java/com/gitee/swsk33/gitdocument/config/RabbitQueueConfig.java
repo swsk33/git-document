@@ -1,12 +1,15 @@
 package com.gitee.swsk33.gitdocument.config;
 
-import com.gitee.swsk33.gitdocument.param.CommonValue;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import static com.gitee.swsk33.gitdocument.param.RabbitMessageQueue.Exchange.*;
+import static com.gitee.swsk33.gitdocument.param.RabbitMessageQueue.Queue.*;
+import static com.gitee.swsk33.gitdocument.param.RabbitMessageQueue.RoutingKey.*;
 
 /**
  * RabbitMQ的队列和交换机配置
@@ -19,7 +22,7 @@ public class RabbitQueueConfig {
 	 */
 	@Bean
 	public Queue updateEmailQueue() {
-		return new Queue(CommonValue.MessageQueue.UPDATE_EMAIL_QUEUE);
+		return new Queue(UPDATE_EMAIL_QUEUE);
 	}
 
 	/**
@@ -27,7 +30,7 @@ public class RabbitQueueConfig {
 	 */
 	@Bean
 	public Queue createEmailQueue() {
-		return new Queue(CommonValue.MessageQueue.CREATE_EMAIL_QUEUE);
+		return new Queue(CREATE_EMAIL_QUEUE);
 	}
 
 	/**
@@ -35,7 +38,7 @@ public class RabbitQueueConfig {
 	 */
 	@Bean
 	public TopicExchange emailExchange() {
-		return new TopicExchange(CommonValue.MessageQueue.EMAIL_TOPIC_EXCHANGE);
+		return new TopicExchange(EMAIL_TOPIC_EXCHANGE);
 	}
 
 	/**
@@ -43,7 +46,7 @@ public class RabbitQueueConfig {
 	 */
 	@Bean
 	public Binding emailUpdateQueueBinding(Queue updateEmailQueue, TopicExchange emailExchange) {
-		return BindingBuilder.bind(updateEmailQueue).to(emailExchange).with(CommonValue.RabbitMQRoutingKey.UPDATE_EMAIL);
+		return BindingBuilder.bind(updateEmailQueue).to(emailExchange).with(UPDATE_EMAIL);
 	}
 
 	/**
@@ -51,7 +54,7 @@ public class RabbitQueueConfig {
 	 */
 	@Bean
 	public Binding emailCreateQueueBinding(Queue createEmailQueue, TopicExchange emailExchange) {
-		return BindingBuilder.bind(createEmailQueue).to(emailExchange).with(CommonValue.RabbitMQRoutingKey.CREATE_EMAIL);
+		return BindingBuilder.bind(createEmailQueue).to(emailExchange).with(CREATE_EMAIL);
 	}
 
 	/**
@@ -59,7 +62,7 @@ public class RabbitQueueConfig {
 	 */
 	@Bean
 	public Queue gitCreateQueue() {
-		return new Queue(CommonValue.MessageQueue.GIT_CREATE_TASK_QUEUE);
+		return new Queue(GIT_CREATE_TASK_QUEUE);
 	}
 
 	/**
@@ -67,7 +70,7 @@ public class RabbitQueueConfig {
 	 */
 	@Bean
 	public Queue gitUpdateQueue() {
-		return new Queue(CommonValue.MessageQueue.GIT_UPDATE_TASK_QUEUE);
+		return new Queue(GIT_UPDATE_TASK_QUEUE);
 	}
 
 	/**
@@ -75,7 +78,7 @@ public class RabbitQueueConfig {
 	 */
 	@Bean
 	public TopicExchange gitTaskExchange() {
-		return new TopicExchange(CommonValue.MessageQueue.GIT_TASK_TOPIC_EXCHANGE);
+		return new TopicExchange(GIT_TASK_TOPIC_EXCHANGE);
 	}
 
 	/**
@@ -83,7 +86,7 @@ public class RabbitQueueConfig {
 	 */
 	@Bean
 	public Binding createQueueBinding(Queue gitCreateQueue, TopicExchange gitTaskExchange) {
-		return BindingBuilder.bind(gitCreateQueue).to(gitTaskExchange).with(CommonValue.RabbitMQRoutingKey.GIT_CREATE);
+		return BindingBuilder.bind(gitCreateQueue).to(gitTaskExchange).with(GIT_CREATE);
 	}
 
 	/**
@@ -91,7 +94,7 @@ public class RabbitQueueConfig {
 	 */
 	@Bean
 	public Binding updateQueueBinding(Queue gitUpdateQueue, TopicExchange gitTaskExchange) {
-		return BindingBuilder.bind(gitUpdateQueue).to(gitTaskExchange).with(CommonValue.RabbitMQRoutingKey.GIT_UPDATE);
+		return BindingBuilder.bind(gitUpdateQueue).to(gitTaskExchange).with(GIT_UPDATE);
 	}
 
 }

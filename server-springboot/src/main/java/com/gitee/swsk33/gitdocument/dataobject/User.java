@@ -45,7 +45,7 @@ public class User implements Serializable {
 	private String nickname;
 
 	/**
-	 * 头像文件名
+	 * 头像文件名，为null时表示使用默认头像
 	 */
 	private String avatar;
 

@@ -1,6 +1,7 @@
 package com.gitee.swsk33.gitdocument.service.impl;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
@@ -9,12 +10,13 @@ import com.gitee.swsk33.gitdocument.dao.AnthologyDAO;
 import com.gitee.swsk33.gitdocument.dao.UserDAO;
 import com.gitee.swsk33.gitdocument.dataobject.Anthology;
 import com.gitee.swsk33.gitdocument.dataobject.User;
+import com.gitee.swsk33.gitdocument.message.CreateEmailMessage;
 import com.gitee.swsk33.gitdocument.message.GitCreateTaskMessage;
 import com.gitee.swsk33.gitdocument.message.GitUpdateTaskMessage;
 import com.gitee.swsk33.gitdocument.model.ArticleDiff;
 import com.gitee.swsk33.gitdocument.model.CommitInfo;
 import com.gitee.swsk33.gitdocument.model.Result;
-import com.gitee.swsk33.gitdocument.param.CommonValue;
+import com.gitee.swsk33.gitdocument.param.PermissionName;
 import com.gitee.swsk33.gitdocument.property.ConfigProperties;
 import com.gitee.swsk33.gitdocument.service.AnthologyService;
 import com.gitee.swsk33.gitdocument.service.ImageService;
@@ -35,6 +37,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
+
+import static com.gitee.swsk33.gitdocument.param.CommonValue.RUN_USER_NAME;
+import static com.gitee.swsk33.gitdocument.param.CommonValue.SA_USER_SESSION_INFO_KEY;
+import static com.gitee.swsk33.gitdocument.param.RabbitMessageQueue.Exchange.EMAIL_TOPIC_EXCHANGE;
+import static com.gitee.swsk33.gitdocument.param.RabbitMessageQueue.Exchange.GIT_TASK_TOPIC_EXCHANGE;
+import static com.gitee.swsk33.gitdocument.param.RabbitMessageQueue.RoutingKey.*;
 
 @Slf4j
 @Component
@@ -93,7 +101,7 @@ public class AnthologyServiceImpl implements AnthologyService {
 					createTaskMessage.setRepositoryId(anthology.getId());
 					createTaskMessage.setCommitId(newCommitId);
 					createTaskMessage.setFileList(GitFileUtils.getLatestFileList(anthology.getRepoPath()));
-					rabbitTemplate.convertAndSend(CommonValue.MessageQueue.GIT_TASK_TOPIC_EXCHANGE, CommonValue.RabbitMQRoutingKey.GIT_CREATE, createTaskMessage);
+					rabbitTemplate.convertAndSend(GIT_TASK_TOPIC_EXCHANGE, GIT_CREATE, createTaskMessage);
 					log.info("已发布对本地仓库：" + anthology.getName() + " 的创建任务消息至消息队列！");
 					listenerContext.addMonitor(anthology.getId(), anthology.getRepoPath());
 					return;
@@ -112,7 +120,7 @@ public class AnthologyServiceImpl implements AnthologyService {
 					updateTaskMessage.setRepositoryId(anthology.getId());
 					updateTaskMessage.setCommitId(newCommitId);
 					updateTaskMessage.setDiffs(ArticleDiff.toArticleDiff(diffs));
-					rabbitTemplate.convertAndSend(CommonValue.MessageQueue.GIT_TASK_TOPIC_EXCHANGE, CommonValue.RabbitMQRoutingKey.GIT_UPDATE, updateTaskMessage);
+					rabbitTemplate.convertAndSend(GIT_TASK_TOPIC_EXCHANGE, GIT_UPDATE, updateTaskMessage);
 					log.info("已发布对本地仓库：" + anthology.getName() + " 的更新任务消息至消息队列！");
 				}
 			} catch (Exception e) {
@@ -127,20 +135,17 @@ public class AnthologyServiceImpl implements AnthologyService {
 		log.info("所有仓库位于：" + configProperties.getRepoPath());
 	}
 
-	@SaCheckPermission(CommonValue.Permission.EDIT_ANTHOLOGY)
+	@SaCheckPermission(PermissionName.EDIT_ANTHOLOGY)
 	@Override
 	public Result<Void> add(Anthology anthology) {
-		Result<Void> result = new Result<>();
 		Anthology getAnthology = anthologyDAO.getByName(anthology.getName());
 		if (getAnthology != null) {
-			result.setResultFailed("该文集名已被使用！");
-			return result;
+			return Result.resultFailed("该文集名已被使用！");
 		}
 		// 先去创建一个Git仓库，并加入到监听列表
 		String repoPath = configProperties.getRepoPath() + File.separator + anthology.getName() + ".git";
 		if (!GitRepositoryUtils.initGitBareRepository(repoPath)) {
-			result.setResultFailed("创建文集仓库失败！请联系开发者！");
-			return result;
+			return Result.resultFailed("创建文集仓库失败！请联系开发者！");
 		}
 		log.info("成功创建文集仓库！位于：" + repoPath);
 		// 补充信息
@@ -150,86 +155,87 @@ public class AnthologyServiceImpl implements AnthologyService {
 		listenerContext.addMonitor(anthology.getId(), repoPath);
 		// 存入数据库
 		anthologyDAO.add(anthology);
-		result.setResultSuccess("创建文集仓库成功！");
-		return result;
+		// 发送通知
+		// 获取订阅新文集创建通知的用户
+		List<User> receivers = userDAO.getByReceiveCreate();
+		List<String> emails = receivers.stream().map(User::getEmail).toList();
+		// 准备任务消息
+		CreateEmailMessage message = new CreateEmailMessage();
+		message.setTitle("GitDocument · " + configProperties.getOrganizationName() + " - 新文集发布通知");
+		message.setName(anthology.getShowName());
+		message.setEmailList(emails);
+		message.setPublisher(((User) StpUtil.getSession().get(SA_USER_SESSION_INFO_KEY)).getNickname());
+		// 投递任务消息
+		rabbitTemplate.convertAndSend(EMAIL_TOPIC_EXCHANGE, CREATE_EMAIL, message);
+		return Result.resultSuccess("创建文集仓库成功！");
 	}
 
-	@SaCheckPermission(CommonValue.Permission.EDIT_ANTHOLOGY)
+	@SaCheckPermission(PermissionName.EDIT_ANTHOLOGY)
 	@Override
 	public Result<Void> batchAdd(List<Anthology> anthologies) {
 		for (Anthology anthology : anthologies) {
 			add(anthology);
 		}
-		Result<Void> result = new Result<>();
-		result.setResultSuccess("批量添加完成！");
-		return result;
+		return Result.resultSuccess("批量添加完成！");
 	}
 
-	@SaCheckPermission(CommonValue.Permission.EDIT_ANTHOLOGY)
+	@SaCheckPermission(PermissionName.EDIT_ANTHOLOGY)
 	@Override
 	public Result<Void> delete(long id) throws IOException {
-		Result<Void> result = new Result<>();
 		// 查找仓库
 		Anthology getAnthology = anthologyDAO.getById(id);
 		if (getAnthology == null) {
-			result.setResultFailed("待删除文集不存在！");
-			return result;
+			return Result.resultFailed("待删除文集不存在！");
 		}
 		// 停止文件监听
 		listenerContext.removeMonitor(id);
 		// 删除仓库文件夹
 		if (!FileUtil.del(getAnthology.getRepoPath())) {
-			result.setResultFailed("删除文集仓库失败！请联系开发者！");
-			return result;
+			return Result.resultFailed("删除文集仓库失败！请联系开发者！");
 		}
 		log.info("成功删除文集仓库：" + getAnthology.getRepoPath());
 		// 从数据库移除
 		anthologyDAO.delete(id);
-		result.setResultSuccess("删除文集成功！");
-		return result;
+		return Result.resultSuccess("删除文集成功！");
 	}
 
-	@SaCheckPermission(CommonValue.Permission.EDIT_ANTHOLOGY)
+	@SaCheckPermission(PermissionName.EDIT_ANTHOLOGY)
 	@Override
 	public Result<Void> update(Anthology anthology) throws Exception {
-		Result<Void> result = new Result<>();
 		if (!StrUtil.isEmpty(anthology.getLatestCommitId())) {
-			result.setResultFailed("不允许手动修改commit id！");
-			return result;
+			return Result.resultFailed("不允许手动修改commit id！");
 		}
 		// 补全
 		Anthology getAnthology = anthologyDAO.getById(anthology.getId());
 		ClassExamine.objectOverlap(anthology, getAnthology);
+		// 检查封面是否修改，若修改删除原封面
+		if (!getAnthology.getCover().equals(anthology.getCover())) {
+			imageService.delete(getAnthology.getCover());
+		}
 		anthologyDAO.update(anthology);
-		result.setResultSuccess("修改文集信息成功！");
-		return result;
+		return Result.resultSuccess("修改文集信息成功！");
 	}
 
-	@SaCheckPermission(CommonValue.Permission.BROWSE_ARTICLE)
+	@SaCheckPermission(PermissionName.BROWSE_ARTICLE)
 	@Override
 	public Result<Anthology> getById(long id) throws Exception {
-		Result<Anthology> result = new Result<>();
 		Anthology getAnthology = anthologyDAO.getById(id);
 		if (getAnthology == null) {
-			result.setResultFailed("该文集不存在！");
-			return result;
+			return Result.resultFailed("该文集不存在！");
 		}
 		// 填充信息
-		getAnthology.setSystemUser(CommonValue.RUN_USER_NAME);
+		getAnthology.setSystemUser(RUN_USER_NAME);
 		getAnthology.setSshPort(configProperties.getHostPort());
 		getAnthology.setUpdateTime(GitRepositoryUtils.getHeadCommit(getAnthology.getRepoPath()).getCommitTime());
-		result.setResultSuccess("查找成功！", getAnthology);
-		return result;
+		return Result.resultSuccess("查找成功！", getAnthology);
 	}
 
-	@SaCheckPermission(CommonValue.Permission.BROWSE_ARTICLE)
+	@SaCheckPermission(PermissionName.BROWSE_ARTICLE)
 	@Override
 	public Result<List<CommitInfo>> getAllCommits(long id) throws Exception {
-		Result<List<CommitInfo>> result = new Result<>();
 		Anthology getAnthology = anthologyDAO.getById(id);
 		if (getAnthology == null) {
-			result.setResultFailed("文集不存在！");
-			return result;
+			return Result.resultFailed("文集不存在！");
 		}
 		List<RevCommit> getCommits = GitRepositoryUtils.getAllCommits(getAnthology.getRepoPath());
 		// 结果列表
@@ -248,14 +254,12 @@ public class AnthologyServiceImpl implements AnthologyService {
 			info.setTimestamp(item.getCommitTime());
 			commitInfos.add(info);
 		});
-		result.setResultSuccess("获取成功！", commitInfos);
-		return result;
+		return Result.resultSuccess("获取成功！", commitInfos);
 	}
 
-	@SaCheckPermission(CommonValue.Permission.BROWSE_ARTICLE)
+	@SaCheckPermission(PermissionName.BROWSE_ARTICLE)
 	@Override
 	public Result<List<Anthology>> getAll() {
-		Result<List<Anthology>> result = new Result<>();
 		List<Anthology> anthologies = anthologyDAO.getAll();
 		// 填充信息
 		anthologies.forEach(item -> {
@@ -268,39 +272,33 @@ public class AnthologyServiceImpl implements AnthologyService {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			item.setSystemUser(CommonValue.RUN_USER_NAME);
+			item.setSystemUser(RUN_USER_NAME);
 			item.setSshPort(configProperties.getHostPort());
 			item.setUpdateTime(timestamp);
 		});
-		result.setResultSuccess("查询成功！", anthologies);
-		return result;
+		return Result.resultSuccess("查询成功！", anthologies);
 	}
 
-	@SaCheckPermission(CommonValue.Permission.BROWSE_ARTICLE)
+	@SaCheckPermission(PermissionName.BROWSE_ARTICLE)
 	@Override
 	public Result<byte[]> getImageData(long id, String imageFilePath) {
-		Result<byte[]> result = new Result<>();
 		Anthology getAnthology = anthologyDAO.getById(id);
 		if (getAnthology == null) {
-			result.setResultFailed("文集不存在！");
-			return result;
+			return Result.resultFailed("文集不存在！");
 		}
 		byte[] data;
 		try {
 			data = GitFileUtils.getFileBytesInLatestCommit(getAnthology.getRepoPath(), imageFilePath);
 		} catch (Exception e) {
 			e.printStackTrace();
-			result.setResultFailed("图片文件获取失败！");
-			return result;
+			return Result.resultFailed("图片文件获取失败！");
 		}
-		result.setResultSuccess("获取成功！", data);
-		return result;
+		return Result.resultSuccess("获取成功！", data);
 	}
 
-	@SaCheckPermission(CommonValue.Permission.EDIT_ANTHOLOGY)
+	@SaCheckPermission(PermissionName.EDIT_ANTHOLOGY)
 	@Override
 	public Result<List<Anthology>> getAnthologyNotInDatabase() {
-		Result<List<Anthology>> result = new Result<>();
 		List<Anthology> anthologyListInDB = anthologyDAO.getAll();
 		List<Anthology> notInDB = new ArrayList<>();
 		Stream<File> files = Stream.of(new File(configProperties.getRepoPath()).listFiles());
@@ -325,8 +323,7 @@ public class AnthologyServiceImpl implements AnthologyService {
 			anthology.setShowName(name);
 			notInDB.add(anthology);
 		});
-		result.setResultSuccess("查找到下列文集仓库没有录入数据库！", notInDB);
-		return result;
+		return Result.resultSuccess("查找到下列文集仓库没有录入数据库！", notInDB);
 	}
 
 }

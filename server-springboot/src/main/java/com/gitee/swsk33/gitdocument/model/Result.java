@@ -28,37 +28,46 @@ public class Result<T> implements Serializable {
 	private T data;
 
 	/**
-	 * 设定结果为成功
+	 * 返回成功结果
 	 *
 	 * @param message 消息
+	 * @return 成功结果
 	 */
-	public void setResultSuccess(String message) {
-		this.message = message;
-		this.success = true;
-		this.data = null;
+	public static <T> Result<T> resultSuccess(String message) {
+		Result<T> result = new Result<>();
+		result.setSuccess(true);
+		result.setMessage(message);
+		result.setData(null);
+		return result;
 	}
 
 	/**
-	 * 设定结果为成功
+	 * 返回成功结果
 	 *
 	 * @param message 消息
 	 * @param data    数据体
+	 * @return 成功结果
 	 */
-	public void setResultSuccess(String message, T data) {
-		this.message = message;
-		this.success = true;
-		this.data = data;
+	public static <T> Result<T> resultSuccess(String message, T data) {
+		Result<T> result = new Result<>();
+		result.setSuccess(true);
+		result.setMessage(message);
+		result.setData(data);
+		return result;
 	}
 
 	/**
-	 * 设定结果为失败
+	 * 返回失败结果
 	 *
 	 * @param message 消息
+	 * @return 失败结果
 	 */
-	public void setResultFailed(String message) {
-		this.message = message;
-		this.success = false;
-		this.data = null;
+	public static <T> Result<T> resultFailed(String message) {
+		Result<T> result = new Result<>();
+		result.setSuccess(false);
+		result.setMessage(message);
+		result.setData(null);
+		return result;
 	}
 
 }

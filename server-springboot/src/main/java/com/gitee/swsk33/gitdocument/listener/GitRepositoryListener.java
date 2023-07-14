@@ -2,6 +2,7 @@ package com.gitee.swsk33.gitdocument.listener;
 
 import cn.hutool.core.io.watch.Watcher;
 import com.gitee.swsk33.gitdocument.dao.AnthologyDAO;
+import com.gitee.swsk33.gitdocument.dao.SystemSettingDAO;
 import com.gitee.swsk33.gitdocument.dao.UserDAO;
 import com.gitee.swsk33.gitdocument.dataobject.Anthology;
 import com.gitee.swsk33.gitdocument.dataobject.User;
@@ -9,7 +10,6 @@ import com.gitee.swsk33.gitdocument.message.GitCreateTaskMessage;
 import com.gitee.swsk33.gitdocument.message.GitUpdateTaskMessage;
 import com.gitee.swsk33.gitdocument.message.UpdateEmailMessage;
 import com.gitee.swsk33.gitdocument.model.ArticleDiff;
-import com.gitee.swsk33.gitdocument.param.CommonValue;
 import com.gitee.swsk33.gitdocument.property.ConfigProperties;
 import com.gitee.swsk33.gitdocument.util.GitFileUtils;
 import com.gitee.swsk33.gitdocument.util.GitRepositoryUtils;
@@ -25,6 +25,10 @@ import org.springframework.stereotype.Component;
 import java.nio.file.Path;
 import java.nio.file.WatchEvent;
 import java.util.List;
+
+import static com.gitee.swsk33.gitdocument.param.RabbitMessageQueue.Exchange.EMAIL_TOPIC_EXCHANGE;
+import static com.gitee.swsk33.gitdocument.param.RabbitMessageQueue.Exchange.GIT_TASK_TOPIC_EXCHANGE;
+import static com.gitee.swsk33.gitdocument.param.RabbitMessageQueue.RoutingKey.*;
 
 /**
  * Git仓库头指针监听器
@@ -54,9 +58,6 @@ public class GitRepositoryListener implements Watcher {
 	@Autowired
 	private RabbitTemplate rabbitTemplate;
 
-	@Autowired
-	private ConfigProperties configProperties;
-
 	@Override
 	public void onCreate(WatchEvent<?> watchEvent, Path path) {
 		log.info("Git分支被创建！");
@@ -65,7 +66,7 @@ public class GitRepositoryListener implements Watcher {
 			createTaskMessage.setRepositoryId(id);
 			createTaskMessage.setCommitId(GitRepositoryUtils.getHeadCommitId(path.toAbsolutePath().toString()));
 			createTaskMessage.setFileList(GitFileUtils.getLatestFileList(path.toAbsolutePath().toString()));
-			rabbitTemplate.convertAndSend(CommonValue.MessageQueue.GIT_TASK_TOPIC_EXCHANGE, CommonValue.RabbitMQRoutingKey.GIT_CREATE, createTaskMessage);
+			rabbitTemplate.convertAndSend(GIT_TASK_TOPIC_EXCHANGE, GIT_CREATE, createTaskMessage);
 			log.info("已发布Git仓库创建任务消息至消息队列！");
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -96,7 +97,7 @@ public class GitRepositoryListener implements Watcher {
 			updateTaskMessage.setRepositoryId(id);
 			updateTaskMessage.setCommitId(newId);
 			updateTaskMessage.setDiffs(ArticleDiff.toArticleDiff(diffs));
-			rabbitTemplate.convertAndSend(CommonValue.MessageQueue.GIT_TASK_TOPIC_EXCHANGE, CommonValue.RabbitMQRoutingKey.GIT_UPDATE, updateTaskMessage);
+			rabbitTemplate.convertAndSend(GIT_TASK_TOPIC_EXCHANGE, GIT_UPDATE, updateTaskMessage);
 			log.info("已发布Git仓库更新任务消息至消息队列！");
 			// 获取收藏这个文集的用户
 			List<User> starUsers = userDAO.getByStarAnthology(id);
@@ -116,7 +117,7 @@ public class GitRepositoryListener implements Watcher {
 			message.setDiffEntries(ArticleDiff.toArticleDiff(diffs));
 			message.setEmailList(emailList);
 			// 投递到消息队列
-			rabbitTemplate.convertAndSend(CommonValue.MessageQueue.EMAIL_TOPIC_EXCHANGE, CommonValue.RabbitMQRoutingKey.UPDATE_EMAIL, message);
+			rabbitTemplate.convertAndSend(EMAIL_TOPIC_EXCHANGE, UPDATE_EMAIL, message);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -110,5 +110,5 @@ create table "star"
 create table "system_setting"
 (
 	"key"   varchar(16) primary key,
-	"value" varchar(128) not null
+	"value" varchar(128)
 );

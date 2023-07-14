@@ -12,16 +12,6 @@ import java.io.File;
 public class ConfigProperties {
 
 	/**
-	 * 组织名
-	 */
-	private String organizationName = "git-doc-org";
-
-	/**
-	 * 允许访客注册
-	 */
-	private boolean allowPublic = true;
-
-	/**
 	 * 宿主机ssh端口，当部署在容器中时，请配置为非22端口防止冲突
 	 */
 	private int hostPort = 22;

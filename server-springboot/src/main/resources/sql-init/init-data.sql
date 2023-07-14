@@ -27,3 +27,10 @@ values (1, 1),
 -- 初始管理员账户，用户名：admin，密码：789101112
 insert into "user" ("username", "password", "nickname", "email", "role_id", "setting_id", "gmt_created", "gmt_modified")
 values ('admin', '$2a$10$DnVDUKyYw77O5VTbQsi7XOktMOGUajGwq1xkoDn2BM6fKvMCtZNtu', 'Administrator', 'example@example.com', 1, 1, now(), now());
+
+-- 初始化系统设置
+insert into "system_setting"
+values ('organization_name', '组织名'),
+	   ('allow_public', 'true'),
+	   ('login_background_image', null),
+	   ('main_background_image', null);

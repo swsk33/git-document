@@ -13,12 +13,9 @@
 /**/.$*.bkp
 /**/.$*.dtmp
 
-# 自定义
-/server-springboot/log/
-/server-springboot/config/application-dev.yml
-/server-springboot/external-resource/avatar/user/
-/server-springboot/external-resource/cover/custom/
-/server-springboot/external-resource/background/custom.jpg
-/server-springboot/external-resource/login-background/custom.jpg
+# Docker
 /dockerfile/*.tar
 /dockerfile/*.tar.xz
+
+# 临时文件
+/server-springboot/images/

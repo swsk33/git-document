@@ -8,7 +8,7 @@ import com.gitee.swsk33.gitdocument.dataobject.Article;
 import com.gitee.swsk33.gitdocument.message.GitCreateTaskMessage;
 import com.gitee.swsk33.gitdocument.message.GitUpdateTaskMessage;
 import com.gitee.swsk33.gitdocument.model.ArticleDirectory;
-import com.gitee.swsk33.gitdocument.param.CommonValue;
+import com.gitee.swsk33.gitdocument.param.RabbitMessageQueue;
 import com.gitee.swsk33.gitdocument.strategy.context.FileChangeStrategyContext;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jgit.diff.DiffEntry;
@@ -38,7 +38,7 @@ public class GitTaskMessageListener {
 	/**
 	 * Git的创建消息任务处理
 	 */
-	@RabbitListener(queues = CommonValue.MessageQueue.GIT_CREATE_TASK_QUEUE)
+	@RabbitListener(queues = RabbitMessageQueue.Queue.GIT_CREATE_TASK_QUEUE)
 	public void getCreateTask(GitCreateTaskMessage message) {
 		log.info("接收到Git仓库创建任务！");
 		Anthology anthology = anthologyDAO.getById(message.getRepositoryId());
@@ -69,7 +69,7 @@ public class GitTaskMessageListener {
 	/**
 	 * Git的更新消息任务处理
 	 */
-	@RabbitListener(queues = CommonValue.MessageQueue.GIT_UPDATE_TASK_QUEUE)
+	@RabbitListener(queues = RabbitMessageQueue.Queue.GIT_UPDATE_TASK_QUEUE)
 	public void getUpdateTask(GitUpdateTaskMessage message) {
 		log.info("接收到Git仓库更新任务！");
 		// 过滤掉内容更改的差异

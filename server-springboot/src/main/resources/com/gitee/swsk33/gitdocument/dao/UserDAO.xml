@@ -61,16 +61,17 @@
 		from "user"
 	</select>
 
-	<select id="getAllAdmin" resultMap="userResultMap">
-		select *
-		from "user"
-		where role_id = (select "id" from "role" where "name" = 'ROLE_ADMIN')
-	</select>
-
 	<select id="getByStarAnthology" resultMap="userResultMap">
 		select "user".*
 		from "user"
-				 left join "star" on "user".id = "star".user_id
+				 inner join "star" on "user".id = "star".user_id
 		where "star".anthology_id = #{anthologyId}
+	</select>
+
+	<select id="getByReceiveCreate" resultMap="userResultMap">
+		select "user".*
+		from "user"
+				 inner join "setting" on "user".setting_id = "setting".id
+		where "setting".receive_new_email = true;
 	</select>
 </mapper>

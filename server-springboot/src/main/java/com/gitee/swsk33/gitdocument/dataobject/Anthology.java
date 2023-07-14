@@ -38,7 +38,7 @@ public class Anthology implements Serializable {
 	private String showName;
 
 	/**
-	 * 封面图片文件名
+	 * 封面图片文件名，为null时表示使用默认封面
 	 */
 	private String cover;
 
