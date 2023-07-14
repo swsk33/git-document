@@ -1,6 +1,7 @@
 package com.gitee.swsk33.gitdocument.listener;
 
 import cn.hutool.core.io.watch.Watcher;
+import cn.hutool.core.util.StrUtil;
 import com.gitee.swsk33.gitdocument.dao.AnthologyDAO;
 import com.gitee.swsk33.gitdocument.dao.SystemSettingDAO;
 import com.gitee.swsk33.gitdocument.dao.UserDAO;
@@ -47,7 +48,7 @@ public class GitRepositoryListener implements Watcher {
 	/**
 	 * 被监听的路径
 	 */
-	private String path;
+	private String repoPath;
 
 	@Autowired
 	private AnthologyDAO anthologyDAO;
@@ -65,10 +66,12 @@ public class GitRepositoryListener implements Watcher {
 	public void onCreate(WatchEvent<?> watchEvent, Path path) {
 		log.info("Git分支被创建！");
 		try {
+			// 延迟执行防止仓库未完成修改就去读取
+			Thread.sleep(750);
 			GitCreateTaskMessage createTaskMessage = new GitCreateTaskMessage();
 			createTaskMessage.setRepositoryId(id);
-			createTaskMessage.setCommitId(GitRepositoryUtils.getHeadCommitId(path.toAbsolutePath().toString()));
-			createTaskMessage.setFileList(GitFileUtils.getLatestFileList(path.toAbsolutePath().toString()));
+			createTaskMessage.setCommitId(GitRepositoryUtils.getHeadCommitId(repoPath));
+			createTaskMessage.setFileList(GitFileUtils.getLatestFileList(repoPath));
 			rabbitTemplate.convertAndSend(GIT_TASK_TOPIC_EXCHANGE, GIT_CREATE, createTaskMessage);
 			log.info("已发布Git仓库创建任务消息至消息队列！");
 		} catch (Exception e) {
@@ -80,17 +83,19 @@ public class GitRepositoryListener implements Watcher {
 	public void onModify(WatchEvent<?> watchEvent, Path path) {
 		log.info("Git HEAD被修改！");
 		try {
+			// 延迟执行防止仓库未完成修改就去读取
+			Thread.sleep(750);
 			// 从数据库获取最新仓库的commitId
 			Anthology getAnthology = anthologyDAO.getById(id);
 			String oldId = getAnthology.getLatestCommitId();
 			// 获取文件系统中仓库新的commitId
-			String newId = GitRepositoryUtils.getHeadCommitId(path.toAbsolutePath().toString());
-			if (newId.equals(oldId)) {
+			String newId = GitRepositoryUtils.getHeadCommitId(repoPath);
+			if (StrUtil.isEmpty(oldId) || newId.equals(oldId)) {
 				log.info("实际没有变化，无需修改！");
 				return;
 			}
 			// 获取差异
-			List<DiffEntry> diffs = GitFileUtils.compareDiffBetweenTwoCommits(path.toAbsolutePath().toString(), oldId, newId);
+			List<DiffEntry> diffs = GitFileUtils.compareDiffBetweenTwoCommits(repoPath, oldId, newId);
 			if (diffs.size() == 0) {
 				log.info("没有需要更新的差异！");
 				return;
@@ -116,7 +121,7 @@ public class GitRepositoryListener implements Watcher {
 			UpdateEmailMessage message = new UpdateEmailMessage();
 			message.setTitle("GitDocument · " + systemSettingDAO.get(ORGANIZATION_NAME) + " - 文集更新通知");
 			message.setName(getAnthology.getShowName());
-			message.setCommitMessage(GitRepositoryUtils.getHeadCommitMessage(path.toAbsolutePath().toString()));
+			message.setCommitMessage(GitRepositoryUtils.getHeadCommitMessage(repoPath));
 			message.setDiffEntries(ArticleDiff.toArticleDiff(diffs));
 			message.setEmailList(emailList);
 			// 投递到消息队列
@@ -128,7 +133,7 @@ public class GitRepositoryListener implements Watcher {
 
 	@Override
 	public void onDelete(WatchEvent<?> watchEvent, Path path) {
-
+		log.info("删除：" + path.toAbsolutePath());
 	}
 
 	@Override

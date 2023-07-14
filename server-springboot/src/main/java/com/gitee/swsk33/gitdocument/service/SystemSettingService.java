@@ -50,4 +50,14 @@ public interface SystemSettingService {
 	 */
 	Result<Void> customMainBackground(MultipartFile image);
 
+	/**
+	 * 获取登录页面背景图片文件，返回文件名
+	 */
+	Result<String> getLoginBackground();
+
+	/**
+	 * 获取主页面背景图片文件，返回文件名
+	 */
+	Result<String> getMainBackground();
+
 }

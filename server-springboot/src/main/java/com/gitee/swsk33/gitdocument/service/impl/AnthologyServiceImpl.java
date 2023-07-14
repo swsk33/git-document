@@ -96,7 +96,6 @@ public class AnthologyServiceImpl implements AnthologyService {
 				// 如果说刚创建的仓库，则不进行对比
 				if (newCommitId == null) {
 					log.warn("本地仓库：" + anthology.getName() + "的commitId为空！可能是刚创建的仓库，跳过比对！");
-					listenerContext.addMonitor(anthology.getId(), anthology.getRepoPath());
 					return;
 				}
 				// 如果数据库中commitId为空，说明需要执行创建任务
@@ -108,7 +107,6 @@ public class AnthologyServiceImpl implements AnthologyService {
 					createTaskMessage.setFileList(GitFileUtils.getLatestFileList(anthology.getRepoPath()));
 					rabbitTemplate.convertAndSend(GIT_TASK_TOPIC_EXCHANGE, GIT_CREATE, createTaskMessage);
 					log.info("已发布对本地仓库：" + anthology.getName() + " 的创建任务消息至消息队列！");
-					listenerContext.addMonitor(anthology.getId(), anthology.getRepoPath());
 					return;
 				}
 				// 如果只是单纯的两者不同，说明需要进行更新同步操作
@@ -118,7 +116,6 @@ public class AnthologyServiceImpl implements AnthologyService {
 					List<DiffEntry> diffs = GitFileUtils.compareDiffBetweenTwoCommits(anthology.getRepoPath(), anthology.getLatestCommitId(), newCommitId);
 					if (diffs.size() == 0) {
 						log.info("没有需要更新的差异！");
-						listenerContext.addMonitor(anthology.getId(), anthology.getRepoPath());
 						return;
 					}
 					GitUpdateTaskMessage updateTaskMessage = new GitUpdateTaskMessage();
@@ -214,8 +211,11 @@ public class AnthologyServiceImpl implements AnthologyService {
 		Anthology getAnthology = anthologyDAO.getById(anthology.getId());
 		ClassExamine.objectOverlap(anthology, getAnthology);
 		// 检查封面是否修改，若修改删除原封面
-		if (!getAnthology.getCover().equals(anthology.getCover())) {
-			imageService.delete(getAnthology.getCover());
+		if (!StrUtil.isEmpty(anthology.getCover()) && !anthology.getCover().equals(getAnthology.getCover())) {
+			log.info("文集封面修改！");
+			if (!StrUtil.isEmpty(getAnthology.getCover())) {
+				imageService.delete(getAnthology.getCover());
+			}
 		}
 		anthologyDAO.update(anthology);
 		return Result.resultSuccess("修改文集信息成功！");
@@ -231,7 +231,9 @@ public class AnthologyServiceImpl implements AnthologyService {
 		// 填充信息
 		getAnthology.setSystemUser(RUN_USER_NAME);
 		getAnthology.setSshPort(configProperties.getHostPort());
-		getAnthology.setUpdateTime(GitRepositoryUtils.getHeadCommit(getAnthology.getRepoPath()).getCommitTime());
+		// 获取更新时间
+		RevCommit commit = GitRepositoryUtils.getHeadCommit(getAnthology.getRepoPath());
+		getAnthology.setUpdateTime(commit == null ? null : commit.getCommitTime());
 		return Result.resultSuccess("查找成功！", getAnthology);
 	}
 

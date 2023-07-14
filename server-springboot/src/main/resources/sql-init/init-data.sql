@@ -10,8 +10,8 @@ values ('edit_user', '编辑用户', now(), now()),                -- id为1，�
 	   ('alter_system_setting', '修改系统设置', now(), now()), -- id为3，修改系统设置
 	   ('browse_article', '浏览内部文章', now(), now()); -- id为4，浏览内部文章
 
-insert into "setting" ("receive_update_email", "gmt_created", "gmt_modified")
-values (true, now(), now()); -- id为1
+insert into "setting" ("receive_update_email", "receive_new_email", "gmt_created", "gmt_modified")
+values (true, true, now(), now()); -- id为1
 
 insert into "role_permission"
 values (1, 1),

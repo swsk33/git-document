@@ -1,5 +1,6 @@
 package com.gitee.swsk33.gitdocument.dataobject;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.gitee.swsk33.gitdocument.param.ValidationRules;
 import com.gitee.swsk33.gitdocument.serializer.LongToStringSerializer;
@@ -7,6 +8,7 @@ import lombok.Data;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -14,6 +16,7 @@ import java.time.LocalDateTime;
  * 星星（收藏）
  */
 @Data
+@JsonIgnoreProperties(allowSetters = true, value = {"user"})
 public class Star implements Serializable {
 
 	/**

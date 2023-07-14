@@ -57,7 +57,7 @@ public class Anthology implements Serializable {
 	/**
 	 * 文集最后更新的时间戳
 	 */
-	private int updateTime;
+	private Integer updateTime;
 
 	/**
 	 * 对应仓库地址

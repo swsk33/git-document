@@ -35,8 +35,8 @@ create table "role_permission"
 create table "setting"
 (
 	"id"                   serial primary key,
-	"receive_update_email" boolean,
-	"receive_new_email"    boolean,
+	"receive_update_email" boolean not null,
+	"receive_new_email"    boolean not null,
 	"gmt_created"          timestamp,
 	"gmt_modified"         timestamp
 );

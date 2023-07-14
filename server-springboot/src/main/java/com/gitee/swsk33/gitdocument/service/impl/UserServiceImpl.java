@@ -133,7 +133,7 @@ public class UserServiceImpl implements UserService {
 		// 信息覆盖
 		ClassExamine.objectOverlap(user, getUser);
 		// 检查头像是否修改
-		if (!user.getAvatar().equals(getUser.getAvatar())) {
+		if (!StrUtil.isEmpty(user.getAvatar()) && !user.getAvatar().equals(getUser.getAvatar())) {
 			log.info("头像被修改！");
 			// 删除原来的头像文件
 			if (!StrUtil.isEmpty(getUser.getAvatar())) {

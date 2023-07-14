@@ -81,4 +81,14 @@ public class SystemSettingServiceImpl implements SystemSettingService {
 		return Result.resultSuccess("设定主页背景图成功！");
 	}
 
+	@Override
+	public Result<String> getLoginBackground() {
+		return Result.resultSuccess("获取完成！", systemSettingDAO.get(LOGIN_BACKGROUND_IMAGE));
+	}
+
+	@Override
+	public Result<String> getMainBackground() {
+		return Result.resultSuccess("获取完成！", systemSettingDAO.get(MAIN_BACKGROUND_IMAGE));
+	}
+
 }

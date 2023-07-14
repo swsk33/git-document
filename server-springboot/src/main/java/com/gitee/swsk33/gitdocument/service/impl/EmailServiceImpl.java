@@ -6,9 +6,12 @@ import com.gitee.swsk33.gitdocument.dataobject.User;
 import com.gitee.swsk33.gitdocument.message.CreateEmailMessage;
 import com.gitee.swsk33.gitdocument.message.UpdateEmailMessage;
 import com.gitee.swsk33.gitdocument.model.ArticleDiff;
+import com.gitee.swsk33.gitdocument.param.EmailServiceName;
 import com.gitee.swsk33.gitdocument.service.EmailService;
+import io.github.swsk33.codepostcore.context.ServiceNameContext;
 import io.github.swsk33.codepostcore.service.EmailNotifyService;
 import io.github.swsk33.codepostcore.service.EmailVerifyCodeService;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +35,15 @@ public class EmailServiceImpl implements EmailService {
 
 	@Autowired
 	private UserDAO userDAO;
+
+	/**
+	 * 验证码服务名注册
+	 */
+	@PostConstruct
+	private void initServiceName() {
+		ServiceNameContext.register(EmailServiceName.PASSWORD_RESET, "密码重置");
+		log.info("全部验证码服务名注册完成！");
+	}
 
 	@Async
 	@Override
@@ -73,18 +85,17 @@ public class EmailServiceImpl implements EmailService {
 
 	@Async
 	@Override
-	public void sendPasswordResetCode(int userId) {
-		User resetUser = userDAO.getById(userId);
+	public void sendPasswordResetCode(String email) {
+		User resetUser = userDAO.getByUsernameOrEmail(email);
 		if (resetUser == null) {
 			return;
 		}
-		verifyCodeService.sendCode(resetUser.getId(), resetUser.getEmail(), 5, TimeUnit.MINUTES);
-		log.info("已向" + resetUser.getEmail() + "发送密码重置验证码！");
+		verifyCodeService.sendCode(EmailServiceName.PASSWORD_RESET, resetUser.getId(), resetUser.getEmail(), 5, TimeUnit.MINUTES);
 	}
 
 	@Override
 	public boolean verifyPasswordResetCode(int userId, String code) {
-		return verifyCodeService.verifyCode(userId, code);
+		return verifyCodeService.verifyCode(EmailServiceName.PASSWORD_RESET, userId, code);
 	}
 
 }

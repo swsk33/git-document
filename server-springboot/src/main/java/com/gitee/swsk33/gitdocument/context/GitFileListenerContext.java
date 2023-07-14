@@ -36,10 +36,9 @@ public class GitFileListenerContext {
 		// 新建文件观察者
 		GitRepositoryListener watcher = beanFactory.getBean(GitRepositoryListener.class);
 		watcher.setId(id);
-		watcher.setPath(dirPath);
+		watcher.setRepoPath(dirPath);
 		// 创建监视器
-		WatchMonitor monitor = WatchMonitor.create(FileUtil.file(dirPath + "/refs/heads"), WatchMonitor.ENTRY_CREATE, WatchMonitor.ENTRY_MODIFY);
-		monitor.setWatcher(watcher);
+		WatchMonitor monitor = WatchMonitor.createAll(FileUtil.file(dirPath + "/refs/heads"), watcher);
 		monitor.start();
 		MONITOR_MAP.put(id, monitor);
 		log.info("加入监听文集仓库路径：" + dirPath);

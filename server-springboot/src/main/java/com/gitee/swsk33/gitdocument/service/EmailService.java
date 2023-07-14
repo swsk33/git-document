@@ -33,9 +33,9 @@ public interface EmailService {
 	/**
 	 * 发送密码重置验证码
 	 *
-	 * @param userId 需要重置密码的用户id
+	 * @param email 需要重置密码的用户邮箱
 	 */
-	void sendPasswordResetCode(int userId);
+	void sendPasswordResetCode(String email);
 
 	/**
 	 * 验证密码重置验证码

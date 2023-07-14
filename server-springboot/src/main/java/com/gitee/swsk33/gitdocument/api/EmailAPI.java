@@ -15,9 +15,9 @@ public class EmailAPI {
 	@Autowired
 	private EmailService emailService;
 
-	@GetMapping("/password-reset/{userId}")
-	public Result<Void> sendPasswordResetCode(@PathVariable int userId) {
-		emailService.sendPasswordResetCode(userId);
+	@GetMapping("/password-reset/{email}")
+	public Result<Void> sendPasswordResetCode(@PathVariable String email) {
+		emailService.sendPasswordResetCode(email);
 		return Result.resultSuccess("已发送密码重置验证码！");
 	}
 

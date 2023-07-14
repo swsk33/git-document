@@ -53,4 +53,14 @@ public class SystemSettingAPI {
 		return systemSettingService.customMainBackground(image);
 	}
 
+	@GetMapping("/get-login-image")
+	public Result<String> getLoginImage() {
+		return systemSettingService.getLoginBackground();
+	}
+
+	@GetMapping("/get-main-image")
+	public Result<String> getMainImage() {
+		return systemSettingService.getMainBackground();
+	}
+
 }
