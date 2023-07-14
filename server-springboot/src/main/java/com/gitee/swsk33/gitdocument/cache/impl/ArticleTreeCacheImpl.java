@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
+import static com.gitee.swsk33.gitdocument.param.RedisKey.ANTHOLOGY_ID_ARTICLE_TREE_MAP;
+
 @Component
 public class ArticleTreeCacheImpl implements ArticleTreeCache {
 
@@ -16,17 +18,17 @@ public class ArticleTreeCacheImpl implements ArticleTreeCache {
 
 	@Override
 	public void setOrAdd(long id, ArticleDirectory directory) {
-		redisTemplate.opsForHash().put(ArticleTreeCache.ANTHOLOGY_ID_ARTICLE_TREE_MAP, id, directory);
+		redisTemplate.opsForHash().put(ANTHOLOGY_ID_ARTICLE_TREE_MAP, id, directory);
 	}
 
 	@Override
 	public void delete(long id) {
-		redisTemplate.opsForHash().delete(ArticleTreeCache.ANTHOLOGY_ID_ARTICLE_TREE_MAP, id);
+		redisTemplate.opsForHash().delete(ANTHOLOGY_ID_ARTICLE_TREE_MAP, id);
 	}
 
 	@Override
 	public ArticleDirectory getById(long id) {
-		return (ArticleDirectory) redisTemplate.opsForHash().get(ArticleTreeCache.ANTHOLOGY_ID_ARTICLE_TREE_MAP, id);
+		return (ArticleDirectory) redisTemplate.opsForHash().get(ANTHOLOGY_ID_ARTICLE_TREE_MAP, id);
 	}
 
 }

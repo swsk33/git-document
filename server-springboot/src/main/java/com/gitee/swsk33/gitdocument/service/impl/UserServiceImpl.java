@@ -182,8 +182,19 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public Result<Void> resetPassword(String email, String code, String newPassword) {
-		
+	public Result<Void> resetPassword(User user, String code) {
+		// 获取对应的用户
+		User getUser = userDAO.getByUsernameOrEmail(user.getEmail());
+		if (getUser == null) {
+			return Result.resultFailed("该邮箱未注册！");
+		}
+		// 检查验证码是否正确
+		if (!emailService.verifyPasswordResetCode(getUser.getId(), code)) {
+			return Result.resultFailed("验证码错误！");
+		}
+		// 修改密码加密保存
+		getUser.setPassword(BCryptEncoder.encode(user.getPassword()));
+		userDAO.update(getUser);
 		return Result.resultSuccess("密码重置成功！");
 	}
 

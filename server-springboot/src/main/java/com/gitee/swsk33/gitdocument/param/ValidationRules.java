@@ -26,4 +26,11 @@ public class ValidationRules {
 
 	}
 
+	/**
+	 * 用户密码重置校验
+	 */
+	public interface UserPasswordReset {
+
+	}
+
 }

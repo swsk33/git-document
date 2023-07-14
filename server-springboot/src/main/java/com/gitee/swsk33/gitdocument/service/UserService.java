@@ -44,10 +44,10 @@ public interface UserService {
 
 	/**
 	 * 用户重置密码
-	 * @param email 重置验证码的用户邮箱
+	 *
+	 * @param user 用户对象，其中email字段为要重置密码的用户邮箱，password为新的密码
 	 * @param code 密码重置验证码
-	 * @param newPassword 新的密码
 	 */
-	Result<Void> resetPassword(String email, String code, String newPassword);
+	Result<Void> resetPassword(User user, String code);
 
 }

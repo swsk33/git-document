@@ -109,6 +109,6 @@ create table "star"
 -- 系统全局设置
 create table "system_setting"
 (
-	"key"   varchar(16) primary key,
+	"key"   varchar(32) primary key,
 	"value" varchar(128)
 );

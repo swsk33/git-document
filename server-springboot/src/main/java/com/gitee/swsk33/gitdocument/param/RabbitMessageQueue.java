@@ -8,7 +8,7 @@ public class RabbitMessageQueue {
 	/**
 	 * 名称前缀
 	 */
-	public static final String PREFIX = "git-document";
+	private static final String PREFIX = "git-document";
 
 	/**
 	 * 存放交换机名称

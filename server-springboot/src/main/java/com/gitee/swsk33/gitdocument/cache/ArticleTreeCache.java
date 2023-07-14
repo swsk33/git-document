@@ -10,11 +10,6 @@ import com.gitee.swsk33.gitdocument.model.ArticleDirectory;
 public interface ArticleTreeCache {
 
 	/**
-	 * 文集id和其文章目录树的对应哈希表名
-	 */
-	String ANTHOLOGY_ID_ARTICLE_TREE_MAP = "anthology_article_tree_map";
-
-	/**
 	 * 添加或者修改目录缓存
 	 *
 	 * @param id        文集id

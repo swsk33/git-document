@@ -69,4 +69,12 @@ public class UserAPI {
 		return Result.resultSuccess("用户已登录！", (User) StpUtil.getSession().get(CommonValue.SA_USER_SESSION_INFO_KEY));
 	}
 
+	@PostMapping("/reset-password/{code}")
+	public Result<Void> resetPassword(@RequestBody @Validated(ValidationRules.UserPasswordReset.class) User user, @PathVariable String code, BindingResult errors) {
+		if (errors.hasErrors()) {
+			return Result.resultFailed(errors.getFieldError().getDefaultMessage());
+		}
+		return userService.resetPassword(user, code);
+	}
+
 }

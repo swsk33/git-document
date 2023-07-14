@@ -74,11 +74,12 @@ io:
         filesystem:
           save-folder: "images"
 
-# 自定义配置
+# GitDocument-自定义配置
 com:
   gitee:
     swsk33:
       git-doc:
-        allow-public: true
-        host-port: 22
-        organization-name: "组织名"
+        # 宿主机端口
+        host-port: 23
+        # 存放所有文集仓库的目录，尽量不要修改
+        # repo-path: ""

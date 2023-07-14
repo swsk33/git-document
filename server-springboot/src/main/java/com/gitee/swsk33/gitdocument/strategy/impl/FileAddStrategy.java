@@ -1,5 +1,6 @@
 package com.gitee.swsk33.gitdocument.strategy.impl;
 
+import cn.hutool.core.util.IdUtil;
 import com.gitee.swsk33.gitdocument.dao.ArticleDAO;
 import com.gitee.swsk33.gitdocument.dataobject.Anthology;
 import com.gitee.swsk33.gitdocument.dataobject.Article;
@@ -30,7 +31,7 @@ public class FileAddStrategy implements GitFileChangeStrategy {
 		Anthology anthology = new Anthology();
 		anthology.setId(repositoryId);
 		Article article = new Article();
-		article.setId(SnowflakeIdGenerator.getSnowflakeId());
+		article.setId(IdUtil.getSnowflakeNextId());
 		article.setFilePath(diff.getNewPath());
 		article.setAnthology(anthology);
 		articleDAO.add(article);
