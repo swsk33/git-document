@@ -1,18 +1,22 @@
 package com.gitee.swsk33.gitdocument.dataobject;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.gitee.swsk33.gitdocument.serializer.LongToStringSerializer;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
  * 文章索引信息
  */
 @Data
-public class Article {
+public class Article implements Serializable {
 
 	/**
 	 * 主键id
 	 */
+	@JsonSerialize(using = LongToStringSerializer.class)
 	private long id;
 
 	/**

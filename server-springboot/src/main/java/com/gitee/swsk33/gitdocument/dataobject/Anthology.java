@@ -1,11 +1,12 @@
 package com.gitee.swsk33.gitdocument.dataobject;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.gitee.swsk33.gitdocument.param.ValidationRules;
-import lombok.Data;
-
+import com.gitee.swsk33.gitdocument.serializer.LongToStringSerializer;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -19,6 +20,7 @@ public class Anthology implements Serializable {
 	/**
 	 * 主键id
 	 */
+	@JsonSerialize(using = LongToStringSerializer.class)
 	@NotNull(groups = ValidationRules.DataUpdate.class, message = "文集id不能为空！")
 	private Long id;
 

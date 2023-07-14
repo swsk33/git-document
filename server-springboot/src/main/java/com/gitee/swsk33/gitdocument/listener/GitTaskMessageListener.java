@@ -1,5 +1,6 @@
 package com.gitee.swsk33.gitdocument.listener;
 
+import cn.hutool.core.util.IdUtil;
 import com.gitee.swsk33.gitdocument.cache.ArticleTreeCache;
 import com.gitee.swsk33.gitdocument.dao.AnthologyDAO;
 import com.gitee.swsk33.gitdocument.dao.ArticleDAO;
@@ -45,7 +46,7 @@ public class GitTaskMessageListener {
 		List<Article> articles = new ArrayList<>();
 		message.getFileList().forEach(path -> {
 			Article article = new Article();
-			article.setId(SnowflakeIdGenerator.getSnowflakeId());
+			article.setId(IdUtil.getSnowflakeNextId());
 			article.setAnthology(anthology);
 			article.setFilePath(path);
 			articles.add(article);

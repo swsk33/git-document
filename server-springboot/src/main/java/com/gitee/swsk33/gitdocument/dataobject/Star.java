@@ -1,6 +1,8 @@
 package com.gitee.swsk33.gitdocument.dataobject;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.gitee.swsk33.gitdocument.param.ValidationRules;
+import com.gitee.swsk33.gitdocument.serializer.LongToStringSerializer;
 import lombok.Data;
 
 import jakarta.validation.constraints.NotEmpty;
@@ -17,6 +19,7 @@ public class Star implements Serializable {
 	/**
 	 * 主键id
 	 */
+	@JsonSerialize(using = LongToStringSerializer.class)
 	@NotNull(groups = ValidationRules.DataUpdate.class, message = "星星id不能为空！")
 	private Long id;
 

@@ -1,13 +1,14 @@
 package com.gitee.swsk33.gitdocument.api;
 
+import cn.hutool.core.io.FileUtil;
 import com.gitee.swsk33.gitdocument.dataobject.Anthology;
 import com.gitee.swsk33.gitdocument.model.CommitInfo;
 import com.gitee.swsk33.gitdocument.model.Result;
 import com.gitee.swsk33.gitdocument.param.ValidationRules;
 import com.gitee.swsk33.gitdocument.service.AnthologyService;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -25,9 +26,7 @@ public class AnthologyAPI {
 	@PostMapping("/add")
 	public Result<Void> add(@Validated(ValidationRules.DataAdd.class) @RequestBody Anthology anthology, BindingResult errors) {
 		if (errors.hasErrors()) {
-			Result<Void> result = new Result<>();
-			result.setResultFailed(errors.getFieldError().getDefaultMessage());
-			return result;
+			return Result.resultFailed(errors.getFieldError().getDefaultMessage());
 		}
 		return anthologyService.add(anthology);
 	}
@@ -42,12 +41,10 @@ public class AnthologyAPI {
 		return anthologyService.delete(id);
 	}
 
-	@PutMapping("/update")
+	@PatchMapping("/update")
 	public Result<Void> update(@Validated(ValidationRules.DataUpdate.class) @RequestBody Anthology anthology, BindingResult errors) throws Exception {
 		if (errors.hasErrors()) {
-			Result<Void> result = new Result<>();
-			result.setResultFailed(errors.getFieldError().getDefaultMessage());
-			return result;
+			return Result.resultFailed(errors.getFieldError().getDefaultMessage());
 		}
 		return anthologyService.update(anthology);
 	}
@@ -67,13 +64,13 @@ public class AnthologyAPI {
 		return anthologyService.getAll();
 	}
 
-	@GetMapping(value = "/get-image/id/{id}", produces = MediaType.IMAGE_JPEG_VALUE)
-	public byte[] getImage(@PathVariable long id, @RequestParam("path") String path) {
+	@GetMapping(value = "/get-image/id/{id}")
+	public ResponseEntity<byte[]> getImage(@PathVariable long id, @RequestParam("path") String path) {
 		Result<byte[]> result = anthologyService.getImageData(id, path);
 		if (!result.isSuccess()) {
-			return null;
+			return ResponseEntity.notFound().build();
 		}
-		return result.getData();
+		return ResponseEntity.ok().contentType(MediaType.parseMediaType(FileUtil.getMimeType(path))).body(result.getData());
 	}
 
 	@GetMapping("/get-not-in-database")

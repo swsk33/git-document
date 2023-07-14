@@ -21,9 +21,7 @@ public class PublicKeyAPI {
 	@PostMapping("/add")
 	public Result<Void> add(@Valid @RequestBody PublicKey publicKey, BindingResult errors) throws Exception {
 		if (errors.hasErrors()) {
-			Result<Void> result = new Result<>();
-			result.setResultFailed(errors.getFieldError().getDefaultMessage());
-			return result;
+			return Result.resultFailed(errors.getFieldError().getDefaultMessage());
 		}
 		return publicKeyService.add(publicKey);
 	}

@@ -23,9 +23,7 @@ public class UserAPI {
 	@PostMapping("/register")
 	public Result<Void> register(@RequestBody @Validated(ValidationRules.DataAdd.class) User user, BindingResult errors) {
 		if (errors.hasErrors()) {
-			Result<Void> result = new Result<>();
-			result.setResultFailed(errors.getFieldError().getDefaultMessage());
-			return result;
+			return Result.resultFailed(errors.getFieldError().getDefaultMessage());
 		}
 		return userService.register(user);
 	}
@@ -35,12 +33,10 @@ public class UserAPI {
 		return userService.delete(id);
 	}
 
-	@PutMapping("/update")
+	@PatchMapping("/update")
 	public Result<Void> update(@RequestBody @Validated(ValidationRules.DataUpdate.class) User user, BindingResult errors) throws Exception {
 		if (errors.hasErrors()) {
-			Result<Void> result = new Result<>();
-			result.setResultFailed(errors.getFieldError().getDefaultMessage());
-			return result;
+			return Result.resultFailed(errors.getFieldError().getDefaultMessage());
 		}
 		return userService.update(user);
 	}
@@ -49,9 +45,7 @@ public class UserAPI {
 	@PostMapping("/login")
 	public Result<Void> login(@RequestBody @Validated(ValidationRules.UserLogin.class) User user, BindingResult errors) {
 		if (errors.hasErrors()) {
-			Result<Void> result = new Result<>();
-			result.setResultFailed(errors.getFieldError().getDefaultMessage());
-			return result;
+			return Result.resultFailed(errors.getFieldError().getDefaultMessage());
 		}
 		return userService.login(user);
 	}
@@ -59,9 +53,7 @@ public class UserAPI {
 	@GetMapping("/logout")
 	public Result<Void> logout() {
 		StpUtil.logout();
-		Result<Void> result = new Result<>();
-		result.setResultSuccess("退出登录成功！");
-		return result;
+		return Result.resultSuccess("退出登录成功！");
 	}
 
 	@GetMapping("/get-all")
@@ -71,13 +63,10 @@ public class UserAPI {
 
 	@GetMapping("/is-login")
 	public Result<User> isLogin() {
-		Result<User> result = new Result<>();
 		if (!StpUtil.isLogin()) {
-			result.setResultFailed("用户没有登录！");
-			return result;
+			return Result.resultFailed("用户没有登录！");
 		}
-		result.setResultSuccess("用户已登录！", (User) StpUtil.getSession().get(CommonValue.SA_USER_SESSION_INFO_KEY));
-		return result;
+		return Result.resultSuccess("用户已登录！", (User) StpUtil.getSession().get(CommonValue.SA_USER_SESSION_INFO_KEY));
 	}
 
 }

@@ -42,4 +42,12 @@ public interface UserService {
 	 */
 	Result<List<User>> getAll();
 
+	/**
+	 * 用户重置密码
+	 * @param email 重置验证码的用户邮箱
+	 * @param code 密码重置验证码
+	 * @param newPassword 新的密码
+	 */
+	Result<Void> resetPassword(String email, String code, String newPassword);
+
 }

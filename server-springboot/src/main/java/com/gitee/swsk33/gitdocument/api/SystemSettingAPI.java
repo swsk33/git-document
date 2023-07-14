@@ -13,6 +13,26 @@ public class SystemSettingAPI {
 	@Autowired
 	private SystemSettingService systemSettingService;
 
+	@PutMapping("/set-organization/{name}")
+	public Result<Void> setOrgName(@PathVariable String name) {
+		return systemSettingService.setOrganizationName(name);
+	}
+
+	@GetMapping("/get-organization")
+	public Result<String> getOrgName() {
+		return systemSettingService.getOrganizationName();
+	}
+
+	@PutMapping("/set-allow-public/{allow}")
+	public Result<Void> setAllowPublic(@PathVariable String allow) {
+		return systemSettingService.setAllowPublic(Boolean.parseBoolean(allow));
+	}
+
+	@GetMapping("/get-allow-public")
+	public Result<Boolean> getAllowPublic() {
+		return systemSettingService.getAllowPublic();
+	}
+
 	@GetMapping("/reset-login-image")
 	public Result<Void> resetLoginImage() {
 		return systemSettingService.resetLoginBackground();

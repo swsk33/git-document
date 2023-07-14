@@ -7,6 +7,7 @@ import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import com.gitee.swsk33.gitdocument.context.GitFileListenerContext;
 import com.gitee.swsk33.gitdocument.dao.AnthologyDAO;
+import com.gitee.swsk33.gitdocument.dao.SystemSettingDAO;
 import com.gitee.swsk33.gitdocument.dao.UserDAO;
 import com.gitee.swsk33.gitdocument.dataobject.Anthology;
 import com.gitee.swsk33.gitdocument.dataobject.User;
@@ -43,6 +44,7 @@ import static com.gitee.swsk33.gitdocument.param.CommonValue.SA_USER_SESSION_INF
 import static com.gitee.swsk33.gitdocument.param.RabbitMessageQueue.Exchange.EMAIL_TOPIC_EXCHANGE;
 import static com.gitee.swsk33.gitdocument.param.RabbitMessageQueue.Exchange.GIT_TASK_TOPIC_EXCHANGE;
 import static com.gitee.swsk33.gitdocument.param.RabbitMessageQueue.RoutingKey.*;
+import static com.gitee.swsk33.gitdocument.param.SystemSettingKey.ORGANIZATION_NAME;
 
 @Slf4j
 @Component
@@ -66,6 +68,9 @@ public class AnthologyServiceImpl implements AnthologyService {
 
 	@Autowired
 	private RabbitTemplate rabbitTemplate;
+
+	@Autowired
+	private SystemSettingDAO systemSettingDAO;
 
 	/**
 	 * 启动时，开始监听现有的每个仓库，并开启文件更新任务队列
@@ -161,7 +166,7 @@ public class AnthologyServiceImpl implements AnthologyService {
 		List<String> emails = receivers.stream().map(User::getEmail).toList();
 		// 准备任务消息
 		CreateEmailMessage message = new CreateEmailMessage();
-		message.setTitle("GitDocument · " + configProperties.getOrganizationName() + " - 新文集发布通知");
+		message.setTitle("GitDocument · " + systemSettingDAO.get(ORGANIZATION_NAME) + " - 新文集发布通知");
 		message.setName(anthology.getShowName());
 		message.setEmailList(emails);
 		message.setPublisher(((User) StpUtil.getSession().get(SA_USER_SESSION_INFO_KEY)).getNickname());

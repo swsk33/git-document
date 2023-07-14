@@ -3,7 +3,9 @@ package com.gitee.swsk33.gitdocument.service.impl;
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.core.util.StrUtil;
 import com.gitee.swsk33.gitdocument.dao.SettingDAO;
+import com.gitee.swsk33.gitdocument.dao.SystemSettingDAO;
 import com.gitee.swsk33.gitdocument.dao.UserDAO;
 import com.gitee.swsk33.gitdocument.dataobject.Setting;
 import com.gitee.swsk33.gitdocument.dataobject.User;
@@ -11,7 +13,6 @@ import com.gitee.swsk33.gitdocument.model.Result;
 import com.gitee.swsk33.gitdocument.param.CommonValue;
 import com.gitee.swsk33.gitdocument.param.PermissionName;
 import com.gitee.swsk33.gitdocument.param.RoleName;
-import com.gitee.swsk33.gitdocument.property.ConfigProperties;
 import com.gitee.swsk33.gitdocument.service.EmailService;
 import com.gitee.swsk33.gitdocument.service.ImageService;
 import com.gitee.swsk33.gitdocument.service.UserService;
@@ -21,8 +22,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
 import java.util.List;
+
+import static com.gitee.swsk33.gitdocument.param.SystemSettingKey.ALLOW_PUBLIC;
 
 @Slf4j
 @Component
@@ -41,14 +43,14 @@ public class UserServiceImpl implements UserService {
 	private EmailService emailService;
 
 	@Autowired
-	private ConfigProperties configProperties;
+	private SystemSettingDAO systemSettingDAO;
 
 	@Override
 	public Result<Void> register(User user) {
 		// 没有登录的时候，是用户注册行为
 		if (!StpUtil.isLogin()) {
 			// 根据配置判断是否运行注册
-			if (!configProperties.isAllowPublic()) {
+			if (!Boolean.parseBoolean(systemSettingDAO.get(ALLOW_PUBLIC))) {
 				return Result.resultFailed("本站不允许访客注册！请联系管理员！");
 			}
 			// 注册权限检查
@@ -133,11 +135,9 @@ public class UserServiceImpl implements UserService {
 		// 检查头像是否修改
 		if (!user.getAvatar().equals(getUser.getAvatar())) {
 			log.info("头像被修改！");
-			if (!getUser.getAvatar().contains("default")) {
-				String originFilePath = getUser.getAvatar();
-				originFilePath = CommonValue.ResourcePath.USER_AVATAR_FOLDER + File.separator + originFilePath.substring(originFilePath.lastIndexOf("/") + 1);
-				new File(originFilePath).delete();
-				log.info("删除原始文件：" + originFilePath);
+			// 删除原来的头像文件
+			if (!StrUtil.isEmpty(getUser.getAvatar())) {
+				imageService.delete(getUser.getAvatar());
 			}
 		}
 		// 密码被修改则加密储存
@@ -179,6 +179,12 @@ public class UserServiceImpl implements UserService {
 	public Result<List<User>> getAll() {
 		List<User> users = userDAO.getAll();
 		return Result.resultSuccess("查询全部用户成功！", users);
+	}
+
+	@Override
+	public Result<Void> resetPassword(String email, String code, String newPassword) {
+		
+		return Result.resultSuccess("密码重置成功！");
 	}
 
 }

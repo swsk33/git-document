@@ -10,7 +10,6 @@ import com.gitee.swsk33.gitdocument.message.GitCreateTaskMessage;
 import com.gitee.swsk33.gitdocument.message.GitUpdateTaskMessage;
 import com.gitee.swsk33.gitdocument.message.UpdateEmailMessage;
 import com.gitee.swsk33.gitdocument.model.ArticleDiff;
-import com.gitee.swsk33.gitdocument.property.ConfigProperties;
 import com.gitee.swsk33.gitdocument.util.GitFileUtils;
 import com.gitee.swsk33.gitdocument.util.GitRepositoryUtils;
 import lombok.Data;
@@ -29,6 +28,7 @@ import java.util.List;
 import static com.gitee.swsk33.gitdocument.param.RabbitMessageQueue.Exchange.EMAIL_TOPIC_EXCHANGE;
 import static com.gitee.swsk33.gitdocument.param.RabbitMessageQueue.Exchange.GIT_TASK_TOPIC_EXCHANGE;
 import static com.gitee.swsk33.gitdocument.param.RabbitMessageQueue.RoutingKey.*;
+import static com.gitee.swsk33.gitdocument.param.SystemSettingKey.ORGANIZATION_NAME;
 
 /**
  * Git仓库头指针监听器
@@ -57,6 +57,9 @@ public class GitRepositoryListener implements Watcher {
 
 	@Autowired
 	private RabbitTemplate rabbitTemplate;
+
+	@Autowired
+	private SystemSettingDAO systemSettingDAO;
 
 	@Override
 	public void onCreate(WatchEvent<?> watchEvent, Path path) {
@@ -111,7 +114,7 @@ public class GitRepositoryListener implements Watcher {
 			}
 			// 准备邮件任务消息
 			UpdateEmailMessage message = new UpdateEmailMessage();
-			message.setTitle("GitDocument · " + configProperties.getOrganizationName() + " - 文集更新通知");
+			message.setTitle("GitDocument · " + systemSettingDAO.get(ORGANIZATION_NAME) + " - 文集更新通知");
 			message.setName(getAnthology.getShowName());
 			message.setCommitMessage(GitRepositoryUtils.getHeadCommitMessage(path.toAbsolutePath().toString()));
 			message.setDiffEntries(ArticleDiff.toArticleDiff(diffs));

@@ -8,6 +8,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
+
 import java.util.List;
 
 @RestController
@@ -20,9 +21,7 @@ public class StarAPI {
 	@PostMapping("/add")
 	public Result<Void> add(@Valid @RequestBody Star star, BindingResult errors) {
 		if (errors.hasErrors()) {
-			Result<Void> result = new Result<>();
-			result.setResultFailed(errors.getFieldError().getDefaultMessage());
-			return result;
+			return Result.resultFailed(errors.getFieldError().getDefaultMessage());
 		}
 		return starService.add(star);
 	}
