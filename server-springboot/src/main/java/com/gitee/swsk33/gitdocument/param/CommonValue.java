@@ -15,4 +15,9 @@ public class CommonValue {
 	 */
 	public static final String RUN_USER_NAME = System.getProperty("user.name");
 
+	/**
+	 * Git仓库头指针名称
+	 */
+	public static final String GIT_HEAD_POINTER = "HEAD";
+
 }

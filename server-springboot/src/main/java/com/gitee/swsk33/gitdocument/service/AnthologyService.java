@@ -5,7 +5,6 @@ import com.gitee.swsk33.gitdocument.model.CommitInfo;
 import com.gitee.swsk33.gitdocument.model.Result;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -33,7 +32,7 @@ public interface AnthologyService {
 	 *
 	 * @param id 文集id
 	 */
-	Result<Void> delete(long id) throws IOException;
+	Result<Void> delete(long id);
 
 	/**
 	 * 修改一个文集
@@ -47,14 +46,14 @@ public interface AnthologyService {
 	 *
 	 * @param id 文集id
 	 */
-	Result<Anthology> getById(long id) throws Exception;
+	Result<Anthology> getById(long id);
 
 	/**
 	 * 获取文集全部的贡献对象
 	 *
 	 * @param id 文集id
 	 */
-	Result<List<CommitInfo>> getAllCommits(long id) throws Exception;
+	Result<List<CommitInfo>> getAllCommits(long id);
 
 	/**
 	 * 获取全部文集列表

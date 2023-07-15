@@ -4,11 +4,11 @@ import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.gitee.swsk33.gitdocument.cache.ArticleTreeCache;
 import com.gitee.swsk33.gitdocument.dao.ArticleDAO;
 import com.gitee.swsk33.gitdocument.dataobject.Article;
+import com.gitee.swsk33.gitdocument.git.GitFileDAO;
 import com.gitee.swsk33.gitdocument.model.ArticleDirectory;
 import com.gitee.swsk33.gitdocument.model.Result;
 import com.gitee.swsk33.gitdocument.param.PermissionName;
 import com.gitee.swsk33.gitdocument.service.ArticleService;
-import com.gitee.swsk33.gitdocument.util.GitFileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +21,9 @@ public class ArticleServiceImpl implements ArticleService {
 	@Autowired
 	private ArticleTreeCache articleTreeCache;
 
+	@Autowired
+	private GitFileDAO gitFileDAO;
+
 	@SaCheckPermission(PermissionName.BROWSE_ARTICLE)
 	@Override
 	public Result<Article> getById(long id) throws Exception {
@@ -29,7 +32,7 @@ public class ArticleServiceImpl implements ArticleService {
 			return Result.resultFailed("文章不存在！");
 		}
 		// 去文章仓库中取出文章内容
-		getArticle.setContent(GitFileUtils.getFileTextContentInLatestCommit(getArticle.getAnthology().getRepoPath(), getArticle.getFilePath()));
+		getArticle.setContent(gitFileDAO.getFileTextContentInLatestCommit(getArticle.getAnthology().getRepoPath(), getArticle.getFilePath()));
 		return Result.resultSuccess("查找文章成功！", getArticle);
 	}
 

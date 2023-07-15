@@ -61,8 +61,13 @@ public class EmailServiceImpl implements EmailService {
 		// 获取差异信息
 		List<String> diffsMessage = message.getDiffEntries().stream()
 				// 过滤掉非md文件的变动
-				.filter(diff -> diff.getChangeType() == DiffEntry.ChangeType.DELETE || diff.getNewPath().endsWith(".md"))
+				.filter(diff -> diff.getNewPath().endsWith(".md") || (diff.getChangeType() == DiffEntry.ChangeType.DELETE && diff.getOldPath().endsWith(".md")))
 				.map(ArticleDiff::toString).toList();
+		// 若没有要通知的差异，则不发送邮件
+		if (diffsMessage.isEmpty()) {
+			log.warn("没有需要通知的差异信息！");
+			return;
+		}
 		// 设定模板变量
 		Map<String, Object> models = new HashMap<>();
 		models.put("anthology", message.getName());

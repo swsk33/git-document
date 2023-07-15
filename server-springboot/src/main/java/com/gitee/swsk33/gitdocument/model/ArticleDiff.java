@@ -5,7 +5,6 @@ import lombok.NoArgsConstructor;
 import org.eclipse.jgit.diff.DiffEntry;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -49,9 +48,7 @@ public class ArticleDiff implements Serializable {
 	 * @return 文章差异对象
 	 */
 	public static List<ArticleDiff> toArticleDiff(List<DiffEntry> diffEntries) {
-		List<ArticleDiff> diffs = new ArrayList<>();
-		diffEntries.forEach(diff -> diffs.add(new ArticleDiff(diff)));
-		return diffs;
+		return diffEntries.stream().map(ArticleDiff::new).toList();
 	}
 
 	@Override

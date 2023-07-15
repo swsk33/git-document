@@ -13,7 +13,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -37,7 +36,7 @@ public class AnthologyAPI {
 	}
 
 	@DeleteMapping("/delete/{id}")
-	public Result<Void> delete(@PathVariable long id) throws IOException {
+	public Result<Void> delete(@PathVariable long id) {
 		return anthologyService.delete(id);
 	}
 
@@ -50,12 +49,12 @@ public class AnthologyAPI {
 	}
 
 	@GetMapping("/get/{id}")
-	public Result<Anthology> getById(@PathVariable long id) throws Exception {
+	public Result<Anthology> getById(@PathVariable long id) {
 		return anthologyService.getById(id);
 	}
 
 	@GetMapping("/get-all-commits/{id}")
-	public Result<List<CommitInfo>> getAllCommits(@PathVariable long id) throws Exception {
+	public Result<List<CommitInfo>> getAllCommits(@PathVariable long id) {
 		return anthologyService.getAllCommits(id);
 	}
 

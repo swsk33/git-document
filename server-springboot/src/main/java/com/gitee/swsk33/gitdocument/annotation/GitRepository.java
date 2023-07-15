@@ -6,13 +6,13 @@ import org.springframework.stereotype.Component;
 import java.lang.annotation.*;
 
 /**
- * 用于Redis缓存操作对象的注解
+ * 用于Git裸仓库操作对象的注解
  */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Component
-public @interface RedisCache {
+public @interface GitRepository {
 
 	@AliasFor(annotation = Component.class)
 	String value() default "";
