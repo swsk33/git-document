@@ -1,7 +1,6 @@
 package com.gitee.swsk33.gitdocument.model;
 
 import com.gitee.swsk33.gitdocument.dataobject.Article;
-import com.gitee.swsk33.gitdocument.param.FileIndexType;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -15,11 +14,6 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 public class ArticleDirectory implements Serializable {
-
-	/**
-	 * 索引类型为目录
-	 */
-	private final FileIndexType type = FileIndexType.DIR;
 
 	/**
 	 * 目录名

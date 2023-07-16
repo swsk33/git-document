@@ -78,6 +78,7 @@ create table "anthology"
 	"cover"            varchar(1024),
 	"repo_path"        varchar(2048)      not null,
 	"latest_commit_id" varchar(40),
+	"status"           varchar(12)        not null,
 	"gmt_created"      timestamp,
 	"gmt_modified"     timestamp
 );

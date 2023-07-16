@@ -8,13 +8,14 @@
 		<result column="cover" property="cover"/>
 		<result column="repo_path" property="repoPath"/>
 		<result column="latest_commit_id" property="latestCommitId"/>
+		<result column="status" property="status"/>
 		<result column="gmt_created" property="gmtCreated"/>
 		<result column="gmt_modified" property="gmtModified"/>
 	</resultMap>
 
 	<insert id="add" parameterType="com.gitee.swsk33.gitdocument.dataobject.Anthology">
 		insert into "anthology"
-		values (#{id}, #{name}, #{showName}, #{cover}, #{repoPath}, #{latestCommitId}, now(), now())
+		values (#{id}, #{name}, #{showName}, #{cover}, #{repoPath}, #{latestCommitId}, #{status}, now(), now())
 	</insert>
 
 	<delete id="delete">
@@ -28,6 +29,7 @@
 		set show_name        = #{showName},
 			cover            = #{cover},
 			latest_commit_id = #{latestCommitId},
+			status           = #{status},
 			gmt_modified     = now()
 		where id = #{id}
 	</update>

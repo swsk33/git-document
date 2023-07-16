@@ -3,6 +3,7 @@ package com.gitee.swsk33.gitdocument.dataobject;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.gitee.swsk33.gitdocument.param.AnthologyStatus;
 import com.gitee.swsk33.gitdocument.param.ValidationRules;
 import com.gitee.swsk33.gitdocument.serializer.LongToStringSerializer;
 import jakarta.validation.constraints.NotNull;
@@ -61,6 +62,11 @@ public class Anthology implements Serializable {
 	 * 最后一次的提交id，新仓库为null
 	 */
 	private String latestCommitId;
+
+	/**
+	 * 文集仓库状态
+	 */
+	private AnthologyStatus status;
 
 	/**
 	 * 创建时间

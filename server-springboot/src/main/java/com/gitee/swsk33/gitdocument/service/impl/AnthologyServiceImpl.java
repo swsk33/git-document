@@ -17,6 +17,7 @@ import com.gitee.swsk33.gitdocument.git.GitRepositoryInfoDAO;
 import com.gitee.swsk33.gitdocument.message.CreateEmailMessage;
 import com.gitee.swsk33.gitdocument.model.CommitInfo;
 import com.gitee.swsk33.gitdocument.model.Result;
+import com.gitee.swsk33.gitdocument.param.AnthologyStatus;
 import com.gitee.swsk33.gitdocument.param.PermissionName;
 import com.gitee.swsk33.gitdocument.property.ConfigProperties;
 import com.gitee.swsk33.gitdocument.service.AnthologyService;
@@ -140,6 +141,7 @@ public class AnthologyServiceImpl implements AnthologyService {
 		// 补充信息
 		anthology.setId(IdUtil.getSnowflakeNextId());
 		anthology.setRepoPath(repoPath);
+		anthology.setStatus(AnthologyStatus.UPDATING);
 		// 加入监听
 		listenerContext.addMonitor(anthology.getId(), repoPath);
 		// 存入数据库

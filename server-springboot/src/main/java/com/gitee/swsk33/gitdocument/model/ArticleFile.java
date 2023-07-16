@@ -1,7 +1,6 @@
 package com.gitee.swsk33.gitdocument.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.gitee.swsk33.gitdocument.param.FileIndexType;
 import com.gitee.swsk33.gitdocument.serializer.LongToStringSerializer;
 import lombok.Data;
 
@@ -12,11 +11,6 @@ import java.io.Serializable;
  */
 @Data
 public class ArticleFile implements Serializable {
-
-	/**
-	 * 索引类型为文件
-	 */
-	private final FileIndexType type = FileIndexType.FILE;
 
 	/**
 	 * 文章id
