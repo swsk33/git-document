@@ -1,5 +1,7 @@
 package com.gitee.swsk33.gitdocument.dataobject;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.gitee.swsk33.gitdocument.param.ValidationRules;
 import com.gitee.swsk33.gitdocument.serializer.LongToStringSerializer;
@@ -15,6 +17,7 @@ import java.time.LocalDateTime;
  * 文章集
  */
 @Data
+@JsonIgnoreProperties(allowSetters = true, value = {"latestCommitId"})
 public class Anthology implements Serializable {
 
 	/**
@@ -45,16 +48,6 @@ public class Anthology implements Serializable {
 	private String cover;
 
 	/**
-	 * 当前运行用户的用户名（用于拼接克隆文集仓库地址）
-	 */
-	private String systemUser;
-
-	/**
-	 * 文集仓库暴露Git SSH宿主机端口（用于拼接克隆文集仓库地址）
-	 */
-	private Integer sshPort;
-
-	/**
 	 * 文集最后更新的时间戳
 	 */
 	private Integer updateTime;
@@ -72,11 +65,13 @@ public class Anthology implements Serializable {
 	/**
 	 * 创建时间
 	 */
+	@JsonIgnore
 	private LocalDateTime gmtCreated;
 
 	/**
 	 * 修改时间
 	 */
+	@JsonIgnore
 	private LocalDateTime gmtModified;
 
 }

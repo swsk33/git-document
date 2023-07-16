@@ -35,7 +35,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static com.gitee.swsk33.gitdocument.param.CommonValue.RUN_USER_NAME;
 import static com.gitee.swsk33.gitdocument.param.CommonValue.SA_USER_SESSION_INFO_KEY;
 import static com.gitee.swsk33.gitdocument.param.RabbitMessageQueue.Exchange.EMAIL_TOPIC_EXCHANGE;
 import static com.gitee.swsk33.gitdocument.param.RabbitMessageQueue.RoutingKey.CREATE_EMAIL;
@@ -216,12 +215,9 @@ public class AnthologyServiceImpl implements AnthologyService {
 		if (getAnthology == null) {
 			return Result.resultFailed("该文集不存在！");
 		}
-		// 填充信息
-		getAnthology.setSystemUser(RUN_USER_NAME);
-		getAnthology.setSshPort(configProperties.getHostPort());
 		// 获取更新时间
 		RevCommit commit = gitCommitDAO.getHeadCommit(getAnthology.getRepoPath());
-		getAnthology.setUpdateTime(commit == null ? null : commit.getCommitTime());
+		getAnthology.setUpdateTime(commit != null ? commit.getCommitTime() : null);
 		return Result.resultSuccess("查找成功！", getAnthology);
 	}
 
@@ -256,20 +252,10 @@ public class AnthologyServiceImpl implements AnthologyService {
 	@Override
 	public Result<List<Anthology>> getAll() {
 		List<Anthology> anthologies = anthologyDAO.getAll();
-		// 填充信息
+		// 填充时间信息
 		anthologies.forEach(item -> {
-			Integer timestamp = null;
-			try {
-				RevCommit commit = gitCommitDAO.getHeadCommit(item.getRepoPath());
-				if (commit != null) {
-					timestamp = commit.getCommitTime();
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			item.setSystemUser(RUN_USER_NAME);
-			item.setSshPort(configProperties.getHostPort());
-			item.setUpdateTime(timestamp);
+			RevCommit commit = gitCommitDAO.getHeadCommit(item.getRepoPath());
+			item.setUpdateTime(commit != null ? commit.getCommitTime() : null);
 		});
 		return Result.resultSuccess("查询成功！", anthologies);
 	}

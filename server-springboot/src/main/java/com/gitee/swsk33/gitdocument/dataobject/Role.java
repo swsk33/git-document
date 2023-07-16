@@ -1,5 +1,6 @@
 package com.gitee.swsk33.gitdocument.dataobject;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import jakarta.validation.constraints.NotNull;
@@ -37,11 +38,13 @@ public class Role implements Serializable {
 	/**
 	 * 创建时间
 	 */
+	@JsonIgnore
 	private LocalDateTime gmtCreated;
 
 	/**
 	 * 修改时间
 	 */
+	@JsonIgnore
 	private LocalDateTime gmtModified;
 
 }

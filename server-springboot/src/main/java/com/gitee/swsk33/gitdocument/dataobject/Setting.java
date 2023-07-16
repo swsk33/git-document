@@ -1,5 +1,6 @@
 package com.gitee.swsk33.gitdocument.dataobject;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.gitee.swsk33.gitdocument.param.ValidationRules;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -34,11 +35,13 @@ public class Setting implements Serializable {
 	/**
 	 * 创建时间
 	 */
+	@JsonIgnore
 	private LocalDateTime gmtCreated;
 
 	/**
 	 * 修改时间
 	 */
+	@JsonIgnore
 	private LocalDateTime gmtModified;
 
 }

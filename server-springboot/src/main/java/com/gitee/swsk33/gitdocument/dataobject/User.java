@@ -1,5 +1,6 @@
 package com.gitee.swsk33.gitdocument.dataobject;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.gitee.swsk33.gitdocument.param.ValidationRules;
 import lombok.Data;
@@ -70,11 +71,13 @@ public class User implements Serializable {
 	/**
 	 * 创建时间
 	 */
+	@JsonIgnore
 	private LocalDateTime gmtCreated;
 
 	/**
 	 * 修改时间
 	 */
+	@JsonIgnore
 	private LocalDateTime gmtModified;
 
 }
