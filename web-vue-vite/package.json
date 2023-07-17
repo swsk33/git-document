@@ -14,7 +14,7 @@
 		"element-plus": "^2.2.30",
 		"highlight.js": "^11.7.0",
 		"katex": "^0.16.4",
-		"marked": "^4.2.12",
+		"marked": "^5.1.1",
 		"pinia": "^2.0.30",
 		"sass": "^1.58.2",
 		"vue": "^3.2.47",
@@ -22,8 +22,8 @@
 	},
 	"devDependencies": {
 		"@vitejs/plugin-vue": "^4.0.0",
-		"unplugin-auto-import": "^0.14.3",
-		"unplugin-vue-components": "^0.24.0",
+		"unplugin-auto-import": "^0.16.6",
+		"unplugin-vue-components": "^0.25.1",
 		"vite": "^4.1.1"
 	}
 }

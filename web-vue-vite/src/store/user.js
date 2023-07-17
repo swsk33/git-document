@@ -1,6 +1,7 @@
 // 用户
 import { sendRequest, REQUEST_METHOD } from '../utils/request';
 import { defineStore } from 'pinia';
+import { REQUEST_PREFIX } from '../param/request-prefix';
 
 export const useUserStore = defineStore('user', {
 	state() {
@@ -20,7 +21,7 @@ export const useUserStore = defineStore('user', {
 		 * 检查用户是否登录并拉取用户信息，若已登录，则将用户数据保存到state，否则置为undefined
 		 */
 		async checkLogin() {
-			let response = await sendRequest('/api/user/is-login', REQUEST_METHOD.GET);
+			let response = await sendRequest(REQUEST_PREFIX.USER + 'is-login', REQUEST_METHOD.GET);
 			// 若登录，则设定用户数据
 			if (response.success) {
 				this.userData = response.data;
@@ -31,7 +32,7 @@ export const useUserStore = defineStore('user', {
 		 * 获取全角色列表
 		 */
 		async getRoleList() {
-			let response = await sendRequest('/api/role/get-all', REQUEST_METHOD.GET);
+			let response = await sendRequest(REQUEST_PREFIX.ROLE + 'get-all', REQUEST_METHOD.GET);
 			if (response.success) {
 				this.roleList = response.data;
 			}

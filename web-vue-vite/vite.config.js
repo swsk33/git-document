@@ -23,11 +23,6 @@ export default defineConfig({
 			'/api': {
 				target: 'http://localhost:8801/',
 				changeOrigin: true
-			},
-			// 静态资源代理
-			'/static': {
-				target: 'http://localhost:8801/',
-				changeOrigin: true
 			}
 		}
 	}
