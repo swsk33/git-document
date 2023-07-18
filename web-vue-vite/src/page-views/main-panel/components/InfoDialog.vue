@@ -80,13 +80,13 @@ $frame-height: 60vh;
 
 		.title {
 			font-size: 26px;
-			height: getByHeightPercent(0.2);
-			line-height: getByHeightPercent(0.2);
+			height: getByHeightPercent(0.25);
+			line-height: getByHeightPercent(0.25);
 			text-align: center;
 		}
 
 		.content {
-			height: getByHeightPercent(0.6);
+			height: getByHeightPercent(0.45);
 			width: getByWidthPercent(0.95);
 			left: getByWidthPercent(0.025);
 			display: flex;
@@ -115,7 +115,7 @@ $frame-height: 60vh;
 		}
 
 		.button-box {
-			height: getByHeightPercent(0.2);
+			height: getByHeightPercent(0.3);
 			display: flex;
 			align-items: center;
 			justify-content: space-evenly;

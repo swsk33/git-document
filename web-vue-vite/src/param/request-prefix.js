@@ -1,6 +1,6 @@
 // 存放所有请求前缀的常量JS文件
-
 import defaultAvatar from '../assets/avatar/default-avatar.jpg';
+import defaultCover from '../assets/cover/default.png';
 
 /**
  * 全部前缀
@@ -58,10 +58,10 @@ const REQUEST_PREFIX = {
 };
 
 /**
- * 解析背景图片资源的请求路径
+ * 解析图片资源的请求路径
  * @param filename 图片资源文件名
  */
-const parseBackgroundURL = (filename) => {
+const parseImageURL = (filename) => {
 	return REQUEST_PREFIX.IMAGE + 'get/' + filename;
 };
 
@@ -70,7 +70,15 @@ const parseBackgroundURL = (filename) => {
  * @param filename 图片资源文件名
  */
 const parseAvatarURL = (filename) => {
-	return filename == null ? defaultAvatar : REQUEST_PREFIX.IMAGE + 'get/' + filename;
+	return filename == null ? defaultAvatar : parseImageURL(filename);
 };
 
-export { REQUEST_PREFIX, parseBackgroundURL, parseAvatarURL };
+/**
+ * 解析封面图片资源的请求路径
+ * @param filename 图片资源文件名
+ */
+const parseCoverURL = (filename) => {
+	return filename == null ? defaultCover : parseImageURL(filename);
+};
+
+export { REQUEST_PREFIX, parseImageURL, parseAvatarURL, parseCoverURL };

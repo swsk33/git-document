@@ -34,6 +34,7 @@ import { ElNotification } from 'element-plus';
 import { Folder, Document, Top } from '@element-plus/icons-vue';
 import { computed, onBeforeMount, reactive, ref, shallowRef, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
+import { REQUEST_PREFIX } from '../../../param/request-prefix';
 
 const router = useRouter();
 const route = useRoute();
@@ -170,7 +171,7 @@ function goToLast() {
 }
 
 onBeforeMount(async () => {
-	const response = await sendRequest('/api/article/get-article-list/' + route.params.id, REQUEST_METHOD.GET);
+	const response = await sendRequest(REQUEST_PREFIX.ARTICLE + 'get-article-list/' + route.params.id, REQUEST_METHOD.GET);
 	loadingDone.value = true;
 	if (!response.success) {
 		ElNotification({

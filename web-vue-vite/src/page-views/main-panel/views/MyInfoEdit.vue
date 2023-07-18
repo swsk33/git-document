@@ -1,6 +1,7 @@
 <template>
 	<div class="my-info">
 		<div class="title">个人中心</div>
+		<!-- 用户信息 -->
 		<div class="content">
 			<UploadImage class="avatar" upload-url="/api/image/upload-avatar" random-url="/api/image/random-avatar" upload-name="avatar" ref="imageUpload">
 				<template v-slot:text>头像</template>
@@ -79,6 +80,7 @@ const imageUpload = ref(null);
 
 // pinia
 import { useUserStore } from '../../../store/user';
+import { REQUEST_PREFIX } from '../../../param/request-prefix';
 
 const userStore = useUserStore();
 
@@ -108,7 +110,7 @@ const popOverShow = reactive({
  * @param id 公钥id
  */
 async function deleteKey(id) {
-	const response = await sendRequest('/api/public-key/delete/' + id, REQUEST_METHOD.DELETE);
+	const response = await sendRequest(REQUEST_PREFIX.PUBLIC_KEY + 'delete/' + id, REQUEST_METHOD.DELETE);
 	if (!response.success) {
 		ElNotification({
 			title: '失败',
@@ -131,7 +133,7 @@ async function deleteKey(id) {
  * 发送增加公钥请求
  */
 async function addPublicKeyRequest() {
-	const response = await sendRequest('/api/public-key/add', REQUEST_METHOD.POST, {
+	const response = await sendRequest(REQUEST_PREFIX.PUBLIC_KEY + 'add', REQUEST_METHOD.POST, {
 		content: addPublicKey.value
 	});
 	if (!response.success) {
@@ -159,8 +161,8 @@ async function addPublicKeyRequest() {
  */
 async function updateUserData() {
 	editUserData.avatar = await imageUpload.value.uploadAndGetUrl();
-	const updateUserInfo = await sendRequest('/api/user/update', REQUEST_METHOD.PUT, editUserData);
-	const updateUserSetting = await sendRequest('/api/setting/update', REQUEST_METHOD.PUT, editSetting);
+	const updateUserInfo = await sendRequest(REQUEST_PREFIX.USER + 'update', REQUEST_METHOD.PUT, editUserData);
+	const updateUserSetting = await sendRequest(REQUEST_PREFIX.SETTING + 'update', REQUEST_METHOD.PUT, editSetting);
 	if (!updateUserInfo.success || !updateUserSetting.success) {
 		ElNotification({
 			title: '失败',
@@ -185,7 +187,7 @@ async function updateUserData() {
  * 获取公钥列表
  */
 async function getPublicKeyList() {
-	const response = await sendRequest('/api/public-key/get-by-user', REQUEST_METHOD.GET);
+	const response = await sendRequest(REQUEST_PREFIX.PUBLIC_KEY + 'get-by-user', REQUEST_METHOD.GET);
 	if (!response.success) {
 		ElNotification({
 			title: '失败',

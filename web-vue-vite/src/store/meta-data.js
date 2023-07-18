@@ -1,5 +1,5 @@
 import { sendRequest, REQUEST_METHOD } from '../utils/request';
-import { parseBackgroundURL, REQUEST_PREFIX } from '../param/request-prefix';
+import { parseImageURL, REQUEST_PREFIX } from '../param/request-prefix';
 import { defineStore } from 'pinia';
 
 export const useMetaDataStore = defineStore('meta-data', {
@@ -75,7 +75,7 @@ export const useMetaDataStore = defineStore('meta-data', {
 			// 首先获取自定义图片
 			const response = await sendRequest(REQUEST_PREFIX.SYSTEM_SETTING + 'get-login-image', REQUEST_METHOD.GET);
 			if (response.data != null) {
-				this.loginBackground = parseBackgroundURL(response.data);
+				this.loginBackground = parseImageURL(response.data);
 				return;
 			}
 			// 若自定义图片为空，则使用默认图片
@@ -98,7 +98,7 @@ export const useMetaDataStore = defineStore('meta-data', {
 			// 首先获取自定义图片
 			const response = await sendRequest(REQUEST_PREFIX.SYSTEM_SETTING + 'get-main-image', REQUEST_METHOD.GET);
 			if (response.data != null) {
-				this.mainBackground = parseBackgroundURL(response.data);
+				this.mainBackground = parseImageURL(response.data);
 				return;
 			}
 			// 若自定义图片为空，则使用默认图片

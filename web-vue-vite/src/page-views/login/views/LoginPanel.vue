@@ -9,7 +9,7 @@
 			<el-button class="button" type="primary" size="large" @click="login(userData)">登录</el-button>
 			<el-button class="button" type="success" size="large" @click="toRegister">注册</el-button>
 		</div>
-		<el-button class="forget-password" type="warning" size="small" @click="forgetPassword">忘记密码</el-button>
+		<el-button class="forget-password" type="warning" size="default" @click="router.push('/login/forget-password')">忘记密码</el-button>
 	</div>
 </template>
 
@@ -26,6 +26,7 @@ const router = useRouter();
 import { useUserStore } from '../../../store/user';
 import { useMetaDataStore } from '../../../store/meta-data';
 import { useUrlPathStore } from '../../../store/url-path';
+import { REQUEST_PREFIX } from '../../../param/request-prefix';
 
 const userStore = useUserStore();
 const metaStore = useMetaDataStore();
@@ -41,7 +42,6 @@ const icons = reactive({
 	lock: shallowRef(Lock)
 });
 
-// 自定义方法
 /**
  * 跳转至注册页视图
  */
@@ -64,7 +64,7 @@ function toRegister() {
  * 登录方法
  */
 async function login() {
-	let response = await sendRequest('/api/user/login', REQUEST_METHOD.POST, userData);
+	let response = await sendRequest(REQUEST_PREFIX.USER + 'login', REQUEST_METHOD.POST, userData);
 	if (!response.success) {
 		ElNotification({
 			title: '错误！',
@@ -92,18 +92,6 @@ async function login() {
 }
 
 /**
- * 忘记密码
- */
-function forgetPassword() {
-	ElNotification({
-		title: '提示',
-		message: '请联系管理员重置密码！',
-		type: 'warning',
-		duration: 1000
-	});
-}
-
-/**
  * 在密码输入框按下enter键时也执行登录
  */
 function enterKeyLogin(e) {
@@ -115,44 +103,40 @@ function enterKeyLogin(e) {
 
 <style lang="scss" scoped>
 .login-panel {
-	position: relative;
-	display: flex;
-	flex-direction: column;
-	justify-content: flex-start;
-	align-items: center;
-	width: 30%;
-	height: 50%;
-	border-radius: 8px;
-	box-shadow: white 1px 1px 7px;
-	background: rgba(255, 255, 255, 0.42);
-
 	.text {
-		margin-top: 9%;
+		margin-top: 8%;
 		position: relative;
 		font-size: 32px;
 	}
 
 	.input-box {
 		position: relative;
-		width: 75%;
-		height: 42%;
-		margin-top: 5%;
+		width: 78%;
+		height: 48%;
+		margin-top: 3%;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		justify-content: space-around;
+
+		.text-input {
+			height: 18%;
+			font-size: 18px;
+		}
 	}
 
 	.button-box {
 		position: relative;
-		width: 75%;
+		width: 78%;
 		height: 22%;
 		display: flex;
 		justify-content: space-evenly;
 		align-items: center;
 
 		.button {
-			font-size: 18px;
+			font-size: 19px;
+			width: 16%;
+			height: 42%;
 		}
 	}
 
@@ -160,6 +144,7 @@ function enterKeyLogin(e) {
 		position: absolute;
 		bottom: 8px;
 		right: 8px;
+		font-size: 16px;
 	}
 }
 </style>

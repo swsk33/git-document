@@ -14,6 +14,10 @@ const loginPageRouter = {
 		{
 			path: 'register',
 			component: () => import('../page-views/login/views/RegisterPanel.vue')
+		},
+		{
+			path: 'forget-password',
+			component: () => import('../page-views/login/views/ForgetPassword.vue')
 		}
 	]
 };

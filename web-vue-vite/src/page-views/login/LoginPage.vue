@@ -1,12 +1,12 @@
 <template>
-	<div class="login-page">
+	<div class="login-page" :style="backgroundStyle">
 		<div class="welcome-text">Welcome Back! 来自{{ metaStore.organizationName }}的成员</div>
 		<router-view class="panel"/>
 	</div>
 </template>
 
 <script setup>
-import { onBeforeMount, watch } from 'vue';
+import { onBeforeMount, watch, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
@@ -17,6 +17,11 @@ import { useUserStore } from '../../store/user';
 
 const metaStore = useMetaDataStore();
 const userStore = useUserStore();
+
+// 设定登录页背景的CSS变量
+const backgroundStyle = reactive({
+	background: 'url("' + metaStore.loginBackground + '") no-repeat center/cover'
+});
 
 // 监听器
 watch(() => metaStore.organizationName, () => {
@@ -44,7 +49,6 @@ onBeforeMount(async () => {
 	left: 0;
 	width: 100%;
 	height: 100vh;
-	background: url("/api/config-get/login-background") no-repeat center/cover;
 
 	.welcome-text {
 		position: relative;
@@ -59,7 +63,17 @@ onBeforeMount(async () => {
 	}
 
 	.panel {
-		bottom: 23%;
+		position: relative;
+		display: flex;
+		bottom: 21%;
+		width: 36%;
+		height: 53%;
+		flex-direction: column;
+		justify-content: flex-start;
+		align-items: center;
+		border-radius: 8px;
+		box-shadow: white 1px 1px 7px;
+		background: rgba(255, 255, 255, 0.42);
 	}
 }
 

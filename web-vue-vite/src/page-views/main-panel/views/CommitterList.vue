@@ -28,6 +28,7 @@ import { timestampToDateString } from '../../../utils/time-convert';
 import { ElNotification } from 'element-plus';
 import { computed, onBeforeMount, ref } from 'vue';
 import { useRoute } from 'vue-router';
+import { REQUEST_PREFIX } from '../../../param/request-prefix';
 
 const route = useRoute();
 
@@ -42,7 +43,7 @@ const getUpdateTime = computed(() => (timestamp) => {
 
 onBeforeMount(async () => {
 	// 拉取贡献者列表
-	const response = await sendRequest('/api/anthology/get-all-commits/' + route.params.id, REQUEST_METHOD.GET);
+	const response = await sendRequest(REQUEST_PREFIX.ANTHOLOGY + 'get-all-commits/' + route.params.id, REQUEST_METHOD.GET);
 	loadingDone.value = true;
 	if (!response.success) {
 		ElNotification({

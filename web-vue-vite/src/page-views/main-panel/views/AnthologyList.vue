@@ -10,7 +10,7 @@
 			<!-- 每个文集 -->
 			<li v-for="item in list" :key="item.id" v-show="!showStarOnly || (showStarOnly && containStar(item.id))">
 				<div class="image">
-					<img :src="item.cover" alt="undefined"/>
+					<img :src="parseCoverURL(item.cover)" alt="undefined"/>
 				</div>
 				<el-tooltip placement="top" :content="item.showName">
 					<div class="text">{{ item.showName }}</div>
@@ -20,7 +20,7 @@
 				</el-tooltip>
 				<div class="button-box">
 					<el-button type="info" plain class="star" :icon="containStar(item.id) ? StarFilled : Star" @click="containStar(item.id) ? cancelStar(item.id) : doStar(item.id)" circle/>
-					<el-button type="primary" plain class="copy-ssh" :id="'copy-ssh-' + item.id" v-if="userStore.hasPermission('edit_anthology')" @click="copySSH(item.id, item.systemUser, item.repoPath, item.sshPort)">复制Git SSH地址</el-button>
+					<el-button type="primary" plain class="copy-ssh" :id="'copy-ssh-' + item.id" v-if="userStore.hasPermission('edit_anthology')" @click="copySSH(item.id, item.repoPath)">复制Git SSH地址</el-button>
 					<el-button type="warning" plain class="edit" v-if="userStore.hasPermission('edit_anthology')" @click="showEditDialog(item)">编辑</el-button>
 					<el-button type="success" plain class="go-to-read" @click="router.push('/article-menu/' + item.id)">去阅读</el-button>
 				</div>
@@ -33,33 +33,33 @@
 			<template v-slot:content>
 				<div class="name">
 					<div class="text">文集名：</div>
-					<el-input class="input" v-model="addAnthologyInfo.name" placeholder="请输入文集名，由英文和数字组成"/>
+					<el-input class="input" size="large" v-model="addAnthologyInfo.name" placeholder="请输入文集名，由英文和数字组成"/>
 				</div>
 				<div class="show-name">
 					<div class="text">文集显示名：</div>
-					<el-input class="input" v-model="addAnthologyInfo.showName" placeholder="请输入文集显示名"/>
+					<el-input class="input" size="large" v-model="addAnthologyInfo.showName" placeholder="请输入文集显示名"/>
 				</div>
 			</template>
 			<template v-slot:button-box>
-				<el-button class="ok" type="success" @click="addAnthology">确定</el-button>
-				<el-button class="cancel" type="warning" @click="addAnthologyRef.frameShow = false">取消</el-button>
+				<el-button class="ok" size="large" type="success" @click="addAnthology">确定</el-button>
+				<el-button class="cancel" size="large" type="warning" @click="addAnthologyRef.frameShow = false">取消</el-button>
 			</template>
 		</InfoDialog>
 		<!-- 信息弹窗 - 修改文集 -->
 		<InfoDialog class="edit-anthology" ref="editAnthologyRef">
 			<template v-slot:title>修改文集</template>
 			<template v-slot:content>
-				<upload-image class="cover" upload-url="/api/image/upload-cover" random-url="/api/image/random-cover" :init-image="editAnthologyInfo.cover" upload-name="cover" ref="uploadImage">
+				<upload-image class="cover" :default-image="parseCoverURL(null)" :init-image="editAnthologyInfo.cover" upload-name="image" ref="uploadImage">
 					<template v-slot:text>上传封面：</template>
 				</upload-image>
 				<div class="show-name">
 					<div class="text">文集显示名：</div>
-					<el-input class="input" v-model="editAnthologyInfo.showName" placeholder="请输入文集显示名"/>
+					<el-input class="input" size="large" v-model="editAnthologyInfo.showName" placeholder="请输入文集显示名"/>
 				</div>
 			</template>
 			<template v-slot:button-box>
-				<el-button class="ok" type="success" @click="editAnthology">确定</el-button>
-				<el-button class="cancel" type="warning" @click="editAnthologyRef.frameShow = false">取消</el-button>
+				<el-button class="ok" type="success" size="large" @click="editAnthology">确定</el-button>
+				<el-button class="cancel" type="warning" size="large" @click="editAnthologyRef.frameShow = false">取消</el-button>
 				<el-popconfirm @confirm="deleteAnthology" title="确认删除这个文集？" cancel-button-text="取消" confirm-button-text="确认" cancel-button-type="primary" confirm-button-type="danger">
 					<template #reference>
 						<el-button type="danger" size="small" class="delete-button" plain>删除</el-button>
@@ -79,6 +79,7 @@ import { ElNotification } from 'element-plus';
 import { reactive, ref, computed, onBeforeMount, watch } from 'vue';
 import { Star, StarFilled } from '@element-plus/icons-vue';
 import { useRouter } from 'vue-router';
+import { parseCoverURL, REQUEST_PREFIX } from '../../../param/request-prefix';
 
 const router = useRouter();
 
@@ -92,8 +93,11 @@ const uploadImage = ref(null);
 
 // pinia
 import { useUserStore } from '../../../store/user';
+import { useMetaDataStore } from '../../../store/meta-data';
+import { MESSAGE_TYPE, showNotification } from '../../../utils/message';
 
 const userStore = useUserStore();
+const metaStore = useMetaDataStore();
 
 // 响应式变量
 const list = ref([]);
@@ -140,7 +144,7 @@ const containStar = computed(() => (anthologyId) => {
  */
 async function getAnthologyList() {
 	loadingDone.value = false;
-	const response = await sendRequest('/api/anthology/get-all', REQUEST_METHOD.GET);
+	const response = await sendRequest(REQUEST_PREFIX.ANTHOLOGY + 'get-all', REQUEST_METHOD.GET);
 	loadingDone.value = true;
 	if (!response.success) {
 		ElNotification({
@@ -157,14 +161,12 @@ async function getAnthologyList() {
 /**
  * 复制文集Git SSH克隆地址
  * @param id 传入文集id
- * @param systemUser 传入后台运行用户
  * @param repoPath 传入仓库路径
- * @param port 传入仓库暴露端口
  */
-function copySSH(id, systemUser, repoPath, port) {
+function copySSH(id, repoPath) {
 	const clipBoard = new ClipBoard('#copy-ssh-' + id, {
 		text() {
-			return port !== 22 ? 'ssh://' + systemUser + '@' + location.hostname + ':' + port + repoPath : systemUser + '@' + location.hostname + ':' + repoPath;
+			return metaStore.sshPort !== 22 ? 'ssh://' + metaStore.systemUser + '@' + location.hostname + ':' + metaStore.sshPort + repoPath : metaStore.systemUser + '@' + location.hostname + ':' + repoPath;
 		}
 	});
 	clipBoard.on('success', () => {
@@ -182,7 +184,7 @@ function copySSH(id, systemUser, repoPath, port) {
  * 添加文集
  */
 async function addAnthology() {
-	const response = await sendRequest('/api/anthology/add', REQUEST_METHOD.POST, addAnthologyInfo);
+	const response = await sendRequest(REQUEST_PREFIX.ANTHOLOGY + 'add', REQUEST_METHOD.POST, addAnthologyInfo);
 	if (!response.success) {
 		ElNotification({
 			title: '失败',
@@ -218,24 +220,15 @@ function showEditDialog(anthology) {
  * 修改文集信息
  */
 async function editAnthology() {
+	// 修改信息之前，先上传图片
 	editAnthologyInfo.cover = await uploadImage.value.uploadAndGetUrl();
 	// 修改文集数据
-	const response = await sendRequest('/api/anthology/update', REQUEST_METHOD.PUT, editAnthologyInfo);
+	const response = await sendRequest(REQUEST_PREFIX.ANTHOLOGY + 'update', REQUEST_METHOD.PATCH, editAnthologyInfo);
 	if (!response.success) {
-		ElNotification({
-			title: '失败',
-			message: response.message,
-			type: 'error',
-			duration: 1000
-		});
+		showNotification('失败', response.message, MESSAGE_TYPE.error);
 		return;
 	}
-	ElNotification({
-		title: '成功',
-		message: '修改文集信息成功！',
-		type: 'success',
-		duration: 1000
-	});
+	showNotification('成功', response.message);
 	editAnthologyRef.value.frameShow = false;
 	// 刷新列表
 	await getAnthologyList();
@@ -245,22 +238,12 @@ async function editAnthology() {
  * 删除当前编辑的文集
  */
 async function deleteAnthology() {
-	const response = await sendRequest('/api/anthology/delete/' + editAnthologyInfo.id, REQUEST_METHOD.DELETE);
+	const response = await sendRequest(REQUEST_PREFIX.ANTHOLOGY + 'delete/' + editAnthologyInfo.id, REQUEST_METHOD.DELETE);
 	if (!response.success) {
-		ElNotification({
-			title: '失败',
-			message: response.message,
-			type: 'error',
-			duration: 1000
-		});
+		showNotification('失败', response.message, MESSAGE_TYPE.error);
 		return;
 	}
-	ElNotification({
-		title: '成功',
-		message: '删除文集成功！',
-		type: 'success',
-		duration: 1000
-	});
+	showNotification('成功', response.message);
 	editAnthologyRef.value.frameShow = false;
 	// 刷新列表
 	await getAnthologyList();
@@ -270,7 +253,7 @@ async function deleteAnthology() {
  * 获取当前用户收藏的文集
  */
 async function getUserStar() {
-	const response = await sendRequest('/api/star/get-by-user', REQUEST_METHOD.GET);
+	const response = await sendRequest(REQUEST_PREFIX.STAR + 'get-by-user', REQUEST_METHOD.GET);
 	if (response.success) {
 		userStar.value = response.data;
 	}
@@ -281,7 +264,7 @@ async function getUserStar() {
  * @param anthologyId 要收藏的文集id
  */
 async function doStar(anthologyId) {
-	const response = await sendRequest('/api/star/add', REQUEST_METHOD.POST, {
+	const response = await sendRequest(REQUEST_PREFIX.STAR + 'add', REQUEST_METHOD.POST, {
 		user: {
 			id: userStore.userData.id
 		},
@@ -290,20 +273,10 @@ async function doStar(anthologyId) {
 		}
 	});
 	if (!response.success) {
-		ElNotification({
-			title: '失败',
-			message: response.message,
-			type: 'error',
-			duration: 1000
-		});
+		showNotification('失败', response.message, MESSAGE_TYPE.error);
 		return;
 	}
-	ElNotification({
-		title: '成功',
-		message: '收藏文集成功！',
-		type: 'success',
-		duration: 1000
-	});
+	showNotification('成功', response.message);
 	// 刷新列表
 	await getUserStar();
 }
@@ -320,27 +293,15 @@ async function cancelStar(anthologyId) {
 			break;
 		}
 	}
-	const response = await sendRequest('/api/star/delete/' + starId, REQUEST_METHOD.DELETE);
+	const response = await sendRequest(REQUEST_PREFIX.STAR + 'delete/' + starId, REQUEST_METHOD.DELETE);
 	if (!response.success) {
-		ElNotification({
-			title: '失败',
-			message: response.message,
-			type: 'error',
-			duration: 1000
-		});
+		showNotification('失败', response.message, MESSAGE_TYPE.error);
 		return;
 	}
-	ElNotification({
-		title: '成功',
-		message: '取消收藏文集成功！',
-		type: 'success',
-		duration: 1000
-	});
+	showNotification('成功', response.message);
 	// 刷新列表
 	await getUserStar();
 }
-
-// 监听器
 
 // 监听是否只显示收藏按钮，将结果存入本地缓存
 watch(showStarOnly, (newValue) => {
@@ -460,10 +421,11 @@ onBeforeMount(async () => {
 		top: 30%;
 	}
 
+	// 弹窗-增加文集
 	.add-anthology {
-		:deep(.content) {
-			left: 10%;
-			width: 80%;
+		:deep(.title) {
+			font-size: 32px;
+			top: 4%;
 		}
 
 		.content {
@@ -471,22 +433,30 @@ onBeforeMount(async () => {
 				position: relative;
 				display: flex;
 				align-items: center;
-				width: 100%;
+				justify-content: space-evenly;
+				width: 90%;
 
 				.text {
 					position: relative;
-					width: 128px;
-					text-align: right;
+					width: 30%;
+					text-align: center;
 				}
 
 				.input {
 					position: relative;
-					margin-left: 2%;
+					width: 60%;
 				}
+			}
+		}
+
+		.button-box {
+			.ok, .cancel {
+				font-size: 18px;
 			}
 		}
 	}
 
+	// 弹窗-修改文集
 	.edit-anthology {
 		:deep(.content) {
 			width: 70%;
@@ -496,26 +466,33 @@ onBeforeMount(async () => {
 		.content {
 			.show-name {
 				display: flex;
-				width: 100%;
-				justify-content: space-evenly;
+				width: 95%;
+				height: 25%;
+				justify-content: space-between;
 				align-items: center;
 				margin-top: 9%;
 
 				.text {
-					width: 128px;
-					text-align: right;
+					width: 30%;
+					text-align: center;
 				}
 
 				.input {
-					width: 72%;
+					width: 65%;
+					height: 70%;
 				}
 			}
 		}
 
 		.button-box {
+			.ok, .cancel {
+				font-size: 17px;
+			}
+
 			.delete-button {
 				position: absolute;
-				right: 3%;
+				right: 8px;
+				bottom: 8px;
 			}
 		}
 	}

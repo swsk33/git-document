@@ -41,7 +41,7 @@ export const useUserStore = defineStore('user', {
 		 * 判断当前用户是否有权限
 		 */
 		hasPermission(permission) {
-			if (this.userData === undefined) {
+			if (this.userData == null) {
 				return false;
 			}
 			const permissions = this.userData.role.permissions;

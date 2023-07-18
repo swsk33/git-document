@@ -6,28 +6,35 @@
 		<div class="image-edit">
 			<img class="preview" :src="previewImage" alt="无法显示"/>
 			<!-- 通过拿到input组件的dom对象可以直接执行其点击方法即为click方法，这样就可以用自己的按钮触发上传事件 -->
-			<el-button class="upload" type="success" plain @click="uploadCover.click()">上传</el-button>
-			<input ref="uploadCover" type="file" @change="getImageFile($event)"/>
-			<el-button class="random" type="warning" plain @click="getRandom">随机</el-button>
+			<el-button class="upload" type="success" plain @click="uploadButton.click()">上传</el-button>
+			<input ref="uploadButton" type="file" @change="getImageFile($event)"/>
 		</div>
 	</div>
 </template>
 
 <script setup>
-import { REQUEST_METHOD, sendRequest } from '../../../utils/request';
-import { ElNotification } from 'element-plus';
 import { ref, onMounted } from 'vue';
-import axios from 'axios';
+import { REQUEST_METHOD, uploadFile } from '../../../utils/request';
+import { parseImageURL, REQUEST_PREFIX } from '../../../param/request-prefix';
+import { MESSAGE_TYPE, showNotification } from '../../../utils/message';
 
-const uploadCover = ref(null);
+// 引用上传按钮
+const uploadButton = ref(null);
 
 // 预上传图片
 const beforeUploadImage = ref(undefined);
 // 预览图
 const previewImage = ref(undefined);
 
-// 分别是：上传API、随机获取API、初始图像、上传表单项名，initImage传入'init-random'时将使用随机获取的图片
-const props = defineProps(['uploadUrl', 'randomUrl', 'initImage', 'uploadName']);
+/**
+ * 传入参数，如下：<br>
+ * <ul>
+ *   <li>initImage：初始化图像文件名，用于从后端请求图片</li>
+ *   <li>defaultImage：默认图片资源，如果initImage为空，则显示该默认图片，为import的图片资源路径</li>
+ *   <li>uploadName：上传文件时，表单文件项使用的字段名</li>
+ * </ul>
+ */
+const props = defineProps(['initImage', 'defaultImage', 'uploadName']);
 
 /**
  * 获取选择的文件并显示到预览图
@@ -44,69 +51,24 @@ function getImageFile(e) {
 }
 
 /**
- * 获取随机图片
- * @param showTip 是否显示提示
- */
-async function getRandom(showTip = true) {
-	beforeUploadImage.value = undefined;
-	const response = await sendRequest(props.randomUrl, REQUEST_METHOD.GET);
-	if (!response.success) {
-		ElNotification({
-			title: '错误',
-			message: '无法获取随机图片！请联系后端开发者！',
-			type: 'error',
-			duration: 1000
-		});
-		return;
-	}
-	previewImage.value = response.data;
-	if (showTip) {
-		ElNotification({
-			title: '成功',
-			message: '获取随机图片成功！',
-			type: 'success',
-			duration: 1000
-		});
-	}
-	return previewImage.value;
-}
-
-/**
- * 上传图片并获取图片URL
- * @return 若没有选择上传的文件，则返回传入的原有图像地址，否则上传图片并返回地址
+ * 上传图片并获取图片文件名
+ * @return {String} 若没有选择上传的文件，则返回传入的原有图像文件名，否则上传图片并返回地址
  */
 async function uploadAndGetUrl() {
-	if (beforeUploadImage.value === undefined) {
-		return previewImage.value;
+	// 如果位指定上传文件，则返回null表示不做更改
+	if (beforeUploadImage.value == null) {
+		return null;
 	}
 	// 创建表单对象
 	let form = new FormData();
 	form.append(props.uploadName, beforeUploadImage.value);
-	let requestParam = {
-		url: props.uploadUrl,
-		method: 'POST',
-		headers: {
-			'content-type': 'multipart/form-data'
-		},
-		data: form
-	};
-	const response = await axios(requestParam);
-	if (!response.data.success) {
-		ElNotification({
-			title: '失败',
-			message: response.data.message,
-			type: 'error',
-			duration: 1000
-		});
+	const response = await uploadFile(REQUEST_PREFIX.IMAGE + 'upload', REQUEST_METHOD.POST, form);
+	if (!response.success) {
+		showNotification('失败', response.message, MESSAGE_TYPE.error);
 		return;
 	}
-	ElNotification({
-		title: '成功',
-		message: '上传图片成功！',
-		type: 'success',
-		duration: 1000
-	});
-	return response.data.data;
+	showNotification('成功', response.message);
+	return response.data;
 }
 
 // 定义组件暴露
@@ -114,20 +76,17 @@ defineExpose({
 	uploadAndGetUrl, previewImage
 });
 
-onMounted(async () => {
-	previewImage.value = props.initImage;
-	if (props.initImage === 'init-random') {
-		previewImage.value = await getRandom(false);
-	}
+onMounted(() => {
+	previewImage.value = props.initImage == null ? props.defaultImage : parseImageURL(props.initImage);
 });
 </script>
 
 <style lang="scss">
 .upload-image {
 	position: relative;
-	width: 90%;
+	width: 95%;
 	display: flex;
-	justify-content: space-evenly;
+	justify-content: space-between;
 	align-items: center;
 
 	.text {

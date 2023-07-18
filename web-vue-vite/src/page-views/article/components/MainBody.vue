@@ -33,13 +33,14 @@ const content = ref(null);
 
 // pinia
 import { useArticlePageThemeStore } from '../../../store/article-page-theme';
+import { REQUEST_PREFIX } from '../../../param/request-prefix';
 
 const themeStore = useArticlePageThemeStore();
 
 // marked.js初始化设定
 marked.setOptions({
 			renderer: new marked.Renderer(),
-			highlight: function (code) {
+			highlight(code) {
 				return highlight.highlightAuto(code).value;
 			},
 			pedantic: false,
@@ -139,7 +140,7 @@ function alterRelativePathImage(contentNode) {
 		let imagePath = dom.getAttribute('src');
 		// 对相对路径的图片进行路径替换
 		if (!imagePath.startsWith('http')) {
-			dom.setAttribute('src', '/api/anthology/get-image/id/' + articleObject.anthology.id + '?path=' + joinPath(imagePath, articleObject.filePath));
+			dom.setAttribute('src', REQUEST_PREFIX.ANTHOLOGY + 'get-image/id/' + articleObject.anthology.id + '?path=' + joinPath(imagePath, articleObject.filePath));
 		}
 	}
 }
@@ -243,7 +244,7 @@ const parseWatcher = watch(() => themeStore.contentParsed, (newValue) => {
 
 onBeforeMount(async () => {
 	// 拉取文本内容
-	const getText = await sendRequest('/api/article/get/' + route.params.id, REQUEST_METHOD.GET);
+	const getText = await sendRequest(REQUEST_PREFIX.ARTICLE + 'get/' + route.params.id, REQUEST_METHOD.GET);
 	if (getText === undefined || !getText.success) {
 		isArticleNotFound.value = true;
 		loadingDone.value = true;

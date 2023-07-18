@@ -80,6 +80,7 @@ public class UserServiceImpl implements UserService {
 		// 新建默认用户配置
 		Setting setting = new Setting();
 		setting.setReceiveUpdateEmail(true);
+		setting.setReceiveNewEmail(true);
 		settingDAO.add(setting);
 		user.setSetting(setting);
 		userDAO.add(user);

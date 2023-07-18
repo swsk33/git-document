@@ -1,6 +1,6 @@
 <template>
 	<div class="top-bar" v-if="userStore.userData !== undefined">
-		<el-avatar class="avatar" :src="userStore.userData.avatar" @click.stop="menuControl(true)"></el-avatar>
+		<el-avatar class="avatar" :src="parseAvatarURL(userStore.userData.avatar)" @click.stop="menuControl(true)"></el-avatar>
 		<div class="menu" v-if="menuShow">
 			<div class="info">{{ userStore.userData.nickname }} <br> <span class="role-name">{{ userStore.userData.role.showName }}</span></div>
 			<ul class="menu-body">
@@ -16,6 +16,7 @@ import { sendRequest, REQUEST_METHOD } from '../../../utils/request';
 import { ElNotification } from 'element-plus';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { parseAvatarURL, REQUEST_PREFIX } from '../../../param/request-prefix';
 
 const router = useRouter();
 
@@ -46,7 +47,7 @@ function toUserInfo() {
  * 用户退出
  */
 async function userLogout() {
-	await sendRequest('/api/user/logout', REQUEST_METHOD.GET);
+	await sendRequest(REQUEST_PREFIX.USER + 'logout', REQUEST_METHOD.GET);
 	await userStore.checkLogin();
 	ElNotification({
 				title: '成功',

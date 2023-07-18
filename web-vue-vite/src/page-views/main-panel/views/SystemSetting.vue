@@ -51,6 +51,7 @@ import axios from 'axios';
 
 // 组件引入
 import InfoDialog from '../components/InfoDialog.vue';
+import { REQUEST_PREFIX } from '../../../param/request-prefix';
 
 const recoveryDialog = ref(null);
 const uploadLoginImage = ref(null);
@@ -149,7 +150,7 @@ async function showRecoveryDialog() {
 	loadingText.value = '正在获取可恢复的文集列表...';
 	loadingRecovery.value = true;
 	recoveryDialog.value.frameShow = true;
-	const response = await sendRequest('/api/anthology/get-not-in-database', REQUEST_METHOD.GET);
+	const response = await sendRequest(REQUEST_PREFIX.ANTHOLOGY + 'get-not-in-database', REQUEST_METHOD.GET);
 	loadingRecovery.value = false;
 	if (!response.success) {
 		ElNotification({
@@ -186,7 +187,7 @@ async function showRecoveryDialog() {
 async function doAnthologyRecovery() {
 	loadingText.value = '正在执行恢复...';
 	loadingRecovery.value = true;
-	const response = await sendRequest('/api/anthology/batch-add', REQUEST_METHOD.POST, recoveryAnthology.value);
+	const response = await sendRequest(REQUEST_PREFIX.ANTHOLOGY + 'batch-add', REQUEST_METHOD.POST, recoveryAnthology.value);
 	loadingRecovery.value = false;
 	recoveryDialog.value.frameShow = false;
 	if (!response.success) {
@@ -212,7 +213,7 @@ watch(() => uploadPicture.login, (newValue, oldValue) => {
 	if (newValue === undefined) {
 		return;
 	}
-	uploadImage('/api/system-setting/set-login-image', 'image', uploadPicture.login);
+	uploadImage(REQUEST_PREFIX.SYSTEM_SETTING + 'set-login-image', 'image', uploadPicture.login);
 });
 
 // 监听是否选择了上传的主面板背景图片
@@ -220,7 +221,7 @@ watch(() => uploadPicture.main, (newValue, oldValue) => {
 	if (newValue === undefined) {
 		return;
 	}
-	uploadImage('/api/system-setting/set-main-image', 'image', uploadPicture.main);
+	uploadImage(REQUEST_PREFIX.SYSTEM_SETTING + 'set-main-image', 'image', uploadPicture.main);
 });
 </script>
 

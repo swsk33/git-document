@@ -4,6 +4,7 @@
 			<div class="title">用户管理</div>
 			<el-button class="add-user-button" type="success" @click="addUserDialog.frameShow = true">添加用户</el-button>
 		</div>
+		<!-- 全部用户列表 -->
 		<el-table class="user-list" :data="userList" border row-class-name="user-list-row" empty-text="没有用户">
 			<el-table-column prop="id" label="id" width="60" align="center"/>
 			<el-table-column label="头像" width="120" :resizable="false" align="center">
@@ -32,11 +33,6 @@
 			</el-table-column>
 			<el-table-column label="操作" align="center">
 				<template #default="scope">
-					<el-popconfirm title="确定重置？" @confirm="resetUser(scope.row.id)" confirm-button-type="danger" cancel-button-type="primary" confirm-button-text="确定" cancel-button-text="取消">
-						<template #reference>
-							<el-button type="warning">重置密码</el-button>
-						</template>
-					</el-popconfirm>
 					<el-popconfirm title="确定删除？" @confirm="deleteUser(scope.row.id)" confirm-button-type="danger" cancel-button-type="primary" confirm-button-text="确定" cancel-button-text="取消">
 						<template #reference>
 							<el-button type="danger">删除</el-button>
@@ -99,6 +95,7 @@ const addUserAvatar = ref(null);
 
 // pinia
 import { useUserStore } from '../../../store/user';
+import { REQUEST_PREFIX } from '../../../param/request-prefix';
 
 const userStore = useUserStore();
 
@@ -122,7 +119,7 @@ const addUserData = reactive({
  */
 async function getUserList() {
 	loadingDone.value = false;
-	const response = await sendRequest('/api/user/get-all', REQUEST_METHOD.GET);
+	const response = await sendRequest(REQUEST_PREFIX.USER + 'get-all', REQUEST_METHOD.GET);
 	loadingDone.value = true;
 	if (!response.success) {
 		ElNotification({
@@ -150,7 +147,7 @@ async function deleteUser(id) {
 		});
 		return;
 	}
-	const response = await sendRequest('/api/user/delete/' + id, REQUEST_METHOD.DELETE);
+	const response = await sendRequest(REQUEST_PREFIX.USER + 'delete/' + id, REQUEST_METHOD.DELETE);
 	if (!response.success) {
 		ElNotification({
 			title: '错误',
@@ -171,34 +168,11 @@ async function deleteUser(id) {
 }
 
 /**
- * 重置用户密码
- * @param id 用户id
- */
-async function resetUser(id) {
-	const response = await sendRequest('/api/user/admin-reset-password/' + id, REQUEST_METHOD.GET);
-	if (!response.success) {
-		ElNotification({
-			title: '错误',
-			message: response.message,
-			type: 'error',
-			duration: 1000
-		});
-		return;
-	}
-	ElNotification({
-		title: '成功',
-		message: '新密码已发送到用户邮箱！',
-		type: 'success',
-		duration: 1000
-	});
-}
-
-/**
  * 修改用户权限
  * @param ids 传入用户id和角色id，ids中有两个属性userId和roleId分别表示用户id与权限id
  */
 async function changeUserRole(ids) {
-	const response = await sendRequest('/api/user/update', REQUEST_METHOD.PUT, {
+	const response = await sendRequest(REQUEST_PREFIX.USER + 'update', REQUEST_METHOD.PUT, {
 		id: ids.userId,
 		role: {
 			id: ids.roleId
@@ -228,7 +202,7 @@ async function changeUserRole(ids) {
  */
 async function addUser() {
 	addUserData.avatar = await addUserAvatar.value.uploadAndGetUrl();
-	const response = await sendRequest('/api/user/register', REQUEST_METHOD.POST, addUserData);
+	const response = await sendRequest(REQUEST_PREFIX.USER + 'register', REQUEST_METHOD.POST, addUserData);
 	if (!response.success) {
 		ElNotification({
 			title: '错误',

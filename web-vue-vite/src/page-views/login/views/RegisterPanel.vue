@@ -5,7 +5,7 @@
 			<el-input class="text-input" v-model="userData.username" placeholder="用户名" :prefix-icon="icons.avatar"/>
 			<el-input class="text-input" v-model="userData.password" show-password placeholder="密码" :prefix-icon="icons.lock"/>
 			<el-input class="text-input" v-model="userData.nickname" placeholder="昵称" :prefix-icon="icons.tag"/>
-			<el-input class="text-input" v-model="userData.email" placeholder="邮箱" :prefix-icon="icons.post"/>
+			<el-input class="text-input" v-model="userData.email" placeholder="邮箱" :prefix-icon="icons.post" @keydown="enterKeyRegister($event)"/>
 		</div>
 		<div class="button-box">
 			<el-button class="button" type="primary" size="large" @click="register">注册</el-button>
@@ -20,10 +20,11 @@ import { sendRequest, REQUEST_METHOD } from '../../../utils/request';
 import { ElNotification } from 'element-plus';
 import { Avatar, Lock, CollectionTag, Postcard } from '@element-plus/icons-vue';
 import { useRouter } from 'vue-router';
+import { REQUEST_PREFIX } from '../../../param/request-prefix';
 
 const router = useRouter();
 
-// 自定义响应式变量
+// 注册用户数据
 const userData = reactive({
 	username: undefined,
 	password: undefined,
@@ -33,6 +34,7 @@ const userData = reactive({
 		id: 3
 	}
 });
+// 图标
 const icons = reactive({
 	avatar: shallowRef(Avatar),
 	lock: shallowRef(Lock),
@@ -40,13 +42,11 @@ const icons = reactive({
 	post: shallowRef(Postcard)
 });
 
-// 自定义方法
-
 /**
  * 注册方法
  */
 async function register() {
-	const response = await sendRequest('/api/user/register', REQUEST_METHOD.POST, userData);
+	const response = await sendRequest(REQUEST_PREFIX.USER + 'register', REQUEST_METHOD.POST, userData);
 	if (!response.success) {
 		ElNotification(
 				{
@@ -68,32 +68,30 @@ async function register() {
 	);
 	await router.push('/login');
 }
+
+/**
+ * 在邮箱输入框按下enter键时也执行登录
+ */
+function enterKeyRegister(e) {
+	if (e.key === 'Enter') {
+		register();
+	}
+}
 </script>
 
 <style lang="scss" scoped>
 .register-panel {
-	position: relative;
-	display: flex;
-	flex-direction: column;
-	justify-content: flex-start;
-	align-items: center;
-	width: 30%;
-	height: 50%;
-	border-radius: 8px;
-	box-shadow: white 1px 1px 7px;
-	background: rgba(255, 255, 255, 0.42);
-
 	.text {
-		margin-top: 7%;
+		margin-top: 6%;
 		position: relative;
 		font-size: 32px;
 	}
 
 	.input-box {
 		position: relative;
-		margin-top: 5%;
+		margin-top: 3%;
 		width: 100%;
-		height: 50%;
+		height: 55%;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -101,6 +99,8 @@ async function register() {
 
 		.text-input {
 			width: 75%;
+			height: 16%;
+			font-size: 18px;
 		}
 	}
 
@@ -113,8 +113,9 @@ async function register() {
 		align-items: center;
 
 		.button {
-			width: 72px;
-			font-size: 18px;
+			width: 16%;
+			height: 42%;
+			font-size: 19px;
 		}
 	}
 }

@@ -1,5 +1,5 @@
 <template>
-	<div class="main-panel">
+	<div class="main-panel" :style="backgroundStyle">
 		<TopBar ref="topBar"/>
 		<SideMenu ref="sideMenu" @closeAvatarMenu="closeAvatarMenu"/>
 		<router-view ref="controlPanel" @click="closeAvatarMenu" class="panel-content"/>
@@ -7,7 +7,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watch, reactive } from 'vue';
 
 // 组件及其ref
 import TopBar from './components/TopBar.vue';
@@ -21,6 +21,11 @@ const controlPanel = ref(null);
 import { useMetaDataStore } from '../../store/meta-data';
 
 const metaStore = useMetaDataStore();
+
+// 背景图片CSS
+const backgroundStyle = reactive({
+	background: 'url("' + metaStore.mainBackground + '") no-repeat center/cover'
+});
 
 /**
  * 关闭头像菜单
@@ -42,7 +47,6 @@ watch(() => metaStore.organizationName, () => {
 	position: absolute;
 	width: 100%;
 	height: 100vh;
-	background: url("/api/config-get/background") no-repeat center/cover;
 
 	.panel-content {
 		position: absolute;
