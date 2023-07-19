@@ -1,27 +1,42 @@
 <template>
 	<div class="system-setting">
 		<div class="title">系统设置</div>
+		<!-- 基本系统设置 -->
+		<div class="setting-component basic-setting">
+			<div class="text">基本系统设置</div>
+			<div class="box">
+				<div class="set-name">
+					<div class="text">组织名</div>
+					<el-input class="input" placeholder="请输入组织名" v-model="basicSetting.organizationName"/>
+					<el-button class="ok" type="primary" plain @click="setOrganizationName">设定</el-button>
+				</div>
+				<div class="set-allow-public">
+					<div class="text">允许公开注册</div>
+					<el-switch class="switch" v-model="basicSetting.allowPublic" inline-prompt :active-icon="Check" :inactive-icon="Close"/>
+				</div>
+			</div>
+		</div>
 		<!-- 背景图片 -->
-		<div class="background-image">
+		<div class="setting-component background-image">
 			<div class="text">背景图片设置</div>
 			<div class="tip">若上传自定义图片后未生效，请清除浏览器缓存！</div>
 			<div class="box">
 				<div class="login-image">
 					<div class="text">登录页背景图</div>
 					<el-button class="upload" type="success" plain @click="uploadLoginImage.click()">自定义</el-button>
-					<el-button class="reset" type="warning" plain @click="resetImage('/api/system-setting/reset-login-image')">恢复默认</el-button>
-					<input ref="uploadLoginImage" type="file" @change="getImage($event, 'login')"/>
+					<el-button class="reset" type="warning" plain @click="resetImage('login')">恢复默认</el-button>
+					<input ref="uploadLoginImage" type="file" @change="uploadAndSetImage($event, 'login')"/>
 				</div>
 				<div class="main-image">
 					<div class="text">主页面背景图</div>
 					<el-button class="upload" type="primary" plain @click="uploadMainImage.click()">自定义</el-button>
-					<el-button class="reset" type="danger" plain @click="resetImage('/api/system-setting/reset-main-image')">恢复默认</el-button>
-					<input ref="uploadMainImage" type="file" @change="getImage($event, 'main')"/>
+					<el-button class="reset" type="danger" plain @click="resetImage('main')">恢复默认</el-button>
+					<input ref="uploadMainImage" type="file" @change="uploadAndSetImage($event, 'main')"/>
 				</div>
 			</div>
 		</div>
 		<!-- 文集恢复 -->
-		<div class="anthology-recovery">
+		<div class="setting-component anthology-recovery">
 			<div class="text">恢复文集</div>
 			<div class="tip">若服务器上存在文集Git仓库但是未显示在文集列表中，请点击下列恢复按钮</div>
 			<el-button class="recovery" type="primary" size="large" @click="showRecoveryDialog">恢复</el-button>
@@ -35,8 +50,8 @@
 					</ul>
 				</template>
 				<template v-slot:button-box>
-					<el-button class="ok" type="success" @click="doAnthologyRecovery">确定</el-button>
-					<el-button class="cancel" type="warning" @click="recoveryDialog.frameShow = false">取消</el-button>
+					<el-button class="ok" type="success" size="large" @click="doAnthologyRecovery">确定</el-button>
+					<el-button class="cancel" type="warning" size="large" @click="recoveryDialog.frameShow = false">取消</el-button>
 				</template>
 			</InfoDialog>
 		</div>
@@ -45,102 +60,104 @@
 
 <script setup>
 import { reactive, ref, watch } from 'vue';
-import { REQUEST_METHOD, sendRequest } from '../../../utils/request';
-import { ElNotification } from 'element-plus';
-import axios from 'axios';
+import { REQUEST_METHOD, sendRequest, uploadFile } from '../../../utils/request';
+import { REQUEST_PREFIX } from '../../../param/request-prefix';
+import { MESSAGE_TYPE, showNotification } from '../../../utils/message';
+import { useMetaDataStore } from '../../../store/meta-data';
 
 // 组件引入
 import InfoDialog from '../components/InfoDialog.vue';
-import { REQUEST_PREFIX } from '../../../param/request-prefix';
+import { Check, Close } from '@element-plus/icons-vue';
 
 const recoveryDialog = ref(null);
 const uploadLoginImage = ref(null);
 const uploadMainImage = ref(null);
-
-// 自定义响应式变量
-// 待上传的图片
-const uploadPicture = reactive({
-	login: undefined,
-	main: undefined
-});
 
 // 待恢复的文集列表
 const recoveryAnthology = ref([]);
 const loadingRecovery = ref(false);
 const loadingText = ref(undefined);
 
-// 自定义方法
+const metaStore = useMetaDataStore();
+
+// 基本系统设置
+const basicSetting = reactive({
+	organizationName: metaStore.organizationName,
+	allowPublic: metaStore.allowPublic
+});
 
 /**
- * 读取图片
+ * 设定组织名
  */
-function getImage(e, name) {
-	// 设定备选上传的文件
-	uploadPicture[name] = e.target.files[0];
-	if (uploadPicture[name] === undefined) {
+async function setOrganizationName() {
+	if (basicSetting.organizationName == null || basicSetting.organizationName === '') {
+		showNotification('失败', '组织名不能为空！', MESSAGE_TYPE.error);
 		return;
 	}
-	const reader = new FileReader();
-	// 读取文件以预览
-	reader.readAsDataURL(uploadPicture[name]);
-}
-
-/**
- * 上传图片
- * @param url 上传图片的地址
- * @param name 上传图片参数名
- * @param image 图片对象
- */
-async function uploadImage(url, name, image) {
-	let form = new FormData();
-	form.append(name, image);
-	const requestParam = {
-		url: url,
-		method: 'POST',
-		headers: {
-			'content-type': 'multipart/form-data'
-		},
-		data: form
-	};
-	const response = await axios(requestParam);
-	if (!response.data.success) {
-		ElNotification({
-			title: '失败',
-			message: response.data.message,
-			type: 'error',
-			duration: 1000
-		});
-		return;
-	}
-	ElNotification({
-		title: '成功',
-		message: response.data.message,
-		type: 'success',
-		duration: 1000
-	});
-}
-
-/**
- * 恢复默认背景
- * @param {string} url 重置背景图的接口地址
- */
-async function resetImage(url) {
-	const response = await sendRequest(url, REQUEST_METHOD.GET);
+	const response = await sendRequest(REQUEST_PREFIX.SYSTEM_SETTING + 'set-organization/' + basicSetting.organizationName, REQUEST_METHOD.PUT);
 	if (!response.success) {
-		ElNotification({
-			title: '错误',
-			message: '重置背景图失败！请联系后端开发者！',
-			type: 'error',
-			duration: 1000
-		});
+		showNotification('失败', response.message, MESSAGE_TYPE.error);
 		return;
 	}
-	ElNotification({
-		title: '成功',
-		message: response.message,
-		type: 'success',
-		duration: 1000
-	});
+	showNotification('成功', response.message);
+	// 重新拉取组织名
+	await metaStore.requestName();
+}
+
+/**
+ * 监听允许公开设置是否更改，若更改则发送请求
+ */
+watch(() => basicSetting.allowPublic, async () => {
+	const response = await sendRequest(REQUEST_PREFIX.SYSTEM_SETTING + 'set-allow-public/' + basicSetting.allowPublic, REQUEST_METHOD.PUT);
+	if (!response.success) {
+		showNotification('失败', response.message, MESSAGE_TYPE.error);
+		return;
+	}
+	showNotification('成功', response.message);
+	// 重新拉取是否公开
+	await metaStore.requestAllowPublic();
+});
+
+/**
+ * 上传图片并设定背景图
+ * @param {Event} e 表示监听按钮事件参数，用于获取选择的文件
+ * @param {String} name 表示登录还是主页背景，登录为login，主页为main
+ */
+async function uploadAndSetImage(e, name) {
+	const uploadImage = e.target.files[0];
+	if (uploadImage == null) {
+		return;
+	}
+	// 上传并设定图片
+	const formData = new FormData();
+	formData.append('image', uploadImage);
+	const response = await uploadFile(REQUEST_PREFIX.SYSTEM_SETTING + 'set-' + name + '-image', REQUEST_METHOD.POST, formData);
+	if (!response.success) {
+		showNotification('失败', response.message, MESSAGE_TYPE.error);
+		return;
+	}
+	showNotification('成功', '自定义背景图成功！2s后页面刷新...');
+	// 刷新页面
+	setTimeout(() => {
+		location.reload();
+	}, 2000);
+}
+
+/**
+ * 重置背景图
+ * @param {String} name 表示登录还是主页背景，登录为login，主页为main
+ */
+async function resetImage(name) {
+	const response = await sendRequest(REQUEST_PREFIX.SYSTEM_SETTING + 'reset-' + name + '-image', REQUEST_METHOD.GET);
+	if (!response.success) {
+		showNotification('错误', response.message, MESSAGE_TYPE.error);
+		return;
+	}
+	showNotification('成功', '重置背景图成功！2s后页面刷新...');
+	// 刷新页面
+	setTimeout(() => {
+		location.reload();
+	}, 2000);
 }
 
 /**
@@ -153,32 +170,17 @@ async function showRecoveryDialog() {
 	const response = await sendRequest(REQUEST_PREFIX.ANTHOLOGY + 'get-not-in-database', REQUEST_METHOD.GET);
 	loadingRecovery.value = false;
 	if (!response.success) {
-		ElNotification({
-			title: '错误',
-			message: '获取失败！请联系后端开发者！',
-			type: 'error',
-			duration: 3000
-		});
+		showNotification('错误', response.message, MESSAGE_TYPE.error);
 		recoveryDialog.value.frameShow = false;
 		return;
 	}
 	recoveryAnthology.value = response.data;
 	if (recoveryAnthology.value.length === 0) {
-		ElNotification({
-			title: '完成',
-			message: '没有可供恢复的文集！',
-			type: 'warning',
-			duration: 3000
-		});
+		showNotification('提示', '没有需要恢复的文集！', MESSAGE_TYPE.warning);
 		recoveryDialog.value.frameShow = false;
 		return;
 	}
-	ElNotification({
-		title: '成功',
-		message: response.message,
-		type: 'success',
-		duration: 3000
-	});
+	showNotification('成功', response.message);
 }
 
 /**
@@ -191,56 +193,30 @@ async function doAnthologyRecovery() {
 	loadingRecovery.value = false;
 	recoveryDialog.value.frameShow = false;
 	if (!response.success) {
-		ElNotification({
-			title: '错误',
-			message: response.message,
-			type: 'error',
-			duration: 3000
-		});
+		showNotification('错误', response.message, MESSAGE_TYPE.error);
 		return;
 	}
-	ElNotification({
-		title: '成功',
-		message: '恢复成功！可自行去主页面修改文集信息！',
-		type: 'success',
-		duration: 2000
-	});
+	showNotification('成功', '恢复成功！可自行去主页面修改文集信息！');
 }
-
-// 监听器
-// 监听是否选择了上传的登录背景图片
-watch(() => uploadPicture.login, (newValue, oldValue) => {
-	if (newValue === undefined) {
-		return;
-	}
-	uploadImage(REQUEST_PREFIX.SYSTEM_SETTING + 'set-login-image', 'image', uploadPicture.login);
-});
-
-// 监听是否选择了上传的主面板背景图片
-watch(() => uploadPicture.main, (newValue, oldValue) => {
-	if (newValue === undefined) {
-		return;
-	}
-	uploadImage(REQUEST_PREFIX.SYSTEM_SETTING + 'set-main-image', 'image', uploadPicture.main);
-});
 </script>
 
 <style lang="scss" scoped>
 .system-setting {
 	.title {
 		position: relative;
-		height: 10%;
+		height: 12%;
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		font-size: 32px;
+		font-size: 36px;
 	}
 
-	.background-image, .anthology-recovery {
+	.setting-component {
 		position: relative;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+		margin-bottom: 2%;
 
 		> .text {
 			font-size: 24px;
@@ -253,6 +229,39 @@ watch(() => uploadPicture.main, (newValue, oldValue) => {
 		}
 	}
 
+	// 基本设置组件
+	.basic-setting {
+		.text {
+			margin-bottom: 1.5%;
+		}
+
+		.box {
+			display: flex;
+			justify-content: space-evenly;
+			align-items: center;
+			width: 90%;
+
+			.set-name, .set-allow-public {
+				display: flex;
+				justify-content: space-evenly;
+				align-items: center;
+				width: 35%;
+			}
+
+			.set-name {
+				.text {
+					width: 20%;
+					text-align: center;
+				}
+
+				.input {
+					width: 35%;
+				}
+			}
+		}
+	}
+
+	// 背景图片设置组件
 	.background-image {
 		.box {
 			position: relative;
@@ -278,14 +287,14 @@ watch(() => uploadPicture.main, (newValue, oldValue) => {
 		}
 	}
 
+	// 文集恢复组件
 	.anthology-recovery {
-		margin-top: 2%;
-
 		.recovery {
 			margin-top: 1.5%;
 			font-size: 18px;
 		}
 
+		// 文集恢复窗口
 		.recovery-dialog {
 			:deep(.content) {
 				justify-content: flex-start;
@@ -296,9 +305,25 @@ watch(() => uploadPicture.main, (newValue, oldValue) => {
 			}
 
 			.recovery-list {
+				border: purple 1px solid;
+				border-radius: 6px;
+				width: 80%;
+				height: 90%;
+				list-style: none;
+				padding: 0 3px;
+
 				li {
-					font-size: 18px;
+					width: 100%;
+					font-size: 20px;
+					line-height: 32px;
 					color: #140068;
+					border-bottom: 1px dashed green;
+				}
+			}
+
+			.button-box {
+				.ok, .cancel {
+					font-size: 18px;
 				}
 			}
 		}

@@ -13,7 +13,6 @@
 
 <script setup>
 import { sendRequest, REQUEST_METHOD } from '../../../utils/request';
-import { ElNotification } from 'element-plus';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { parseAvatarURL, REQUEST_PREFIX } from '../../../param/request-prefix';
@@ -24,6 +23,7 @@ let menuShow = ref(false);
 
 // pinia
 import { useUserStore } from '../../../store/user';
+import { showNotification } from '../../../utils/message';
 
 const userStore = useUserStore();
 
@@ -49,13 +49,7 @@ function toUserInfo() {
 async function userLogout() {
 	await sendRequest(REQUEST_PREFIX.USER + 'logout', REQUEST_METHOD.GET);
 	await userStore.checkLogin();
-	ElNotification({
-				title: '成功',
-				message: '已退出登录！',
-				type: 'success',
-				duration: 750
-			}
-	);
+	showNotification('成功', '已退出登录！');
 	await router.push('/login');
 }
 
@@ -113,12 +107,14 @@ defineExpose({
 			height: 72px;
 			padding-left: 5%;
 			padding-right: 5%;
-			padding-top: 5%;
+			padding-top: 2%;
 			box-sizing: border-box;
 			border-bottom: 1px #dcdcdc solid;
 			text-overflow: ellipsis;
 			white-space: nowrap;
 			overflow: hidden;
+			font-size: 20px;
+			color: #007c30;
 
 			.role-name {
 				color: #7462ff;

@@ -27,6 +27,7 @@ public class ImageServiceImpl implements ImageService {
 		if (!uploadResult.isSuccess()) {
 			return Result.resultFailed(uploadResult.getMessage());
 		}
+		log.info("已保存：{}.{}", uploadResult.getData().getName(), uploadResult.getData().getFormat());
 		return Result.resultSuccess("上传图片成功！", uploadResult.getData().getName() + "." + uploadResult.getData().getFormat());
 	}
 
@@ -34,6 +35,7 @@ public class ImageServiceImpl implements ImageService {
 	@Override
 	public Result<Void> delete(String filename) {
 		uploadFileService.delete(FileNameUtil.mainName(filename));
+		log.warn("已删除：{}", filename);
 		return Result.resultSuccess("删除完成！");
 	}
 

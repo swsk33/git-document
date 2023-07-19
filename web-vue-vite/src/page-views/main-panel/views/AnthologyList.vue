@@ -75,7 +75,6 @@ import ClipBoard from 'clipboard';
 
 import { sendRequest, REQUEST_METHOD } from '../../../utils/request';
 import { timestampToDateString } from '../../../utils/time-convert';
-import { ElNotification } from 'element-plus';
 import { reactive, ref, computed, onBeforeMount, watch } from 'vue';
 import { Star, StarFilled } from '@element-plus/icons-vue';
 import { useRouter } from 'vue-router';
@@ -116,8 +115,6 @@ const userStar = ref([]);
 // 是否只显示收藏
 const showStarOnly = ref(false);
 
-// 计算属性
-
 /**
  * 将时间戳转换为标准时间
  */
@@ -147,12 +144,7 @@ async function getAnthologyList() {
 	const response = await sendRequest(REQUEST_PREFIX.ANTHOLOGY + 'get-all', REQUEST_METHOD.GET);
 	loadingDone.value = true;
 	if (!response.success) {
-		ElNotification({
-			title: '错误',
-			message: '无法获取文集列表！请联系后端开发者！',
-			type: 'error',
-			duration: 1000
-		});
+		showNotification('错误', response.message, MESSAGE_TYPE.error);
 		return;
 	}
 	list.value = response.data;
@@ -170,12 +162,7 @@ function copySSH(id, repoPath) {
 		}
 	});
 	clipBoard.on('success', () => {
-		ElNotification({
-			title: '成功',
-			message: '复制成功！',
-			type: 'success',
-			duration: 1000
-		});
+		showNotification('成功', '复制成功！');
 		clipBoard.destroy();
 	});
 }
@@ -186,20 +173,10 @@ function copySSH(id, repoPath) {
 async function addAnthology() {
 	const response = await sendRequest(REQUEST_PREFIX.ANTHOLOGY + 'add', REQUEST_METHOD.POST, addAnthologyInfo);
 	if (!response.success) {
-		ElNotification({
-			title: '失败',
-			message: response.message,
-			type: 'error',
-			duration: 1000
-		});
+		showNotification('错误', response.message, MESSAGE_TYPE.error);
 		return;
 	}
-	ElNotification({
-		title: '成功',
-		message: '添加文集成功！',
-		type: 'success',
-		duration: 1000
-	});
+	showNotification('成功', response.message);
 	addAnthologyRef.value.frameShow = false;
 	// 重新获取文集列表
 	await getAnthologyList();
@@ -338,6 +315,7 @@ onBeforeMount(async () => {
 
 		.show-star-only-switch {
 			position: relative;
+			right: 2%;
 			--el-switch-off-color: #008800;
 		}
 

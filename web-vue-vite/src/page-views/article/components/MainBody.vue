@@ -18,7 +18,6 @@
 
 <script setup>
 import { marked } from 'marked';
-import { ElNotification } from 'element-plus';
 import { REQUEST_METHOD, sendRequest } from '../../../utils/request';
 import { joinPath } from '../../../utils/file-path';
 import highlight from 'highlight.js';
@@ -34,6 +33,7 @@ const content = ref(null);
 // pinia
 import { useArticlePageThemeStore } from '../../../store/article-page-theme';
 import { REQUEST_PREFIX } from '../../../param/request-prefix';
+import { MESSAGE_TYPE, showNotification } from '../../../utils/message';
 
 const themeStore = useArticlePageThemeStore();
 
@@ -170,24 +170,12 @@ function showCodeTypeAndCopy(contentNode) {
 	// 实例化剪贴板对象
 	const clipBoard = new ClipBoard('.copy-button');
 	clipBoard.on('success', (e) => {
-		ElNotification({
-			title: '成功！',
-			message: '复制成功！',
-			type: 'success',
-			position: 'top-left',
-			duration: 750
-		});
+		showNotification('成功', '复制成功！');
 		// 清除文本选中状态
 		e.clearSelection();
 	});
 	clipBoard.on('error', (e) => {
-		ElNotification({
-			title: '错误！',
-			message: '复制失败！请联系开发者！',
-			type: 'error',
-			position: 'top-left',
-			duration: 750
-		});
+		showNotification('失败', '复制失败！请检查浏览器权限！', MESSAGE_TYPE.error);
 		// 清除文本选中状态
 		e.clearSelection();
 	});
@@ -222,8 +210,6 @@ function changeCodeStyle(isNight) {
 		}
 	}
 }
-
-// 监听器
 
 // 监听白天/夜晚模式的变化
 watch(() => themeStore.isNight, () => {

@@ -30,29 +30,24 @@
 
 <script setup>
 import { sendRequest, REQUEST_METHOD } from '../../../utils/request.js';
-import { ElNotification } from 'element-plus';
-import { Folder, Document, Top } from '@element-plus/icons-vue';
-import { computed, onBeforeMount, reactive, ref, shallowRef, watch } from 'vue';
+import { Folder, Document } from '@element-plus/icons-vue';
+import { computed, onBeforeMount, reactive, ref, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { REQUEST_PREFIX } from '../../../param/request-prefix';
+import { MESSAGE_TYPE, showNotification } from '../../../utils/message';
 
 const router = useRouter();
 const route = useRoute();
 
-// 响应式变量
 const loadingDone = ref(false);
-const icons = reactive({
-	top: shallowRef(Top)
-});
 const total = reactive({
 	directories: [],
 	articles: []
 });
+// 当前目录，以/xxx/xxx的形式表示
 const currentPath = ref('/');
 // 目录深度，-1代表当前位于根目录
 const depth = ref(-1);
-
-// 计算属性
 
 /**
  * 用于设定或者获取当前目录
@@ -135,8 +130,6 @@ watch(depth, () => {
 	menuTree.value = depth.value;
 });
 
-// 自定义方法
-
 /**
  * 进入当前目录下的一个目录
  * @param dir 要进入的目录名
@@ -174,12 +167,7 @@ onBeforeMount(async () => {
 	const response = await sendRequest(REQUEST_PREFIX.ARTICLE + 'get-article-list/' + route.params.id, REQUEST_METHOD.GET);
 	loadingDone.value = true;
 	if (!response.success) {
-		ElNotification({
-			title: '错误',
-			message: '获取文章列表失败！请联系后端开发者！',
-			type: 'error',
-			duration: 1000
-		});
+		showNotification('错误', response.message, MESSAGE_TYPE.error);
 		return;
 	}
 	total.directories = response.data.directories;

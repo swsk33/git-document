@@ -3,7 +3,7 @@
 		<div class="title">个人中心</div>
 		<!-- 用户信息 -->
 		<div class="content">
-			<UploadImage class="avatar" upload-url="/api/image/upload-avatar" random-url="/api/image/random-avatar" upload-name="avatar" ref="imageUpload">
+			<UploadImage class="avatar" ref="imageUpload" :init-image="editUserData.avatar" :default-image="parseAvatarURL(null)" upload-name="image">
 				<template v-slot:text>头像</template>
 			</UploadImage>
 			<div class="username">
@@ -25,9 +25,15 @@
 			<!-- 偏好设置 -->
 			<div class="setting">
 				<div class="text">个人偏好设置</div>
-				<div class="update-email-setting">
-					<div class="text">收藏的文集更新时邮件通知我</div>
-					<el-switch class="switch" v-model="editSetting.receiveUpdateEmail" inline-prompt :active-icon="Check" :inactive-icon="Close"/>
+				<div class="box">
+					<div class="item update-email-setting">
+						<div class="text">收藏的文集更新时邮件通知我</div>
+						<el-switch class="switch" v-model="editSetting.receiveUpdateEmail" inline-prompt :active-icon="Check" :inactive-icon="Close"/>
+					</div>
+					<div class="item create-email-setting">
+						<div class="text">新文集发布时邮件通知我</div>
+						<el-switch class="switch" v-model="editSetting.receiveNewEmail" inline-prompt :active-icon="Check" :inactive-icon="Close"/>
+					</div>
 				</div>
 			</div>
 			<!-- 公钥管理 -->
@@ -38,7 +44,7 @@
 						<template #reference>
 							<el-button class="add" type="success" size="small" @click="popOverShow.publicKeyAdd = true">添加SSH公钥</el-button>
 						</template>
-						<el-input v-model="addPublicKey" type="textarea" cols="50" rows="5" resize="none" placeholder="请粘贴公钥内容至此"></el-input>
+						<el-input v-model="addPublicKey" type="textarea" cols="50" rows="5" resize="none" placeholder="请粘贴公钥内容至此"/>
 						<div class="button-box" style="display: flex;margin-top: 12px">
 							<el-button type="success" size="small" @click="addPublicKeyRequest">确认</el-button>
 							<el-button type="warning" size="small" @click="popOverShow.publicKeyAdd = false">取消</el-button>
@@ -66,7 +72,6 @@
 
 <script setup>
 import { sendRequest, REQUEST_METHOD } from '../../../utils/request';
-import { ElNotification } from 'element-plus';
 import { Check, Close } from '@element-plus/icons-vue';
 import { onMounted, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
@@ -80,11 +85,14 @@ const imageUpload = ref(null);
 
 // pinia
 import { useUserStore } from '../../../store/user';
-import { REQUEST_PREFIX } from '../../../param/request-prefix';
+import { parseAvatarURL, REQUEST_PREFIX } from '../../../param/request-prefix';
+import { MESSAGE_TYPE, showNotification } from '../../../utils/message';
 
 const userStore = useUserStore();
 
-// 自定义响应式变量
+/**
+ * 编辑的用户信息
+ */
 const editUserData = reactive({
 	id: undefined,
 	avatar: undefined,
@@ -93,17 +101,32 @@ const editUserData = reactive({
 	nickname: undefined,
 	password: undefined
 });
+
+/**
+ * 编辑的设置信息
+ */
 const editSetting = reactive({
 	id: undefined,
-	receiveUpdateEmail: undefined
+	receiveUpdateEmail: undefined,
+	receiveNewEmail: undefined
 });
+
+/**
+ * 公钥列表
+ */
 const publicKeys = ref([]);
+
+/**
+ * 添加的公钥
+ */
 const addPublicKey = ref(undefined);
+
+/**
+ * 显示弹窗
+ */
 const popOverShow = reactive({
 	publicKeyAdd: false
 });
-
-// 自定义方法
 
 /**
  * 删除公钥
@@ -112,20 +135,10 @@ const popOverShow = reactive({
 async function deleteKey(id) {
 	const response = await sendRequest(REQUEST_PREFIX.PUBLIC_KEY + 'delete/' + id, REQUEST_METHOD.DELETE);
 	if (!response.success) {
-		ElNotification({
-			title: '失败',
-			message: response.message,
-			type: 'error',
-			duration: 1000
-		});
+		showNotification('错误', response.message, MESSAGE_TYPE.error);
 		return;
 	}
-	ElNotification({
-		title: '成功',
-		message: '删除成功！',
-		type: 'success',
-		duration: 1000
-	});
+	showNotification('成功', '删除成功！');
 	await getPublicKeyList();
 }
 
@@ -137,20 +150,10 @@ async function addPublicKeyRequest() {
 		content: addPublicKey.value
 	});
 	if (!response.success) {
-		ElNotification({
-			title: '失败',
-			message: response.message,
-			type: 'error',
-			duration: 1000
-		});
+		showNotification('错误', response.message, MESSAGE_TYPE.error);
 		return;
 	}
-	ElNotification({
-		title: '成功',
-		message: '添加SSH公钥成功！',
-		type: 'success',
-		duration: 1000
-	});
+	showNotification('成功', response.message);
 	popOverShow.publicKeyAdd = false;
 	addPublicKey.value = '';
 	await getPublicKeyList();
@@ -161,23 +164,15 @@ async function addPublicKeyRequest() {
  */
 async function updateUserData() {
 	editUserData.avatar = await imageUpload.value.uploadAndGetUrl();
-	const updateUserInfo = await sendRequest(REQUEST_PREFIX.USER + 'update', REQUEST_METHOD.PUT, editUserData);
-	const updateUserSetting = await sendRequest(REQUEST_PREFIX.SETTING + 'update', REQUEST_METHOD.PUT, editSetting);
+	// 修改用户信息
+	const updateUserInfo = await sendRequest(REQUEST_PREFIX.USER + 'update', REQUEST_METHOD.PATCH, editUserData);
+	// 修改用户设置
+	const updateUserSetting = await sendRequest(REQUEST_PREFIX.SETTING + 'update', REQUEST_METHOD.PATCH, editSetting);
 	if (!updateUserInfo.success || !updateUserSetting.success) {
-		ElNotification({
-			title: '失败',
-			message: updateUserInfo.message,
-			type: 'error',
-			duration: 1000
-		});
+		showNotification('错误', updateUserInfo.message, MESSAGE_TYPE.error);
 		return;
 	}
-	ElNotification({
-		title: '成功',
-		message: '修改用户信息成功！',
-		type: 'success',
-		duration: 1000
-	});
+	showNotification('成功', '修改用户信息和偏好设置成功！');
 	await router.push('/');
 	// 刷新用户信息
 	await userStore.checkLogin();
@@ -189,12 +184,7 @@ async function updateUserData() {
 async function getPublicKeyList() {
 	const response = await sendRequest(REQUEST_PREFIX.PUBLIC_KEY + 'get-by-user', REQUEST_METHOD.GET);
 	if (!response.success) {
-		ElNotification({
-			title: '失败',
-			message: response.message,
-			type: 'error',
-			duration: 1000
-		});
+		showNotification('错误', response.message, MESSAGE_TYPE.error);
 		return;
 	}
 	publicKeys.value = response.data;
@@ -213,12 +203,13 @@ onMounted(async () => {
 	// 填充偏好设置
 	editSetting.id = userStore.userData.setting.id;
 	editSetting.receiveUpdateEmail = userStore.userData.setting.receiveUpdateEmail;
-	// 用户头像
-	imageUpload.value.previewImage = editUserData.avatar;
+	editSetting.receiveNewEmail = userStore.userData.setting.receiveNewEmail;
 	// 管理员用户获取公钥
 	if (userStore.hasPermission('edit_anthology')) {
 		await getPublicKeyList();
 	}
+	// 刷新头像显示
+	imageUpload.value.refreshPreviewImage(editUserData.avatar);
 });
 </script>
 
@@ -277,18 +268,28 @@ onMounted(async () => {
 
 			> .text {
 				color: #9000c9;
-				font-size: 18px;
+				font-size: 22px;
 			}
 
-			.update-email-setting {
+			.box {
+				width: 100%;
 				display: flex;
+				flex-direction: column;
 				align-items: center;
-				width: 97%;
-				margin-top: 1.5%;
+				margin-top: 1%;
 
-				.switch {
-					position: relative;
-					left: 3%;
+				.item {
+					display: flex;
+					align-items: center;
+					justify-content: space-evenly;
+					width: 100%;
+					margin-bottom: 5px;
+
+					.text {
+						position: relative;
+						width: 50%;
+						text-align: center;
+					}
 				}
 			}
 		}

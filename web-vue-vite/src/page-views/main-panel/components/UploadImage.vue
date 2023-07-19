@@ -71,13 +71,25 @@ async function uploadAndGetUrl() {
 	return response.data;
 }
 
+/**
+ * 刷新预览图
+ * @param {String} imageName 传入图片名刷新预览图，若不传入则使用props中的值
+ */
+function refreshPreviewImage(imageName = undefined) {
+	if (imageName === undefined) {
+		previewImage.value = props.initImage == null ? props.defaultImage : parseImageURL(props.initImage);
+		return;
+	}
+	previewImage.value = parseImageURL(imageName);
+}
+
 // 定义组件暴露
 defineExpose({
-	uploadAndGetUrl, previewImage
+	uploadAndGetUrl, refreshPreviewImage
 });
 
 onMounted(() => {
-	previewImage.value = props.initImage == null ? props.defaultImage : parseImageURL(props.initImage);
+	refreshPreviewImage();
 });
 </script>
 

@@ -9,12 +9,12 @@
 			<el-table-column prop="id" label="id" width="60" align="center"/>
 			<el-table-column label="头像" width="120" :resizable="false" align="center">
 				<template #default="scope">
-					<img :src="scope.row.avatar" alt="无法显示">
+					<img :src="parseAvatarURL(scope.row.avatar)" alt="无法显示">
 				</template>
 			</el-table-column>
 			<el-table-column prop="username" show-overflow-tooltip label="用户名" width="250"/>
 			<el-table-column prop="nickname" show-overflow-tooltip label="昵称" width="250"/>
-			<el-table-column label="角色" width="120">
+			<el-table-column label="角色" width="150">
 				<template #default="scope">
 					<el-dropdown @command="changeUserRole">
 						<div class="current-value" style="user-select: none">
@@ -25,7 +25,7 @@
 						</div>
 						<template #dropdown>
 							<el-dropdown-menu>
-								<el-dropdown-item v-for="item in userStore.roleList" :command="{userId:scope.row.id, roleId: item.id}" style="user-select: none">{{ item.showName }}</el-dropdown-item>
+								<el-dropdown-item v-for="item in userStore.roleList" :command="{userId: scope.row.id, roleId: item.id}" style="user-select: none">{{ item.showName }}</el-dropdown-item>
 							</el-dropdown-menu>
 						</template>
 					</el-dropdown>
@@ -46,7 +46,7 @@
 			<template v-slot:title>添加用户</template>
 			<template v-slot:content>
 				<!-- 头像上传组件 -->
-				<UploadImage class="avatar" ref="addUserAvatar" upload-url="/api/image/upload-avatar" random-url="/api/image/random-avatar" upload-name="avatar" init-image="init-random">
+				<UploadImage class="avatar" ref="addUserAvatar" upload-name="image" :init-image="addUserData.avatar" :default-image="parseAvatarURL(null)">
 					<template v-slot:text>设定头像</template>
 				</UploadImage>
 				<div class="username">
@@ -73,8 +73,8 @@
 				</div>
 			</template>
 			<template v-slot:button-box>
-				<el-button class="ok" type="success" @click="addUser">确定</el-button>
-				<el-button class="cancel" type="warning" @click="addUserDialog.frameShow = false">取消</el-button>
+				<el-button class="ok" type="success" size="large" @click="addUser">确定</el-button>
+				<el-button class="cancel" type="warning" size="large" @click="addUserDialog.frameShow = false">取消</el-button>
 			</template>
 		</InfoDialog>
 	</div>
@@ -82,9 +82,9 @@
 
 <script setup>
 import { sendRequest, REQUEST_METHOD } from '../../../utils/request';
-import { ElNotification } from 'element-plus';
 import { ArrowDown } from '@element-plus/icons-vue';
 import { onBeforeMount, reactive, ref } from 'vue';
+import { parseAvatarURL, REQUEST_PREFIX } from '../../../param/request-prefix';
 
 // 组件引入
 import InfoDialog from '../components/InfoDialog.vue';
@@ -95,13 +95,15 @@ const addUserAvatar = ref(null);
 
 // pinia
 import { useUserStore } from '../../../store/user';
-import { REQUEST_PREFIX } from '../../../param/request-prefix';
+import { MESSAGE_TYPE, showNotification } from '../../../utils/message';
 
 const userStore = useUserStore();
 
-// 自定义响应式变量
+// 是否加载完成
 const loadingDone = ref(false);
+// 用户列表
 const userList = ref([]);
+// 添加的用户信息
 const addUserData = reactive({
 	username: undefined,
 	password: undefined,
@@ -113,7 +115,6 @@ const addUserData = reactive({
 	}
 });
 
-// 自定义方法
 /**
  * 获取全部用户列表
  */
@@ -122,12 +123,7 @@ async function getUserList() {
 	const response = await sendRequest(REQUEST_PREFIX.USER + 'get-all', REQUEST_METHOD.GET);
 	loadingDone.value = true;
 	if (!response.success) {
-		ElNotification({
-			title: '失败',
-			message: response.message,
-			type: 'error',
-			duration: 1000
-		});
+		showNotification('失败', response.message, MESSAGE_TYPE.error);
 		return;
 	}
 	userList.value = response.data;
@@ -139,30 +135,15 @@ async function getUserList() {
  */
 async function deleteUser(id) {
 	if (userStore.userData.id === id) {
-		ElNotification({
-			title: '错误',
-			message: '不能删除自己！',
-			type: 'warning',
-			duration: 1000
-		});
+		showNotification('失败', '不能删除自己！', MESSAGE_TYPE.warning);
 		return;
 	}
 	const response = await sendRequest(REQUEST_PREFIX.USER + 'delete/' + id, REQUEST_METHOD.DELETE);
 	if (!response.success) {
-		ElNotification({
-			title: '错误',
-			message: response.message,
-			type: 'error',
-			duration: 1000
-		});
+		showNotification('失败', response.message, MESSAGE_TYPE.error);
 		return;
 	}
-	ElNotification({
-		title: '成功',
-		message: '删除完成！',
-		type: 'success',
-		duration: 1000
-	});
+	showNotification('成功', response.message);
 	// 刷新列表
 	await getUserList();
 }
@@ -172,27 +153,17 @@ async function deleteUser(id) {
  * @param ids 传入用户id和角色id，ids中有两个属性userId和roleId分别表示用户id与权限id
  */
 async function changeUserRole(ids) {
-	const response = await sendRequest(REQUEST_PREFIX.USER + 'update', REQUEST_METHOD.PUT, {
+	const response = await sendRequest(REQUEST_PREFIX.USER + 'update', REQUEST_METHOD.PATCH, {
 		id: ids.userId,
 		role: {
 			id: ids.roleId
 		}
 	});
 	if (!response.success) {
-		ElNotification({
-			title: '错误',
-			message: response.message,
-			type: 'error',
-			duration: 1000
-		});
+		showNotification('失败', response.message, MESSAGE_TYPE.error);
 		return;
 	}
-	ElNotification({
-		title: '成功',
-		message: '修改用户权限成功！',
-		type: 'success',
-		duration: 1000
-	});
+	showNotification('成功', response.message);
 	// 刷新列表
 	await getUserList();
 }
@@ -204,20 +175,10 @@ async function addUser() {
 	addUserData.avatar = await addUserAvatar.value.uploadAndGetUrl();
 	const response = await sendRequest(REQUEST_PREFIX.USER + 'register', REQUEST_METHOD.POST, addUserData);
 	if (!response.success) {
-		ElNotification({
-			title: '错误',
-			message: response.message,
-			type: 'error',
-			duration: 1000
-		});
+		showNotification('失败', response.message, MESSAGE_TYPE.error);
 		return;
 	}
-	ElNotification({
-		title: '成功',
-		message: '添加用户成功！',
-		type: 'success',
-		duration: 1000
-	});
+	showNotification('成功', response.message);
 	// 刷新列表
 	await getUserList();
 	addUserDialog.value.frameShow = false;
@@ -248,6 +209,7 @@ onBeforeMount(async () => {
 		}
 	}
 
+	// 用户列表
 	.user-list {
 		position: relative;
 		width: 96%;
@@ -266,6 +228,7 @@ onBeforeMount(async () => {
 		}
 	}
 
+	// 添加用户弹窗
 	.add-user-dialog {
 		:deep(.content) {
 			justify-content: flex-start;
@@ -277,16 +240,26 @@ onBeforeMount(async () => {
 			justify-content: space-evenly;
 			align-items: center;
 			width: 90%;
-			margin-top: 2vh;
+			margin-bottom: 2.5%;
 
 			.text {
-				width: 128px;
+				width: 20%;
 				text-align: right;
 			}
 
 			.input {
-				width: 80%;
+				width: 70%;
 				margin-left: 3%;
+			}
+		}
+
+		.avatar {
+			margin-bottom: 4.5%;
+		}
+
+		.button-box {
+			.ok, .cancel {
+				font-size: 18px;
 			}
 		}
 	}

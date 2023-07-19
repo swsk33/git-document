@@ -5,7 +5,7 @@
 			<el-table-column label="贡献者" width="300" :resizable="false" align="center">
 				<template #default="scope">
 					<div class="committer-info">
-						<img class="avatar" :src="scope.row.committer.avatar" alt="无法显示">
+						<img class="avatar" :src="parseAvatarURL(scope.row.committer.avatar)" alt="无法显示">
 						<div class="nickname">{{ scope.row.committer.nickname }}</div>
 					</div>
 				</template>
@@ -25,10 +25,10 @@
 <script setup>
 import { sendRequest, REQUEST_METHOD } from '../../../utils/request';
 import { timestampToDateString } from '../../../utils/time-convert';
-import { ElNotification } from 'element-plus';
 import { computed, onBeforeMount, ref } from 'vue';
 import { useRoute } from 'vue-router';
-import { REQUEST_PREFIX } from '../../../param/request-prefix';
+import { parseAvatarURL, REQUEST_PREFIX } from '../../../param/request-prefix';
+import { MESSAGE_TYPE, showNotification } from '../../../utils/message';
 
 const route = useRoute();
 
@@ -46,12 +46,7 @@ onBeforeMount(async () => {
 	const response = await sendRequest(REQUEST_PREFIX.ANTHOLOGY + 'get-all-commits/' + route.params.id, REQUEST_METHOD.GET);
 	loadingDone.value = true;
 	if (!response.success) {
-		ElNotification({
-			title: '失败',
-			message: '获取贡献者列表失败！请联系后端开发者！',
-			type: 'error',
-			duration: 1000
-		});
+		showNotification('错误', response.message, MESSAGE_TYPE.error);
 		return;
 	}
 	commits.value = response.data;

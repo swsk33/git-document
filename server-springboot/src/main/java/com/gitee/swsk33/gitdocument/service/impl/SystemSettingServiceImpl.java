@@ -1,6 +1,7 @@
 package com.gitee.swsk33.gitdocument.service.impl;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.hutool.core.util.StrUtil;
 import com.gitee.swsk33.gitdocument.dao.SystemSettingDAO;
 import com.gitee.swsk33.gitdocument.model.Result;
 import com.gitee.swsk33.gitdocument.param.PermissionName;
@@ -20,6 +21,18 @@ public class SystemSettingServiceImpl implements SystemSettingService {
 
 	@Autowired
 	private ImageService imageService;
+
+	/**
+	 * 删除背景图
+	 *
+	 * @param configKey 配置键，指定是登录页还是主页背景图
+	 */
+	private void deleteBackgroundImage(String configKey) {
+		String lastImage = systemSettingDAO.get(configKey);
+		if (!StrUtil.isEmpty(lastImage)) {
+			imageService.delete(lastImage);
+		}
+	}
 
 	@SaCheckPermission(PermissionName.ALTER_SYSTEM_SETTING)
 	@Override
@@ -48,6 +61,8 @@ public class SystemSettingServiceImpl implements SystemSettingService {
 	@SaCheckPermission(PermissionName.ALTER_SYSTEM_SETTING)
 	@Override
 	public Result<Void> resetLoginBackground() {
+		// 删除上一个背景图
+		deleteBackgroundImage(LOGIN_BACKGROUND_IMAGE);
 		systemSettingDAO.set(LOGIN_BACKGROUND_IMAGE, null);
 		return Result.resultSuccess("重置完成！");
 	}
@@ -55,6 +70,8 @@ public class SystemSettingServiceImpl implements SystemSettingService {
 	@SaCheckPermission(PermissionName.ALTER_SYSTEM_SETTING)
 	@Override
 	public Result<Void> resetMainBackground() {
+		// 删除上一个背景图
+		deleteBackgroundImage(MAIN_BACKGROUND_IMAGE);
 		systemSettingDAO.set(MAIN_BACKGROUND_IMAGE, null);
 		return Result.resultSuccess("重置完成！");
 	}
@@ -66,6 +83,8 @@ public class SystemSettingServiceImpl implements SystemSettingService {
 		if (!uploadResult.isSuccess()) {
 			return Result.resultFailed(uploadResult.getMessage());
 		}
+		// 删除上一个背景图
+		deleteBackgroundImage(LOGIN_BACKGROUND_IMAGE);
 		systemSettingDAO.set(LOGIN_BACKGROUND_IMAGE, uploadResult.getData());
 		return Result.resultSuccess("设定登录页背景图成功！");
 	}
@@ -77,6 +96,8 @@ public class SystemSettingServiceImpl implements SystemSettingService {
 		if (!uploadResult.isSuccess()) {
 			return Result.resultFailed(uploadResult.getMessage());
 		}
+		// 删除上一个背景图
+		deleteBackgroundImage(MAIN_BACKGROUND_IMAGE);
 		systemSettingDAO.set(MAIN_BACKGROUND_IMAGE, uploadResult.getData());
 		return Result.resultSuccess("设定主页背景图成功！");
 	}
