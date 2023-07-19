@@ -4,7 +4,7 @@
  * @return {string} 时间字符串
  */
 function timestampToDateString(timestamp) {
-	if (timestamp === 0) {
+	if (timestamp == null) {
 		return '暂无提交';
 	}
 	const time = new Date(timestamp * 1000);

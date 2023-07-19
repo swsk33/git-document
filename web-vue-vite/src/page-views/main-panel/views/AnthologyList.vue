@@ -9,18 +9,31 @@
 		<ul class="anthology-list">
 			<!-- 每个文集 -->
 			<li v-for="item in list" :key="item.id" v-show="!showStarOnly || (showStarOnly && containStar(item.id))">
+				<!-- 文集封面 -->
 				<div class="image">
 					<img :src="parseCoverURL(item.cover)" alt="undefined"/>
 				</div>
+				<!-- 文集显示名称 -->
 				<el-tooltip placement="top" :content="item.showName">
 					<div class="text">{{ item.showName }}</div>
 				</el-tooltip>
+				<!-- 文集状态 -->
+				<el-tooltip placement="top" :content="ANTHOLOGY_STATUS.get(item.status).tip">
+					<div class="status" :style="{ color: ANTHOLOGY_STATUS.get(item.status).tipColor }">{{ ANTHOLOGY_STATUS.get(item.status).showName }}</div>
+				</el-tooltip>
+				<!-- 文集更新时间 -->
 				<el-tooltip placement="top" content="最后更新时间">
 					<div class="update-time">{{ getUpdateTime(item.updateTime) }}</div>
 				</el-tooltip>
+				<!-- 按钮盒子 -->
 				<div class="button-box">
-					<el-button type="info" plain class="star" :icon="containStar(item.id) ? StarFilled : Star" @click="containStar(item.id) ? cancelStar(item.id) : doStar(item.id)" circle/>
-					<el-button type="primary" plain class="copy-ssh" :id="'copy-ssh-' + item.id" v-if="userStore.hasPermission('edit_anthology')" @click="copySSH(item.id, item.repoPath)">复制Git SSH地址</el-button>
+					<div class="star-box">
+						<el-button type="info" plain class="star" :icon="containStar(item.id) ? StarFilled : Star" @click="containStar(item.id) ? cancelStar(item.id) : doStar(item.id)" circle/>
+						<el-tooltip placement="top" :content="'收藏数：' + item.starCount">
+							<div class="count">{{ item.starCount }}</div>
+						</el-tooltip>
+					</div>
+					<el-button type="primary" plain class="copy-ssh" :id="'copy-ssh-' + item.id" v-if="userStore.hasPermission('edit_anthology') && item.status !== 'ARCHIVE'" @click="copySSH(item.id, item.repoPath)">复制Git SSH地址</el-button>
 					<el-button type="warning" plain class="edit" v-if="userStore.hasPermission('edit_anthology')" @click="showEditDialog(item)">编辑</el-button>
 					<el-button type="success" plain class="go-to-read" @click="router.push('/article-menu/' + item.id)">去阅读</el-button>
 				</div>
@@ -56,6 +69,12 @@
 					<div class="text">文集显示名：</div>
 					<el-input class="input" size="large" v-model="editAnthologyInfo.showName" placeholder="请输入文集显示名"/>
 				</div>
+				<div class="status">
+					<div class="text">文集状态：</div>
+					<el-select class="select" v-model="editAnthologyInfo.status" size="large">
+						<el-option v-for="item in ANTHOLOGY_STATUS.values()" :key="item.name" :label="item.showName" :value="item.name"/>
+					</el-select>
+				</div>
 			</template>
 			<template v-slot:button-box>
 				<el-button class="ok" type="success" size="large" @click="editAnthology">确定</el-button>
@@ -79,6 +98,8 @@ import { reactive, ref, computed, onBeforeMount, watch } from 'vue';
 import { Star, StarFilled } from '@element-plus/icons-vue';
 import { useRouter } from 'vue-router';
 import { parseCoverURL, REQUEST_PREFIX } from '../../../param/request-prefix';
+import { MESSAGE_TYPE, showNotification } from '../../../utils/message';
+import { ANTHOLOGY_STATUS } from '../../../param/anthology-status';
 
 const router = useRouter();
 
@@ -93,26 +114,40 @@ const uploadImage = ref(null);
 // pinia
 import { useUserStore } from '../../../store/user';
 import { useMetaDataStore } from '../../../store/meta-data';
-import { MESSAGE_TYPE, showNotification } from '../../../utils/message';
 
 const userStore = useUserStore();
 const metaStore = useMetaDataStore();
 
-// 响应式变量
+/**
+ * 所有文集列表
+ */
 const list = ref([]);
+
+/**
+ * 是否加载完成
+ */
 const loadingDone = ref(false);
+
+/**
+ * 当前要添加的文集信息
+ */
 const addAnthologyInfo = reactive({
 	name: undefined,
 	showName: undefined
 });
-const editAnthologyInfo = reactive({
-	id: undefined,
-	showName: undefined,
-	cover: undefined
-});
-// 用户收藏的文集列表
+
+/**
+ * 当前正在编辑的文集信息
+ */
+const editAnthologyInfo = ref(undefined);
+
+/**
+ * 用户收藏的文集列表
+ */
 const userStar = ref([]);
-// 是否只显示收藏
+/**
+ * 是否只显示收藏
+ */
 const showStarOnly = ref(false);
 
 /**
@@ -180,6 +215,7 @@ async function addAnthology() {
 	addAnthologyRef.value.frameShow = false;
 	// 重新获取文集列表
 	await getAnthologyList();
+	await getStarCount();
 }
 
 /**
@@ -187,9 +223,7 @@ async function addAnthology() {
  * @param anthology 文集对象
  */
 function showEditDialog(anthology) {
-	editAnthologyInfo.id = anthology.id;
-	editAnthologyInfo.showName = anthology.showName;
-	editAnthologyInfo.cover = anthology.cover;
+	editAnthologyInfo.value = anthology;
 	editAnthologyRef.value.frameShow = true;
 }
 
@@ -198,9 +232,9 @@ function showEditDialog(anthology) {
  */
 async function editAnthology() {
 	// 修改信息之前，先上传图片
-	editAnthologyInfo.cover = await uploadImage.value.uploadAndGetUrl();
+	editAnthologyInfo.value.cover = await uploadImage.value.uploadAndGetUrl();
 	// 修改文集数据
-	const response = await sendRequest(REQUEST_PREFIX.ANTHOLOGY + 'update', REQUEST_METHOD.PATCH, editAnthologyInfo);
+	const response = await sendRequest(REQUEST_PREFIX.ANTHOLOGY + 'update', REQUEST_METHOD.PATCH, editAnthologyInfo.value);
 	if (!response.success) {
 		showNotification('失败', response.message, MESSAGE_TYPE.error);
 		return;
@@ -209,13 +243,15 @@ async function editAnthology() {
 	editAnthologyRef.value.frameShow = false;
 	// 刷新列表
 	await getAnthologyList();
+	await getUserStar();
+	await getStarCount();
 }
 
 /**
  * 删除当前编辑的文集
  */
 async function deleteAnthology() {
-	const response = await sendRequest(REQUEST_PREFIX.ANTHOLOGY + 'delete/' + editAnthologyInfo.id, REQUEST_METHOD.DELETE);
+	const response = await sendRequest(REQUEST_PREFIX.ANTHOLOGY + 'delete/' + editAnthologyInfo.value.id, REQUEST_METHOD.DELETE);
 	if (!response.success) {
 		showNotification('失败', response.message, MESSAGE_TYPE.error);
 		return;
@@ -224,6 +260,8 @@ async function deleteAnthology() {
 	editAnthologyRef.value.frameShow = false;
 	// 刷新列表
 	await getAnthologyList();
+	await getUserStar();
+	await getStarCount();
 }
 
 /**
@@ -256,6 +294,7 @@ async function doStar(anthologyId) {
 	showNotification('成功', response.message);
 	// 刷新列表
 	await getUserStar();
+	await getStarCount();
 }
 
 /**
@@ -278,6 +317,21 @@ async function cancelStar(anthologyId) {
 	showNotification('成功', response.message);
 	// 刷新列表
 	await getUserStar();
+	await getStarCount();
+}
+
+/**
+ * 获取并设定每个文集的收藏数
+ */
+async function getStarCount() {
+	for (let item of list.value) {
+		item.starCount = 0;
+		const response = await sendRequest(REQUEST_PREFIX.STAR + 'get-star-count/' + item.id, REQUEST_METHOD.GET);
+		if (!response.success) {
+			continue;
+		}
+		item.starCount = response.data;
+	}
 }
 
 // 监听是否只显示收藏按钮，将结果存入本地缓存
@@ -289,6 +343,7 @@ onBeforeMount(async () => {
 	// 挂载组件时获取文集列表
 	await getAnthologyList();
 	await getUserStar();
+	await getStarCount();
 	// 获取本地缓存中的显示全部/仅显示收藏选项
 	let item = localStorage.getItem('show-star-only');
 	if (item != null) {
@@ -325,6 +380,7 @@ onBeforeMount(async () => {
 		}
 	}
 
+	// 文集列表（每一个列表项）
 	.anthology-list {
 		margin: 0;
 		padding: 0;
@@ -340,6 +396,7 @@ onBeforeMount(async () => {
 			left: 2%;
 			border-bottom: #d0d0d0 1px solid;
 			box-sizing: border-box;
+			user-select: none;
 
 			.image {
 				height: 10vh;
@@ -367,25 +424,60 @@ onBeforeMount(async () => {
 			}
 
 			.text {
-				margin-left: 3%;
-				width: 31%;
+				margin-left: 2%;
+				width: 27%;
 				font-size: 18px;
+				padding-left: 3px;
+			}
+
+			.status {
+				font-size: 15px;
+				line-height: 18px;
+				height: 18px;
+				width: 4%;
+				border-radius: 5px;
+				border-style: solid;
+				border-width: 1px;
+				padding: 2px 4px;
+				margin-left: 1%;
+				text-align: center;
+				box-sizing: content-box;
+				text-overflow: ellipsis;
+				overflow: hidden;
+				white-space: nowrap;
 			}
 
 			.update-time {
-				width: 20%;
+				width: 18%;
 				font-size: 13px;
 				text-align: center;
 				color: #5500ff;
+				margin-left: 1%;
 			}
 
 			.button-box {
 				display: flex;
 				justify-content: space-evenly;
 				align-items: center;
-				width: 33%;
+				width: 36%;
 				height: 6vh;
-				margin-left: 3%;
+				margin-left: 2%;
+
+				.star-box {
+					display: flex;
+					justify-content: space-evenly;
+					align-items: center;
+					width: 17%;
+
+					.count {
+						position: relative;
+						text-overflow: ellipsis;
+						white-space: nowrap;
+						overflow: hidden;
+						color: #7b00db;
+						font-family: Arial, serif;
+					}
+				}
 			}
 
 		}
@@ -442,22 +534,32 @@ onBeforeMount(async () => {
 		}
 
 		.content {
-			.show-name {
+			.cover {
+				margin-bottom: 5%;
+			}
+
+			.show-name, .status {
 				display: flex;
 				width: 95%;
 				height: 25%;
-				justify-content: space-between;
 				align-items: center;
-				margin-top: 9%;
 
 				.text {
 					width: 30%;
 					text-align: center;
 				}
+			}
 
+			.show-name {
 				.input {
-					width: 65%;
+					width: 70%;
 					height: 70%;
+				}
+			}
+
+			.status {
+				.select {
+					width: 30%;
 				}
 			}
 		}

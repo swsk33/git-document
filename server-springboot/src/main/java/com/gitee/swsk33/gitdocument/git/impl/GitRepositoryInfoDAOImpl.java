@@ -57,7 +57,7 @@ public class GitRepositoryInfoDAOImpl implements GitRepositoryInfoDAO {
 		// 裸仓库文件夹
 		File repositoryFolder = FileUtil.file(gitRepository);
 		// 钩子脚本所在位置
-		File hookScript = FileUtil.file(gitRepository + File.separator + "hooks/pre-receive");
+		File hookScript = FileUtil.file(gitRepository + File.separator + "hooks/post-receive");
 		// 创建仓库文件夹
 		FileUtil.mkdir(repositoryFolder);
 		// 创建钩子文件的输入输出流，完成把钩子脚本模板内容读取并写入到仓库文件夹指定位置
