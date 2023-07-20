@@ -64,16 +64,12 @@
 .page-night.page-orange {
 	.top-bar {
 		.show-menu-button {
-			border-color: #ffd296;
-
-			div {
-				background-color: #ffd296;
-			}
+			color: #ff6d37;
 		}
 	}
 
 	.main-body {
-		.menu, .content, .content pre {
+		.menu, .content, .content pre, .content pre code {
 			// 设定滚动条滑块
 			&::-webkit-scrollbar-thumb {
 				background: #ffd4ab;

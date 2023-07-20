@@ -93,12 +93,12 @@ onMounted(() => {
 	.page {
 		.top-bar {
 			.show-menu-button {
-				display: flex;
+				display: block;
 			}
 
 			.color-box {
 				width: 50%;
-				margin-right: 10px;
+				margin-right: 6px;
 			}
 		}
 

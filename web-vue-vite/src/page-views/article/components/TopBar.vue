@@ -2,11 +2,7 @@
 	<!-- 顶栏 -->
 	<div class="top-bar">
 		<!-- 手机模式显示菜单 -->
-		<div class="show-menu-button" @click="themeStore.setMenuShow(true)">
-			<div></div>
-			<div></div>
-			<div></div>
-		</div>
+		<el-button class="show-menu-button" @click="themeStore.setMenuShow(true)" :icon="Memo" type="primary" plain circle/>
 		<!-- 更改颜色主题按钮盒子 -->
 		<div class="color-box">
 			<div class="text">主题</div>
@@ -42,18 +38,20 @@
 </template>
 
 <script setup>
-import { ElNotification } from 'element-plus';
+import { MESSAGE_TYPE, showNotification } from '../../../utils/message';
 import { reactive, shallowRef, watch } from 'vue';
 
 // element-plus图标
-import { Check, Moon, Sunny } from '@element-plus/icons-vue';
+import { Check, Memo, Moon, Sunny } from '@element-plus/icons-vue';
 
 // pinia
 import { useArticlePageThemeStore } from '../../../store/article-page-theme';
 
 const themeStore = useArticlePageThemeStore();
 
-// 自定义响应式变量
+/**
+ * 图标
+ */
 const elementIcon = reactive({
 	moon: shallowRef(Moon),
 	sunny: shallowRef(Sunny)
@@ -66,13 +64,7 @@ const elementIcon = reactive({
  */
 function changePageColor(color) {
 	themeStore.setPageColor(color);
-	ElNotification({
-		title: '成功！',
-		message: '更换主题成功！',
-		type: 'success',
-		position: 'top-left',
-		duration: 750
-	});
+	showNotification('成功', '更换主题成功！', MESSAGE_TYPE.success, 750);
 }
 
 // 监听器
@@ -95,21 +87,9 @@ watch(() => themeStore.isNight, () => {
 	.show-menu-button {
 		position: absolute;
 		display: none;
-		flex-direction: column;
-		justify-content: space-evenly;
-		align-items: center;
-		left: 1.25vh;
-		width: 4.5vh;
-		height: 4.5vh;
-		border-radius: 4px;
-		border: gray 1px solid;
-
-		div {
-			width: 75%;
-			height: 16%;
-			background-color: gray;
-			border-radius: 3px;
-		}
+		left: 1.5vh;
+		width: 3.5vh;
+		height: 3.5vh;
 	}
 
 	.color-box {

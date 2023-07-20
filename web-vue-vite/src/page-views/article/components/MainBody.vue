@@ -20,11 +20,14 @@
 import { marked } from 'marked';
 import { REQUEST_METHOD, sendRequest } from '../../../utils/request';
 import { joinPath } from '../../../utils/file-path';
-import highlight from 'highlight.js';
+import { REQUEST_PREFIX } from '../../../param/request-prefix';
+import { MESSAGE_TYPE, showNotification } from '../../../utils/message';
 import ClipBoard from 'clipboard';
 import renderMathInElement from 'katex/dist/contrib/auto-render';
 import { onBeforeMount, onUpdated, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
+import { markedHighlight } from 'marked-highlight';
+import hljs from 'highlight.js';
 
 const route = useRoute();
 
@@ -32,40 +35,37 @@ const content = ref(null);
 
 // pinia
 import { useArticlePageThemeStore } from '../../../store/article-page-theme';
-import { REQUEST_PREFIX } from '../../../param/request-prefix';
-import { MESSAGE_TYPE, showNotification } from '../../../utils/message';
 
 const themeStore = useArticlePageThemeStore();
 
-// marked.js初始化设定
-marked.setOptions({
-			renderer: new marked.Renderer(),
-			highlight(code) {
-				return highlight.highlightAuto(code).value;
-			},
-			pedantic: false,
-			gfm: true,
-			tables: true,
-			breaks: false,
-			sanitize: false,
-			smartLists: true,
-			smartypants: false,
-			xhtml: false
-		}
-);
+// marked.js配置高亮
+marked.use(markedHighlight({
+	langPrefix: 'hljs language-',
+	highlight(code, lang) {
+		const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+		return hljs.highlight(code, { language }).value;
+	}
+}));
 
-// 文章的文本节点
+// marked.js其余选项
+marked.setOptions({
+	headerIds: false,
+	mangle: false
+});
+
+/**
+ * 文章的文本节点
+ */
 let textDom;
-// 获取到的文章对象
+/**
+ * 获取到的文章对象
+ */
 let articleObject;
 
-// 自定义响应式变量
 const loadingDone = ref(false);
 const loadingText = ref('正在拉取文章内容...');
 const menuItems = ref([]);
 const isArticleNotFound = ref(false);
-
-// 自定义方法
 
 /**
  * 获得目录项的缩进长度，css值形式
@@ -124,6 +124,11 @@ function setLink(contentNode) {
 	// 找出所有a标签
 	const doms = contentNode.querySelectorAll('a');
 	for (let dom of doms) {
+		// 如果href属性为#开头，说明是锚点，设定为当前页
+		if (dom.getAttribute('href').startsWith('#')) {
+			dom.setAttribute('target', '_self');
+			continue;
+		}
 		// 设置a标签为新标签页打开
 		dom.setAttribute('target', '_blank');
 	}
@@ -270,6 +275,7 @@ onUpdated(() => {
 .main-body {
 	height: 93vh;
 
+	// 设定所有滚动条
 	.menu, .content {
 		position: absolute;
 		overflow-x: hidden;
@@ -293,6 +299,7 @@ onUpdated(() => {
 		}
 	}
 
+	// 左侧目录
 	.menu {
 		top: 0;
 		left: 0;
@@ -326,6 +333,7 @@ onUpdated(() => {
 		}
 	}
 
+	// 正文内容
 	.content {
 		width: 83vw;
 		left: 17vw;
@@ -343,14 +351,39 @@ onUpdated(() => {
 			border-bottom: 1px solid;
 		}
 
+		// 定义代码块的滚动条
+		pre, pre code {
+			// 设定滚动条整体
+			&::-webkit-scrollbar {
+				height: 4px;
+			}
+
+			// 设定滚动条滑块
+			&::-webkit-scrollbar-thumb {
+				border-radius: 8px;
+				background: rgba(0, 0, 0, 0.2);
+			}
+
+			// 设定外层轨道滚动槽
+			&::-webkit-scrollbar-track {
+				border-radius: 0;
+				background: rgba(0, 0, 0, 0.1);
+			}
+		}
+
 		// 定义代码块样式
 		pre {
 			position: relative;
 			display: block;
 			border-radius: 4px;
 			box-sizing: content-box;
-			padding: 13px 9px;
-			overflow-x: auto;
+			padding: 15px 9px 5px;
+			overflow-x: scroll;
+
+			code {
+				background-color: #FFFFFF00;
+				padding: 0 0 5px;
+			}
 
 			// 设定语言标识和复制按钮
 			.code-language, .copy-button {
@@ -367,23 +400,6 @@ onUpdated(() => {
 			.copy-button {
 				right: 5px;
 				cursor: pointer;
-			}
-
-			// 设定滚动条整体
-			&::-webkit-scrollbar {
-				height: 4px;
-			}
-
-			// 设定滚动条滑块
-			&::-webkit-scrollbar-thumb {
-				border-radius: 8px;
-				background: rgba(0, 0, 0, 0.2);
-			}
-
-			// 设定外层轨道滚动槽
-			&::-webkit-scrollbar-track {
-				border-radius: 0;
-				background: rgba(0, 0, 0, 0.1);
 			}
 		}
 

@@ -1,6 +1,7 @@
 package com.gitee.swsk33.gitdocument.model;
 
 import com.gitee.swsk33.gitdocument.dataobject.Article;
+import com.gitee.swsk33.gitdocument.util.FileNameSortUtil;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -36,11 +37,16 @@ public class ArticleDirectory implements Serializable {
 	 * @param articles 文章列表
 	 */
 	public ArticleDirectory(List<Article> articles) {
+		// 首先对文章列表按照文件名进行排序
+		FileNameSortUtil.sortArticlePath(articles);
+		// 然后解析为树状形式
 		for (Article article : articles) {
+			// 将路径按照分隔符分为数组形式
 			String[] paths = article.getFilePath().split("/");
 			// 目录指针，用于标识当前遍历的时候进入到了哪个目录中
 			ArticleDirectory pointer = this;
 			for (int i = 0; i < paths.length; i++) {
+				// 如果当前位于数组最后一个，说明当前遍历到的是文件，将其加入到指针所在目录下
 				if (i == paths.length - 1) {
 					ArticleFile file = new ArticleFile();
 					file.setId(article.getId());
@@ -48,6 +54,7 @@ public class ArticleDirectory implements Serializable {
 					pointer.getArticles().add(file);
 					break;
 				}
+				// 否则，说明当前遍历到的是文件夹，检查该目录是否已经在树形结构中创建
 				if (pointer.getDirectoryByName(paths[i]) == null) {
 					ArticleDirectory directory = new ArticleDirectory();
 					directory.setName(paths[i]);
