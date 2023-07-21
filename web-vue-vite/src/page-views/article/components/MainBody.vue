@@ -35,8 +35,10 @@ const content = ref(null);
 
 // pinia
 import { useArticlePageThemeStore } from '../../../store/article-page-theme';
+import { useArticleTreeStore } from '../../../store/article-tree';
 
 const themeStore = useArticlePageThemeStore();
+const articleTreeStore = useArticleTreeStore();
 
 // marked.js配置高亮
 marked.use(markedHighlight({
@@ -57,14 +59,30 @@ marked.setOptions({
  * 文章的文本节点
  */
 let textDom;
+
 /**
  * 获取到的文章对象
  */
 let articleObject;
 
+/**
+ * 是否加载完成
+ */
 const loadingDone = ref(false);
+
+/**
+ * 加载提示
+ */
 const loadingText = ref('正在拉取文章内容...');
+
+/**
+ * 左侧栏目录
+ */
 const menuItems = ref([]);
+
+/**
+ * 文章是否不存在
+ */
 const isArticleNotFound = ref(false);
 
 /**
@@ -257,6 +275,8 @@ onBeforeMount(async () => {
 	renderKatex(textDom);
 	// 设定渲染完成
 	themeStore.contentParsed = true;
+	// 最后，从缓存读取该文章所在文集的其它文章目录树，使得用户可以切换文章
+	articleTreeStore.getArticleTree(articleObject.anthology.id);
 });
 
 onUpdated(() => {
@@ -414,6 +434,11 @@ onUpdated(() => {
 				margin-left: 2px;
 				margin-right: 2px;
 			}
+		}
+
+		// 加粗字体和斜体调整
+		strong, em {
+			padding-bottom: 2px;
 		}
 
 		// 调整一号标题代码样式

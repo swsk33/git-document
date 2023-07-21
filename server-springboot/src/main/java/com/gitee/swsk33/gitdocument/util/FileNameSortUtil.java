@@ -18,7 +18,7 @@ public class FileNameSortUtil {
 	 * @param articleList 获取到的文章列表
 	 */
 	public static void sortArticlePath(List<Article> articleList) {
-		articleList.sort(((articleOne, articleTwo) -> {
+		articleList.sort((articleOne, articleTwo) -> {
 			// 使用正则表达式，把数字和非数字部分拆分
 			String regex = "(\\D+|\\d+)";
 			List<String> partsOne = ReUtil.findAll(regex, articleOne.getFilePath(), 0);
@@ -60,7 +60,7 @@ public class FileNameSortUtil {
 			}
 			// 否则，说明两个文件完全相等或者短文件名和长文件名的前半部分完全相等，将文件名长的放在后面
 			return partsOne.size() - partsTwo.size();
-		}));
+		});
 	}
 
 }

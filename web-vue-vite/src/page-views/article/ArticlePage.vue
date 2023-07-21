@@ -61,6 +61,17 @@ onMounted(() => {
 	color: white;
 	background-color: #141414;
 
+	.top-bar {
+		.tree-container {
+			background-color: #0d1117;
+
+			.tree {
+				color: white;
+				background-color: #0d1117;
+			}
+		}
+	}
+
 	.main-body {
 		.menu {
 			border-right: 1px solid #ffffff;
@@ -96,9 +107,17 @@ onMounted(() => {
 				display: block;
 			}
 
+			.switch-article {
+				left: 6.5vh;
+			}
+
 			.color-box {
-				width: 50%;
+				width: 42%;
 				margin-right: 6px;
+
+				.text {
+					display: none
+				}
 			}
 		}
 

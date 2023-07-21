@@ -35,19 +35,35 @@ import { computed, onBeforeMount, reactive, ref, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { REQUEST_PREFIX } from '../../../param/request-prefix';
 import { MESSAGE_TYPE, showNotification } from '../../../utils/message';
+import { useArticleTreeStore } from '../../../store/article-tree';
+
+const articleTreeStore = useArticleTreeStore();
 
 const router = useRouter();
 const route = useRoute();
 
+/**
+ * 是否加载完成
+ */
 const loadingDone = ref(false);
+
+/**
+ * 文集文章的文件目录树
+ */
 const total = reactive({
 	directories: [],
 	articles: []
 });
-// 当前目录，以/xxx/xxx的形式表示
+
+/**
+ * 当前目录，以/xxx/xxx的形式表示
+ */
 const currentPath = ref('/');
-// 目录深度，-1代表当前位于根目录
-const depth = ref(-1);
+
+/**
+ * 目录深度，-1代表当前位于根目录
+ */
+let depth = ref(-1);
 
 /**
  * 用于设定或者获取当前目录
@@ -55,7 +71,7 @@ const depth = ref(-1);
 const currentPathHandler = computed({
 	/**
 	 * 获取当前路径下的目录或者文件列表
-	 * @returns {{directories: [], articles: []}} 目录列表与文件列表
+	 * @returns {*} 目录列表与文件列表
 	 */
 	get() {
 		let pointer = total;
@@ -164,6 +180,7 @@ function goToLast() {
 }
 
 onBeforeMount(async () => {
+	// 获取文章目录列表
 	const response = await sendRequest(REQUEST_PREFIX.ARTICLE + 'get-article-list/' + route.params.id, REQUEST_METHOD.GET);
 	loadingDone.value = true;
 	if (!response.success) {
@@ -172,6 +189,8 @@ onBeforeMount(async () => {
 	}
 	total.directories = response.data.directories;
 	total.articles = response.data.articles;
+	// 获取完成后，解析文集列表目录树为组件树结构并存入缓存
+	articleTreeStore.saveArticleTree(route.params.id, articleTreeStore.parseArticleTree(total));
 });
 </script>
 

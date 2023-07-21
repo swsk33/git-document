@@ -96,6 +96,16 @@
 				}
 			}
 
+			// 加粗文字下划线
+			strong {
+				border-bottom: 1px #29d08c solid;
+			}
+
+			// 斜体字下划虚线
+			em {
+				border-bottom: 1px #29d08c dashed;
+			}
+
 			// 定义引用块
 			blockquote {
 				background-color: rgba(147, 255, 155, 0.1);
