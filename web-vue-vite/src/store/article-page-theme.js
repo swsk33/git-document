@@ -13,6 +13,10 @@ export const useArticlePageThemeStore = defineStore('article-page-theme', {
 			 */
 			menuShow: true,
 			/**
+			 * 是否显示切换文章的展开菜单
+			 */
+			articleSwitchShow: false,
+			/**
 			 * 是否是夜晚样式
 			 */
 			isNight: false,

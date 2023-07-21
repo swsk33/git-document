@@ -2,7 +2,7 @@
 	<!-- 主体 -->
 	<div class="main-body" v-loading="!loadingDone" :element-loading-text="loadingText">
 		<!-- 正文内容 -->
-		<div class="content" ref="content" @click="themeStore.setMenuShow(false)"></div>
+		<div class="content" ref="content" @click="closeExpandMenu"></div>
 		<!-- 菜单 -->
 		<div class="menu" v-show="themeStore.menuShow">
 			<el-tooltip placement="right" v-for="item in menuItems" :key="item.text" :content="item.text">
@@ -84,6 +84,14 @@ const menuItems = ref([]);
  * 文章是否不存在
  */
 const isArticleNotFound = ref(false);
+
+/**
+ * 点击文章页面主体时，关闭所有展开菜单
+ */
+function closeExpandMenu() {
+	themeStore.setMenuShow(false);
+	themeStore.articleSwitchShow = false;
+}
 
 /**
  * 获得目录项的缩进长度，css值形式

@@ -1,5 +1,15 @@
 // 页面白天灰色主题
 .page-gray {
+	.top-bar {
+		.switch-article {
+			.tree-node > .el-tree-node__content {
+				&:hover {
+					background-color: #cbcbcb;
+				}
+			}
+		}
+	}
+
 	.main-body {
 		.menu {
 			a {
@@ -63,8 +73,19 @@
 // 页面夜晚样式
 .page-night.page-gray {
 	.top-bar {
-		.show-menu-button {
-			color: #313131;
+		.switch-article {
+			.tree-container {
+				// 设定滚动条滑块
+				&::-webkit-scrollbar-thumb {
+					background: #ffffff;
+				}
+
+				.tree-node > .el-tree-node__content {
+					&:hover {
+						color: black;
+					}
+				}
+			}
 		}
 	}
 

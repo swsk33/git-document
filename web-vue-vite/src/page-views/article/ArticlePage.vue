@@ -63,11 +63,12 @@ onMounted(() => {
 
 	.top-bar {
 		.tree-container {
-			background-color: #0d1117;
+			background-color: #141414;
+			border-bottom: 1px white solid;
 
 			.tree {
 				color: white;
-				background-color: #0d1117;
+				background-color: #141414;
 			}
 		}
 	}
@@ -108,7 +109,12 @@ onMounted(() => {
 			}
 
 			.switch-article {
-				left: 6.5vh;
+				left: 8vh;
+
+				.tree-container {
+					width: 75vw;
+					height: 45vh;
+				}
 			}
 
 			.color-box {

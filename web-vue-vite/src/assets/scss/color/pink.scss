@@ -1,5 +1,15 @@
 // 页面白天粉色主题
 .page-pink {
+	.top-bar {
+		.switch-article {
+			.tree-node > .el-tree-node__content {
+				&:hover {
+					background-color: #ffaafc;
+				}
+			}
+		}
+	}
+
 	.main-body {
 		.menu {
 			a {
@@ -63,8 +73,19 @@
 // 页面夜晚样式
 .page-night.page-pink {
 	.top-bar {
-		.show-menu-button {
-			color: #db628c;
+		.switch-article {
+			.tree-container {
+				// 设定滚动条滑块
+				&::-webkit-scrollbar-thumb {
+					background: #ffb9e2;
+				}
+
+				.tree-node > .el-tree-node__content {
+					&:hover {
+						color: black;
+					}
+				}
+			}
 		}
 	}
 

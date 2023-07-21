@@ -5,9 +5,10 @@
 		<el-button class="show-menu-button" @click="themeStore.setMenuShow(true)" :icon="Memo" type="primary" plain circle/>
 		<!-- 切换文章按钮及其树形组件 -->
 		<div class="switch-article">
-			<el-button class="button" :icon="Document" type="success" plain/>
-			<div class="tree-container">
-				<el-tree class="tree" v-if="articleTreeStore.currentArticleTree != null" :data="articleTreeStore.currentArticleTree.children" :props="treeProperties" accordion/>
+			<el-button class="button" :icon="Document" type="success" plain @click="themeStore.articleSwitchShow = true"/>
+			<div class="tree-container" v-show="themeStore.articleSwitchShow">
+				<div class="text">点击目录树以切换文章</div>
+				<el-tree class="tree" v-if="articleTreeStore.currentArticleTree != null" :data="articleTreeStore.currentArticleTree.children" :props="treeProperties" accordion @node-click="switchArticle"/>
 			</div>
 		</div>
 		<!-- 更改颜色主题按钮盒子 -->
@@ -47,8 +48,6 @@
 <script setup>
 import { MESSAGE_TYPE, showNotification } from '../../../utils/message';
 import { reactive, shallowRef, watch } from 'vue';
-
-// element-plus图标
 import { Check, Memo, Moon, Sunny, Document } from '@element-plus/icons-vue';
 
 // pinia
@@ -71,8 +70,19 @@ const elementIcon = reactive({
  */
 const treeProperties = {
 	children: 'children',
-	label: 'label'
+	label: 'label',
+	class: 'tree-node'
 };
+
+/**
+ * 点击树形组件时切换文章
+ * @param nodeData 树节点所绑定的节点数据对象
+ */
+function switchArticle(nodeData) {
+	if (nodeData.id != null) {
+		location.pathname = '/article/' + nodeData.id;
+	}
+}
 
 /**
  * 改变页面颜色主题
@@ -116,17 +126,17 @@ watch(() => themeStore.isNight, () => {
 
 		.tree-container {
 			position: absolute;
-			width: 35vw;
+			width: 50vw;
 			height: 35vh;
 			z-index: 9;
-			overflow-x: hidden;
-			overflow-y: scroll;
+			overflow: scroll;
 			background-color: white;
 			user-select: none;
 
 			// 设定滚动条整体
 			&::-webkit-scrollbar {
 				width: 5px;
+				height: 5px;
 			}
 
 			// 设定滚动条滑块
@@ -141,10 +151,26 @@ watch(() => themeStore.isNight, () => {
 				background: rgba(0, 0, 0, 0.1);
 			}
 
+			.text {
+				position: relative;
+				font-size: 18px;
+				padding: 4px 20px;
+				height: 24px;
+				line-height: 24px;
+				border-bottom-width: 1px;
+				border-bottom-style: solid;
+				margin-bottom: 2px;
+			}
+
 			.tree {
-				position: absolute;
-				width: 100%;
-				height: 100%;
+				position: relative;
+
+				.tree-node > .el-tree-node__content {
+					font-size: 16px;
+					height: 36px;
+					line-height: 36px;
+					background-color: #00000000;
+				}
 			}
 		}
 
