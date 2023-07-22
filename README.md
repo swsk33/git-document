@@ -45,7 +45,6 @@ GitDocument是一个轻量的团队文档管理和查看工具，部署之后，
 ### (2) 待开发的功能
 
 - 在线多版本和分支查看
-- 错误报告
 - 手机端适配
 - 文章评论
 - ...
@@ -64,15 +63,12 @@ GitDocument是一个轻量的团队文档管理和查看工具，部署之后，
 - [Vue-Router](https://router.vuejs.org/zh/) 单页路由
 - [Pinia](https://pinia.vuejs.org/zh/) 状态管理
 
-后端是使用Spring Boot进行搭建，使用MySQL作为数据库，可以理解为是SSM架构，除了Spring Boot的一些Starter之外，还用到了以下开源外部库或者是中间件：
+后端是使用Spring Boot进行搭建，使用PostgreSQL作为数据库，可以理解为是SSM架构，除了Spring Boot的一些Starter之外，还用到了以下开源外部库或者是中间件：
 
 - [Sa-Token](https://sa-token.dev33.cn/) 认证和鉴权框架
 - [ReadAndWriteJ](https://gitee.com/swsk33/ReadAndWriteJ) 读写实用类
-- [yitter-idgenerator](https://github.com/yitter/idgenerator) 雪花id生成器
-- [jackson-annotations](https://github.com/FasterXML/jackson-annotations) JSON注解实用工具
-- [common-lang3](https://commons.apache.org/proper/commons-lang/) 实用工具
-- [common-io](https://commons.apache.org/proper/commons-io/) 读写实用工具，用于仓库文件系统监听
 - [JGit](https://www.eclipse.org/jgit/) 用于使用Java来操作Git仓库
+- [Hutool](https://hutool.cn/) 实用工具集
 - 集成[Redis](https://redis.io/)作为缓存功能
 - 集成[RabbitMQ](https://www.rabbitmq.com/)作为任务和邮件通知消息队列
 
@@ -83,8 +79,6 @@ GitDocument是一个轻量的团队文档管理和查看工具，部署之后，
 如果这个软件帮助到了你，请点上你宝贵的`star`，非常感谢！
 
 该项目托管在如下仓库：[Gitee](https://gitee.com/swsk33/git-document) | [Github](https://github.com/swsk33/git-document)
-
-
 
 ## 3，使用说明
 
@@ -242,25 +236,3 @@ git push origin master
 - LaTeX公式的支持是使用katex库实现，但是katex并非支持所有的LaTeX语法，大部分都支持，支持列表请参考：
 	- 支持的函数：[传送门](https://katex.org/docs/supported.html)
 	- 支持的语法：[传送门](https://katex.org/docs/support_table.html)
-
-## 4，其余配置项
-
-在GitDocument中，也提供了其它的一些配置项，主要是通过修改**Spring Boot配置文件**完成，在上面挂载数据卷的时候就已经得知了配置文件位置了。
-
-Spring Boot的配置文件是[YAML](https://yaml.org/)格式的，若语法不太熟悉可以先参考：[菜鸟教程](https://www.runoob.com/w3cnote/yaml-intro.html)。
-
-在Spring Boot配置文件中，也有相应的注释，根据注释可以快速定位到需要修改的项，配置完成后记得重启容器。
-
-### (1) 组织名
-
-访问登录页面时，标题会显示组织名，包括网页标题。这个是可以自定义的，编辑配置文件即可，配置文件中`com.gitee.swsk33.git-doc.organization-name`即为自定义的组织名，配置文件位置在上面两种安装方式中已经提到过了。
-
-修改后记得重启服务。
-
-### (2) 是否允许公开注册
-
-默认情况下GitDocument平台是允许访客注册的，若内部的内容不能对外开放，可以关闭公开注册，这时只有管理员可以创建账号。
-
-修改配置项`com.gitee.swsk33.git-doc.allow-public`为`false`即可关闭访客注册。
-
-> 最后更新：2023.2.19
