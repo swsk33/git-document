@@ -20,12 +20,19 @@ const userStore = useUserStore();
 
 // 设定登录页背景的CSS变量
 const backgroundStyle = reactive({
-	background: 'url("' + metaStore.loginBackground + '") no-repeat center/cover'
+	background: ''
 });
 
-// 监听器
+// 监听标题是否加载以实时设定标题
 watch(() => metaStore.organizationName, () => {
 	metaStore.setTitle('GitDocument - 用户登录');
+}, {
+	immediate: true
+});
+
+// 监听登录页背景是否加载以实时设定背景图片
+watch(() => metaStore.loginBackground, () => {
+	backgroundStyle.background = 'url("' + metaStore.loginBackground + '") no-repeat center/cover';
 }, {
 	immediate: true
 });

@@ -24,7 +24,7 @@ const metaStore = useMetaDataStore();
 
 // 背景图片CSS
 const backgroundStyle = reactive({
-	background: 'url("' + metaStore.mainBackground + '") no-repeat center/cover'
+	background: ''
 });
 
 /**
@@ -34,9 +34,16 @@ function closeAvatarMenu() {
 	topBar.value.menuControl(false);
 }
 
-// 监听标题
+// 监听标题是否加载以实时设定标题
 watch(() => metaStore.organizationName, () => {
 	metaStore.setTitle('GitDocument');
+}, {
+	immediate: true
+});
+
+// 监听主页背景是否加载以实时设定背景图片
+watch(() => metaStore.mainBackground, () => {
+	backgroundStyle.background = 'url("' + metaStore.mainBackground + '") no-repeat center/cover';
 }, {
 	immediate: true
 });
