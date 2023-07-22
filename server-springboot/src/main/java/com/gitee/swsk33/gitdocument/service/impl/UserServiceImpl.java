@@ -54,8 +54,8 @@ public class UserServiceImpl implements UserService {
 				return Result.resultFailed("本站不允许访客注册！请联系管理员！");
 			}
 			// 注册权限检查
-			if (user.getRole().getId() == 1 || user.getRole().getId() == 2) {
-				return Result.resultFailed("不允许注册成管理员！");
+			if (user.getRole().getId() != 3) {
+				return Result.resultFailed("不允许注册为除了团队成员之外的角色！");
 			}
 		} else { // 登录的时候，是管理员添加用户行为
 			if (!StpUtil.hasPermission(PermissionName.EDIT_USER)) {
@@ -79,8 +79,6 @@ public class UserServiceImpl implements UserService {
 		user.setPassword(BCryptEncoder.encode(user.getPassword()));
 		// 新建默认用户配置
 		Setting setting = new Setting();
-		setting.setReceiveUpdateEmail(true);
-		setting.setReceiveNewEmail(true);
 		settingDAO.add(setting);
 		user.setSetting(setting);
 		userDAO.add(user);

@@ -16,9 +16,9 @@
 <script setup>
 import { Avatar, Lock } from '@element-plus/icons-vue';
 import { REQUEST_METHOD, sendRequest } from '../../../utils/request';
-import { ElNotification } from 'element-plus';
 import { reactive, shallowRef } from 'vue';
 import { useRouter } from 'vue-router';
+import { MESSAGE_TYPE, showNotification } from '../../../utils/message';
 
 const router = useRouter();
 
@@ -32,11 +32,17 @@ const userStore = useUserStore();
 const metaStore = useMetaDataStore();
 const urlStore = useUrlPathStore();
 
-// 自定义响应式变量
+/**
+ * 登录的用户数据
+ */
 const userData = reactive({
 	username: undefined,
 	password: undefined
 });
+
+/**
+ * 图标
+ */
 const icons = reactive({
 	avatar: shallowRef(Avatar),
 	lock: shallowRef(Lock)
@@ -47,14 +53,7 @@ const icons = reactive({
  */
 function toRegister() {
 	if (!metaStore.allowPublic) {
-		ElNotification(
-				{
-					title: '错误！',
-					message: '本站不允许访客注册！请联系管理员！',
-					type: 'error',
-					duration: 1000
-				}
-		);
+		showNotification('错误', '本站不允许访客注册！请联系管理员！', MESSAGE_TYPE.error);
 		return;
 	}
 	router.push('/login/register');
@@ -66,20 +65,10 @@ function toRegister() {
 async function login() {
 	let response = await sendRequest(REQUEST_PREFIX.USER + 'login', REQUEST_METHOD.POST, userData);
 	if (!response.success) {
-		ElNotification({
-			title: '错误！',
-			message: response.message,
-			type: 'error',
-			duration: 1000
-		});
+		showNotification('错误', response.message, MESSAGE_TYPE.error);
 		return;
 	}
-	ElNotification({
-		title: '成功！',
-		message: '登录成功！',
-		type: 'success',
-		duration: 750
-	});
+	showNotification('成功', response.message);
 	// 获取用户信息
 	await userStore.checkLogin();
 	// 跳转至用户访问的页面

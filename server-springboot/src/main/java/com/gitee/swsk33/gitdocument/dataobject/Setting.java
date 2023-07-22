@@ -23,14 +23,12 @@ public class Setting implements Serializable {
 	/**
 	 * 在收藏的文集更新时是否接收通知
 	 */
-	@NotNull(groups = ValidationRules.DataAdd.class, message = "设置项更新接收通知不能为空！")
-	private Boolean receiveUpdateEmail;
+	private Boolean receiveUpdateEmail = true;
 
 	/**
 	 * 在有新的文集创建发布时是否接收通知
 	 */
-	@NotNull(groups = ValidationRules.DataAdd.class, message = "设置项创建接收通知不能为空！")
-	private Boolean receiveNewEmail;
+	private Boolean receiveNewEmail = true;
 
 	/**
 	 * 创建时间

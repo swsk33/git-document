@@ -17,14 +17,16 @@
 <script setup>
 import { reactive, shallowRef } from 'vue';
 import { sendRequest, REQUEST_METHOD } from '../../../utils/request';
-import { ElNotification } from 'element-plus';
 import { Avatar, Lock, CollectionTag, Postcard } from '@element-plus/icons-vue';
 import { useRouter } from 'vue-router';
 import { REQUEST_PREFIX } from '../../../param/request-prefix';
+import { MESSAGE_TYPE, showNotification } from '../../../utils/message';
 
 const router = useRouter();
 
-// 注册用户数据
+/**
+ * 注册用户数据
+ */
 const userData = reactive({
 	username: undefined,
 	password: undefined,
@@ -34,7 +36,10 @@ const userData = reactive({
 		id: 3
 	}
 });
-// 图标
+
+/**
+ * 图标
+ */
 const icons = reactive({
 	avatar: shallowRef(Avatar),
 	lock: shallowRef(Lock),
@@ -48,24 +53,10 @@ const icons = reactive({
 async function register() {
 	const response = await sendRequest(REQUEST_PREFIX.USER + 'register', REQUEST_METHOD.POST, userData);
 	if (!response.success) {
-		ElNotification(
-				{
-					title: '错误！',
-					message: response.message,
-					type: 'error',
-					duration: 1000
-				}
-		);
+		showNotification('失败', response.message, MESSAGE_TYPE.error);
 		return;
 	}
-	ElNotification(
-			{
-				title: '成功！',
-				message: '注册成功！请登录！',
-				type: 'success',
-				duration: 1000
-			}
-	);
+	showNotification('成功', '注册成功！请登录！');
 	await router.push('/login');
 }
 

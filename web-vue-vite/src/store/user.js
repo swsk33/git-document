@@ -11,7 +11,7 @@ export const useUserStore = defineStore('user', {
 			 */
 			userData: undefined,
 			/**
-			 * 用户角色列表
+			 * 全部用户角色列表
 			 */
 			roleList: []
 		};

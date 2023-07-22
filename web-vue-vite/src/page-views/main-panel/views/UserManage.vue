@@ -68,7 +68,7 @@
 				<div class="role">
 					<div class="text">角色：</div>
 					<el-radio-group v-model="addUserData.role.id" class="input">
-						<el-radio v-for="item in userStore.roleList" :label="item.id" size="large">{{ item.showName }}</el-radio>
+						<el-radio v-for="item in availableRole" :label="item.id" size="large">{{ item.showName }}</el-radio>
 					</el-radio-group>
 				</div>
 			</template>
@@ -85,6 +85,7 @@ import { sendRequest, REQUEST_METHOD } from '../../../utils/request';
 import { ArrowDown } from '@element-plus/icons-vue';
 import { onBeforeMount, reactive, ref } from 'vue';
 import { parseAvatarURL, REQUEST_PREFIX } from '../../../param/request-prefix';
+import { MESSAGE_TYPE, showNotification } from '../../../utils/message';
 
 // 组件引入
 import InfoDialog from '../components/InfoDialog.vue';
@@ -95,15 +96,27 @@ const addUserAvatar = ref(null);
 
 // pinia
 import { useUserStore } from '../../../store/user';
-import { MESSAGE_TYPE, showNotification } from '../../../utils/message';
 
 const userStore = useUserStore();
 
-// 是否加载完成
+/**
+ * 是否加载完成
+ */
 const loadingDone = ref(false);
-// 用户列表
+
+/**
+ * 用户列表
+ */
 const userList = ref([]);
-// 添加的用户信息
+
+/**
+ * 可用于添加新用户的角色
+ */
+const availableRole = ref([]);
+
+/**
+ * 添加的用户信息
+ */
 const addUserData = reactive({
 	username: undefined,
 	password: undefined,
@@ -187,6 +200,9 @@ async function addUser() {
 onBeforeMount(async () => {
 	await getUserList();
 	await userStore.getRoleList();
+	// 把全部角色列表先复制到可用角色列表中，并删除第一个预留管理员角色
+	availableRole.value = [...userStore.roleList];
+	availableRole.value.shift();
 });
 </script>
 

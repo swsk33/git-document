@@ -22,27 +22,40 @@ import { ref, reactive, shallowRef } from 'vue';
 import { Lock, Message, Coin } from '@element-plus/icons-vue';
 import { REQUEST_METHOD, sendRequest } from '../../../utils/request';
 import { REQUEST_PREFIX } from '../../../param/request-prefix';
-import { ElNotification } from 'element-plus';
+import { MESSAGE_TYPE, showNotification } from '../../../utils/message';
 
 const router = useRouter();
 
-// 图标
+/**
+ * 图标
+ */
 const icons = reactive({
 	lock: shallowRef(Lock),
 	message: shallowRef(Message),
 	coin: shallowRef(Coin)
 });
 
-// 要重置密码的用户信息
+/**
+ * 要重置密码的用户信息
+ */
 const resetUser = reactive({
 	email: undefined,
 	password: undefined
 });
 
-// 验证码
+/**
+ * 验证码
+ */
 const code = ref(undefined);
-// 验证码按钮是否可用
+
+/**
+ * 验证码按钮是否可用
+ */
 const sendCodeEnable = ref(true);
+
+/**
+ * 验证码按钮文字
+ */
 const sendCodeText = ref('发送验证码');
 
 /**
@@ -51,30 +64,15 @@ const sendCodeText = ref('发送验证码');
 async function sendCode() {
 	// 检验空
 	if (resetUser.email === undefined || resetUser.email === '') {
-		ElNotification({
-			title: '错误！',
-			message: '邮箱不能为空！',
-			type: 'error',
-			duration: 1000
-		});
+		showNotification('错误', '邮箱不能为空！', MESSAGE_TYPE.error);
 		return;
 	}
 	const response = await sendRequest(REQUEST_PREFIX.EMAIL + 'password-reset/' + resetUser.email, REQUEST_METHOD.GET);
 	if (!response.success) {
-		ElNotification({
-			title: '错误！',
-			message: response.message,
-			type: 'error',
-			duration: 1000
-		});
+		showNotification('错误', response.message, MESSAGE_TYPE.error);
 		return;
 	}
-	ElNotification({
-		title: '成功！',
-		message: response.message,
-		type: 'success',
-		duration: 1000
-	});
+	showNotification('成功', response.message);
 	// 禁用按钮60s
 	let time = ref(60);
 	sendCodeEnable.value = false;
@@ -96,30 +94,15 @@ async function sendCode() {
 async function resetPassword() {
 // 检验空
 	if (resetUser.password === undefined || code.value === undefined || resetUser.password === '' || code.value === '') {
-		ElNotification({
-			title: '错误！',
-			message: '新密码或者验证码不能为空！',
-			type: 'error',
-			duration: 1000
-		});
+		showNotification('错误', '新密码或者验证码不能为空！', MESSAGE_TYPE.error);
 		return;
 	}
 	const response = await sendRequest(REQUEST_PREFIX.USER + 'reset-password/' + code.value, REQUEST_METHOD.POST, resetUser);
 	if (!response.success) {
-		ElNotification({
-			title: '错误！',
-			message: response.message,
-			type: 'error',
-			duration: 1000
-		});
+		showNotification('错误', response.message, MESSAGE_TYPE.error);
 		return;
 	}
-	ElNotification({
-		title: '成功！',
-		message: response.message,
-		type: 'success',
-		duration: 1000
-	});
+	showNotification('成功', response.message);
 	await router.push('/login');
 }
 </script>

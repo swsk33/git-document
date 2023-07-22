@@ -2,7 +2,8 @@
 insert into "role" ("name", "show_name", "gmt_created", "gmt_modified")
 values ('ROLE_PRESERVE_ADMIN', '预留管理员', now(), now()), -- id为1，预留管理员
 	   ('ROLE_ADMIN', '管理员', now(), now()),              -- id为2，管理员
-	   ('ROLE_MEMBER', '团队成员', now(), now()); -- id为3，团队成员
+	   ('ROLE_MEMBER', '团队成员', now(), now()),           -- id为3，团队成员
+	   ('ROLE_WRITER', '写作者', now(), now()); -- id为4，写作者
 
 insert into "permission"("name", "show_name", "gmt_created", "gmt_modified")
 values ('edit_user', '编辑用户', now(), now()),                -- id为1，增加或者编辑用户
@@ -22,7 +23,9 @@ values (1, 1),
 	   (2, 2),
 	   (2, 3),
 	   (2, 4),
-	   (3, 4);
+	   (3, 4),
+	   (4, 2),
+	   (4, 4);
 
 -- 初始管理员账户，用户名：admin，密码：789101112
 insert into "user" ("username", "password", "nickname", "email", "role_id", "setting_id", "gmt_created", "gmt_modified")
