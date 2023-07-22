@@ -16,6 +16,7 @@
 # Docker
 /dockerfile/*.tar
 /dockerfile/*.tar.xz
+/dockerfile/*.jar
 
 # 临时文件
 /server-springboot/images/
