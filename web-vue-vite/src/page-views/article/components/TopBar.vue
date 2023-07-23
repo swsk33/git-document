@@ -113,8 +113,8 @@ watch(() => themeStore.isNight, () => {
 		position: absolute;
 		display: none;
 		left: 1.5vh;
-		width: 3.5vh;
-		height: 3.5vh;
+		width: 4vh;
+		height: 4vh;
 	}
 
 	.switch-article {

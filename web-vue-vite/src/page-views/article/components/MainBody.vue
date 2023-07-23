@@ -446,7 +446,7 @@ onUpdated(() => {
 
 		// 加粗字体和斜体调整
 		strong, em {
-			padding-bottom: 2px;
+			padding-bottom: 1px;
 		}
 
 		// 调整一号标题代码样式

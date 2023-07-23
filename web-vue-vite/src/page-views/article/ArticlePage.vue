@@ -105,7 +105,7 @@ onMounted(() => {
 	.page {
 		.top-bar {
 			.show-menu-button {
-				display: block;
+				display: flex;
 			}
 
 			.switch-article {
@@ -147,6 +147,11 @@ onMounted(() => {
 					.code-language, .copy-button {
 						font-size: 15px;
 					}
+				}
+
+				// 加粗字体和斜体调整
+				strong, em {
+					padding-bottom: 0;
 				}
 			}
 		}
