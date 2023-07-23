@@ -11,25 +11,24 @@
 
 GitDocument是一个轻量的团队文档管理和查看工具，部署之后，完全使用Git来管理团队的文档，并在线浏览，文档全部为Markdown文件形式。
 
+**登录界面**
+
 ![image-20230722233254043](https://swsk33-note.oss-cn-shanghai.aliyuncs.com/undefinedimage-20230722233254043.png)
 
-<center>登录界面</center>
-
+**主界面**
 ![image-20230722233320954](https://swsk33-note.oss-cn-shanghai.aliyuncs.com/undefinedimage-20230722233320954.png)
 
-<center>主界面</center>
+**在线文档目录**
 
 ![image-20230722233424397](https://swsk33-note.oss-cn-shanghai.aliyuncs.com/undefinedimage-20230722233424397.png)
 
-<center>在线文档目录</center>
+**文档浏览界面（白天主题）**
 
 ![image-20230722233520467](https://swsk33-note.oss-cn-shanghai.aliyuncs.com/undefinedimage-20230722233520467.png)
 
-<center>文档浏览界面（白天主题）</center>
+**文档浏览界面（夜晚主题）**
 
 ![image-20230722233531742](https://swsk33-note.oss-cn-shanghai.aliyuncs.com/undefinedimage-20230722233531742.png)
-
-<center>文档浏览界面（夜晚主题）</center>
 
 ### (1) 主要功能
 

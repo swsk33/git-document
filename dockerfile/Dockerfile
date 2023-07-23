@@ -39,6 +39,8 @@ ENV EMAIL_USER=""
 ENV EMAIL_PASSWORD=""
 # 容器内22端口映射至的宿主机端口配置
 ENV HOST_SSH_PORT=23
+# 延迟启动时间（秒）以等待数据库和中间件启动完毕
+ENV DELAY_START=5
 # 需映射至宿主机23端口
 EXPOSE 22
 # 配置数据卷

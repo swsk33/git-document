@@ -17,6 +17,8 @@ services:
       - EMAIL_PASSWORD=授权码
       # 映射的宿主机SSH端口
       - HOST_SSH_PORT=23
+      # 设定延迟启动时长（秒）以等待数据库和消息队列启动完成后再启动
+      - DELAY_START=5
     volumes:
       - git-doc-nginx-config:/etc/nginx
       - git-doc-nginx-log:/var/log/nginx

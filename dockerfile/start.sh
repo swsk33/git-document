@@ -1,8 +1,8 @@
 #!/bin/bash
 /etc/init.d/ssh restart
 nginx
-echo 延迟5秒以等待其它服务启动...
-sleep 5
+echo 延迟${DELAY_START}秒以等待其它服务启动...
+sleep $DELAY_START
 exec sudo -u git java -jar \
 	-Dspring.datasource.url="jdbc:postgresql://$POSTGRE_HOST:$POSTGRE_PORT/git_doc?TimeZone=Asia/Shanghai" \
 	-Dspring.datasource.username=$POSTGRE_USER \
