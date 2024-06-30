@@ -3,6 +3,9 @@ package com.gitee.swsk33.gitdocument.dataobject;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.gitee.swsk33.gitdocument.param.ValidationRules;
+import com.mybatisflex.annotation.Id;
+import com.mybatisflex.annotation.KeyType;
+import com.mybatisflex.annotation.Table;
 import lombok.Data;
 
 import jakarta.validation.constraints.*;
@@ -14,12 +17,14 @@ import java.time.LocalDateTime;
  * 用户类
  */
 @Data
+@Table("user")
 @JsonIgnoreProperties(allowSetters = true, value = {"password"})
 public class User implements Serializable {
 
 	/**
 	 * 主键id
 	 */
+	@Id(keyType = KeyType.Auto)
 	@NotNull(groups = ValidationRules.DataUpdate.class, message = "用户id不能为空！")
 	private Integer id;
 

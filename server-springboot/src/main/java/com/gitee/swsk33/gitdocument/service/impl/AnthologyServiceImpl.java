@@ -145,7 +145,7 @@ public class AnthologyServiceImpl implements AnthologyService {
 		// 加入监听
 		listenerContext.addMonitor(anthology.getId(), repoPath);
 		// 存入数据库
-		anthologyDAO.add(anthology);
+		anthologyDAO.insert(anthology);
 		// 发送通知
 		// 获取订阅新文集创建通知的用户
 		List<User> receivers = userDAO.getByReceiveCreate();
@@ -186,7 +186,7 @@ public class AnthologyServiceImpl implements AnthologyService {
 		}
 		log.info("成功删除文集仓库：" + getAnthology.getRepoPath());
 		// 从数据库移除
-		anthologyDAO.delete(id);
+		anthologyDAO.deleteById(id);
 		return Result.resultSuccess("删除文集成功！");
 	}
 

@@ -1,6 +1,6 @@
 # 服务端配置
 server:
-  port: 8800
+  port: ${GITDOC_PORT:8800}
   tomcat:
     max-http-form-post-size: 20MB
 
@@ -17,21 +17,21 @@ spring:
       max-request-size: 20MB
   # PostgreSQL数据库
   datasource:
-    url: "jdbc:postgresql://127.0.0.1:5432/git_doc?TimeZone=Asia/Shanghai"
-    username: "用户名"
-    password: "密码"
+    url: "jdbc:postgresql://${GITDOC_DB_HOST:127.0.0.1}:${GITDOC_DB_PORT:5432}/${GITDOC_DB_NAME:git_doc}?TimeZone=Asia/Shanghai"
+    username: "${GITDOC_DB_USER:postgres}"
+    password: "${GITDOC_DB_PASSWORD:123456}"
   data:
     # Redis
     redis:
-      host: 127.0.0.1
-      port: 6379
-      password: "密码"
+      host: "${GITDOC_REDIS_HOST:127.0.0.1}"
+      port: ${GITDOC_REDIS_PORT:6379}
+      password: "${GITDOC_REDIS_PASSWORD:123456}"
   # RabbitMQ
   rabbitmq:
-    host: 127.0.0.1
-    port: 5672
-    username: "用户名"
-    password: "密码"
+    host: ${GITDOC_MQ_HOST:127.0.0.1}
+    port: ${GITDOC_MQ_PORT:5672}
+    username: "${GITDOC_MQ_USER}"
+    password: "${GITDOC_MQ_PASSWORD}"
 
 # Sa-Token配置
 sa-token:
@@ -52,9 +52,9 @@ io:
       # code-post邮件配置
       code-post:
         core:
-          smtp-host: "smtp.163.com"
-          email: "你的邮箱"
-          password: "你的邮箱密码（或者是授权码）"
+          smtp-host: "${GITDOC_MAIL_SMTP_HOST:smtp.163.com}"
+          email: "${GITDOC_MAIL_USER}"
+          password: "${GITDOC_MAIL_PASSKEY}"
           code-storage: "redis"
           site-name: "GitDocument"
           template-path: "classpath:/templates"
@@ -80,6 +80,6 @@ com:
     swsk33:
       git-doc:
         # 宿主机端口
-        host-port: 23
+        host-port: ${GITDOC_SSH_PORT:23}
         # 存放所有文集仓库的目录，尽量不要修改
-        # repo-path: ""
+        # repo-path: "${GITDOC_REPO_PATH}"

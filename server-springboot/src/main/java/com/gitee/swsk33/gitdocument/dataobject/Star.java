@@ -5,6 +5,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.gitee.swsk33.gitdocument.param.ValidationRules;
 import com.gitee.swsk33.gitdocument.serializer.LongToStringSerializer;
+import com.mybatisflex.annotation.Id;
+import com.mybatisflex.annotation.KeyType;
+import com.mybatisflex.annotation.Table;
+import com.mybatisflex.core.keygen.KeyGenerators;
 import lombok.Data;
 
 import jakarta.validation.constraints.NotEmpty;
@@ -17,12 +21,14 @@ import java.time.LocalDateTime;
  * 星星（收藏）
  */
 @Data
+@Table("star")
 @JsonIgnoreProperties(allowSetters = true, value = {"user"})
 public class Star implements Serializable {
 
 	/**
 	 * 主键id
 	 */
+	@Id(keyType = KeyType.Generator, value = KeyGenerators.snowFlakeId)
 	@JsonSerialize(using = LongToStringSerializer.class)
 	@NotNull(groups = ValidationRules.DataUpdate.class, message = "星星id不能为空！")
 	private Long id;

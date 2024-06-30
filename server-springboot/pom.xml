@@ -4,21 +4,22 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.1.1</version>
+		<version>3.3.1</version>
 		<relativePath/>
 	</parent>
 	<groupId>com.gitee.swsk33</groupId>
 	<artifactId>git-document</artifactId>
-	<version>3.0.1</version>
+	<version>3.1.0</version>
 	<name>git-document</name>
 	<description>基于Git版本管理工具的轻便的文档管理系统，使用Git管理Markdown文档</description>
 
 	<properties>
-		<java.version>17</java.version>
+		<java.version>21</java.version>
 		<maven.compiler.source>${java.version}</maven.compiler.source>
 		<maven.compiler.targer>${java.version}</maven.compiler.targer>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<sa-token.version>1.35.0.RC</sa-token.version>
+		<sa-token.version>1.38.0</sa-token.version>
+		<mybatis-flex.version>1.9.3</mybatis-flex.version>
 	</properties>
 
 	<dependencies>
@@ -34,11 +35,19 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 
-		<!-- MyBatis -->
+		<!-- MyBatis-Flex -->
 		<dependency>
-			<groupId>org.mybatis.spring.boot</groupId>
-			<artifactId>mybatis-spring-boot-starter</artifactId>
-			<version>3.0.2</version>
+			<groupId>com.mybatis-flex</groupId>
+			<artifactId>mybatis-flex-spring-boot3-starter</artifactId>
+			<version>${mybatis-flex.version}</version>
+		</dependency>
+
+		<!-- MyBatis-Flex注解处理器 -->
+		<dependency>
+			<groupId>com.mybatis-flex</groupId>
+			<artifactId>mybatis-flex-processor</artifactId>
+			<version>${mybatis-flex.version}</version>
+			<scope>provided</scope>
 		</dependency>
 
 		<!-- PostgreSQL驱动 -->
@@ -106,35 +115,35 @@
 		<dependency>
 			<groupId>cn.hutool</groupId>
 			<artifactId>hutool-all</artifactId>
-			<version>5.8.20</version>
+			<version>5.8.28</version>
 		</dependency>
 
 		<!-- JGit操作Git仓库 -->
 		<dependency>
 			<groupId>org.eclipse.jgit</groupId>
 			<artifactId>org.eclipse.jgit</artifactId>
-			<version>6.6.0.202305301015-r</version>
+			<version>6.10.0.202406032230-r</version>
 		</dependency>
 
 		<!-- SQL自动初始化 -->
 		<dependency>
 			<groupId>io.github.swsk33</groupId>
 			<artifactId>sql-initialize-spring-boot-starter</artifactId>
-			<version>1.1.0</version>
+			<version>2.2.0</version>
 		</dependency>
 
 		<!-- 邮件验证码框架 -->
 		<dependency>
 			<groupId>io.github.swsk33</groupId>
 			<artifactId>code-post-spring-boot-starter</artifactId>
-			<version>1.0.0</version>
+			<version>1.2.0</version>
 		</dependency>
 
 		<!-- 小文件上传框架 -->
 		<dependency>
 			<groupId>io.github.swsk33</groupId>
 			<artifactId>file-lift-spring-boot-starter</artifactId>
-			<version>1.0.0</version>
+			<version>1.2.1</version>
 		</dependency>
 	</dependencies>
 
