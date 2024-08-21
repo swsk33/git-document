@@ -1,6 +1,6 @@
 # 服务端配置
 server:
-  port: ${GITDOC_PORT:8800}
+  port: ${GITDOC_PORT:5354}
   tomcat:
     max-http-form-post-size: 20MB
 
@@ -26,12 +26,6 @@ spring:
       host: "${GITDOC_REDIS_HOST:127.0.0.1}"
       port: ${GITDOC_REDIS_PORT:6379}
       password: "${GITDOC_REDIS_PASSWORD:123456}"
-  # RabbitMQ
-  rabbitmq:
-    host: ${GITDOC_MQ_HOST:127.0.0.1}
-    port: ${GITDOC_MQ_PORT:5672}
-    username: "${GITDOC_MQ_USER}"
-    password: "${GITDOC_MQ_PASSWORD}"
 
 # Sa-Token配置
 sa-token:
@@ -48,6 +42,7 @@ io:
       sql-init:
         sql-paths:
           - "classpath:/sql-init/init-table.sql"
+          - "classpath:/sql-init/init-constraint.sql"
           - "classpath:/sql-init/init-data.sql"
       # code-post邮件配置
       code-post:
@@ -82,4 +77,4 @@ com:
         # 宿主机端口
         host-port: ${GITDOC_SSH_PORT:23}
         # 存放所有文集仓库的目录，尽量不要修改
-        # repo-path: "${GITDOC_REPO_PATH}"
+        repo-path: "${GITDOC_REPO_PATH}"

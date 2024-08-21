@@ -8,27 +8,27 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 /**
- * 用户偏好设置
+ * 用户登录记录
  */
 @Data
-@Table("setting")
-public class Setting {
+@Table("login_record")
+public class LoginRecord {
 
 	/**
-	 * 设置对应的用户id
+	 * 关联的用户id
 	 */
 	@Id(keyType = KeyType.None)
 	private Integer userId;
 
 	/**
-	 * 在收藏的文集更新时是否接收通知
+	 * 上一次登录的IP地址
 	 */
-	private Boolean receiveUpdateEmail = true;
+	private String ip;
 
 	/**
-	 * 在有新的文集创建发布时是否接收通知
+	 * 上一次登录位置
 	 */
-	private Boolean receiveNewEmail = true;
+	private String location;
 
 	/**
 	 * 创建时间

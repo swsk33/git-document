@@ -1,13 +1,12 @@
 package com.gitee.swsk33.gitdocument.dataobject;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mybatisflex.annotation.Id;
 import com.mybatisflex.annotation.KeyType;
+import com.mybatisflex.annotation.RelationManyToMany;
 import com.mybatisflex.annotation.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -16,7 +15,7 @@ import java.util.List;
  */
 @Data
 @Table("permission")
-public class Permission implements Serializable {
+public class Permission {
 
 	/**
 	 * 主键id
@@ -38,18 +37,19 @@ public class Permission implements Serializable {
 	/**
 	 * 拥有该权限的角色
 	 */
+	@RelationManyToMany(joinTable = "role_permission",
+			selfField = "id", joinSelfColumn = "permission_id",
+			targetField = "id", joinTargetColumn = "role_id")
 	private List<Role> roles;
 
 	/**
 	 * 创建时间
 	 */
-	@JsonIgnore
 	private LocalDateTime gmtCreated;
 
 	/**
 	 * 修改时间
 	 */
-	@JsonIgnore
 	private LocalDateTime gmtModified;
 
 }

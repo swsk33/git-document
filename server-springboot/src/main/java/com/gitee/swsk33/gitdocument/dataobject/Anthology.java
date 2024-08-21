@@ -1,6 +1,5 @@
 package com.gitee.swsk33.gitdocument.dataobject;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.gitee.swsk33.gitdocument.param.AnthologyStatus;
@@ -8,6 +7,7 @@ import com.gitee.swsk33.gitdocument.param.ValidationRules;
 import com.gitee.swsk33.gitdocument.serializer.LongToStringSerializer;
 import com.mybatisflex.annotation.Id;
 import com.mybatisflex.annotation.KeyType;
+import com.mybatisflex.annotation.RelationOneToMany;
 import com.mybatisflex.annotation.Table;
 import com.mybatisflex.core.keygen.KeyGenerators;
 import jakarta.validation.constraints.NotNull;
@@ -15,16 +15,16 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 文章集
  */
 @Data
 @Table("anthology")
-@JsonIgnoreProperties(allowSetters = true, value = {"latestCommitId"})
-public class Anthology implements Serializable {
+@JsonIgnoreProperties(allowSetters = true, value = {"latestCommit"})
+public class Anthology {
 
 	/**
 	 * 主键id
@@ -65,9 +65,9 @@ public class Anthology implements Serializable {
 	private String repoPath;
 
 	/**
-	 * 最后一次的提交id，新仓库为null
+	 * 最后一次的Git Commit提交id，新仓库为null
 	 */
-	private String latestCommitId;
+	private String latestCommit;
 
 	/**
 	 * 文集仓库状态
@@ -75,15 +75,19 @@ public class Anthology implements Serializable {
 	private AnthologyStatus status;
 
 	/**
+	 * 该文集所包含的文章列表
+	 */
+	@RelationOneToMany(selfField = "id", targetField = "anthologyId")
+	private List<Article> articles;
+
+	/**
 	 * 创建时间
 	 */
-	@JsonIgnore
 	private LocalDateTime gmtCreated;
 
 	/**
 	 * 修改时间
 	 */
-	@JsonIgnore
 	private LocalDateTime gmtModified;
 
 }

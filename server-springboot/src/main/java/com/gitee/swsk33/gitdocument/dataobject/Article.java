@@ -1,15 +1,14 @@
 package com.gitee.swsk33.gitdocument.dataobject;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.gitee.swsk33.gitdocument.serializer.LongToStringSerializer;
+import com.mybatisflex.annotation.Column;
 import com.mybatisflex.annotation.Id;
 import com.mybatisflex.annotation.KeyType;
 import com.mybatisflex.annotation.Table;
 import com.mybatisflex.core.keygen.KeyGenerators;
 import lombok.Data;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
@@ -17,7 +16,7 @@ import java.time.LocalDateTime;
  */
 @Data
 @Table("article")
-public class Article implements Serializable {
+public class Article {
 
 	/**
 	 * 主键id
@@ -34,23 +33,22 @@ public class Article implements Serializable {
 	/**
 	 * 文章内容
 	 */
+	@Column(ignore = true)
 	private String content;
 
 	/**
-	 * 所属文集
+	 * 所属文集id（外键）
 	 */
-	private Anthology anthology;
+	private Long anthologyId;
 
 	/**
 	 * 创建时间
 	 */
-	@JsonIgnore
 	private LocalDateTime gmtCreated;
 
 	/**
 	 * 修改时间
 	 */
-	@JsonIgnore
 	private LocalDateTime gmtModified;
 
 }

@@ -1,5 +1,5 @@
 -- 初始化表
-drop table if exists "user", "setting", "role", "role_permission", "permission", "public_key", "article", "anthology", "star", "system_setting";
+drop table if exists "role", "permission", "role_permission", "user", "setting", "login_record", "public_key", "anthology", "article", "star", "system_setting";
 
 -- 角色
 create table "role"
@@ -26,20 +26,9 @@ create table "role_permission"
 (
 	"role_id"       int,
 	"permission_id" int,
-	primary key ("role_id", "permission_id"),
-	foreign key ("role_id") references "role" ("id") on delete cascade on update cascade,
-	foreign key ("permission_id") references "permission" ("id") on delete cascade on update cascade
+	primary key ("role_id", "permission_id")
 );
 
--- 用户偏好设置
-create table "setting"
-(
-	"id"                   serial primary key,
-	"receive_update_email" boolean not null,
-	"receive_new_email"    boolean not null,
-	"gmt_created"          timestamp,
-	"gmt_modified"         timestamp
-);
 
 -- 用户
 create table "user"
@@ -50,37 +39,53 @@ create table "user"
 	"nickname"     varchar(32) not null,
 	"avatar"       varchar(1024),
 	"email"        varchar(64) not null unique,
-	"setting_id"   int         not null,
 	"role_id"      int         not null,
 	"gmt_created"  timestamp,
-	"gmt_modified" timestamp,
-	foreign key ("setting_id") references "setting" ("id") on delete cascade on update cascade,
-	foreign key ("role_id") references "role" ("id") on delete cascade on update cascade
+	"gmt_modified" timestamp
+);
+
+-- 用户偏好设置
+create table "setting"
+(
+	"user_id"              int primary key,
+	"receive_update_email" boolean not null,
+	"receive_new_email"    boolean not null,
+	"gmt_created"          timestamp,
+	"gmt_modified"         timestamp
+);
+
+-- 用户的登录记录
+create table "login_record"
+(
+	"user_id"      int primary key,
+	"ip"           varchar(16),
+	"location"     varchar(16),
+	"gmt_created"  timestamp,
+	"gmt_modified" timestamp
 );
 
 -- 公钥信息
 create table "public_key"
 (
 	"id"           serial primary key,
-	"line"         int not null,
-	"user_id"      int not null,
+	"content"      varchar(1024) not null,
+	"user_id"      int           not null,
 	"gmt_created"  timestamp,
-	"gmt_modified" timestamp,
-	foreign key ("user_id") references "user" ("id")
+	"gmt_modified" timestamp
 );
 
 -- 文集
 create table "anthology"
 (
-	"id"               bigint primary key,
-	"name"             varchar(64) unique not null,
-	"show_name"        varchar(64)        not null,
-	"cover"            varchar(1024),
-	"repo_path"        varchar(2048)      not null,
-	"latest_commit_id" varchar(40),
-	"status"           varchar(12)        not null,
-	"gmt_created"      timestamp,
-	"gmt_modified"     timestamp
+	"id"            bigint primary key,
+	"name"          varchar(64) unique not null,
+	"show_name"     varchar(64)        not null,
+	"cover"         varchar(1024),
+	"repo_path"     varchar(2048)      not null,
+	"latest_commit" varchar(48),
+	"status"        varchar(12)        not null,
+	"gmt_created"   timestamp,
+	"gmt_modified"  timestamp
 );
 
 -- 文章索引信息
@@ -90,8 +95,7 @@ create table "article"
 	"file_path"    varchar(2048) not null,
 	"anthology_id" bigint        not null,
 	"gmt_created"  timestamp,
-	"gmt_modified" timestamp,
-	foreign key ("anthology_id") references "anthology" ("id") on delete cascade on update cascade
+	"gmt_modified" timestamp
 );
 
 -- 星星（收藏）
@@ -102,9 +106,7 @@ create table "star"
 	"anthology_id" bigint not null,
 	"gmt_created"  timestamp,
 	"gmt_modified" timestamp,
-	unique ("user_id", "anthology_id"),
-	foreign key ("user_id") references "user" ("id") on delete cascade on update cascade,
-	foreign key ("anthology_id") references "anthology" ("id") on delete cascade on update cascade
+	unique ("user_id", "anthology_id")
 );
 
 -- 系统全局设置

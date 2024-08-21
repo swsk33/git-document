@@ -1,25 +1,21 @@
 package com.gitee.swsk33.gitdocument.dataobject;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.gitee.swsk33.gitdocument.param.ValidationRules;
-import com.mybatisflex.annotation.Id;
-import com.mybatisflex.annotation.KeyType;
-import com.mybatisflex.annotation.Table;
+import com.mybatisflex.annotation.*;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 
-import jakarta.validation.constraints.*;
-
-import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 用户类
  */
 @Data
 @Table("user")
-@JsonIgnoreProperties(allowSetters = true, value = {"password"})
-public class User implements Serializable {
+@JsonIgnoreProperties(allowSetters = true, value = {"password", "roleId"})
+public class User {
 
 	/**
 	 * 主键id
@@ -63,26 +59,49 @@ public class User implements Serializable {
 	private String email;
 
 	/**
-	 * 偏好设置
+	 * 角色id（外键）
 	 */
-	private Setting setting;
+	private Integer roleId;
 
 	/**
 	 * 角色
 	 */
 	@NotNull(groups = ValidationRules.DataAdd.class, message = "角色不能为空！")
+	@RelationManyToOne(selfField = "roleId", targetField = "id")
 	private Role role;
+
+	/**
+	 * 用户上一次登录记录
+	 */
+	@RelationOneToOne(selfField = "id", targetField = "userId")
+	private LoginRecord loginRecord;
+
+	/**
+	 * 偏好设置
+	 */
+	@RelationOneToOne(selfField = "id", targetField = "userId")
+	private Setting setting;
+
+	/**
+	 * 用户的收藏
+	 */
+	@RelationOneToMany(selfField = "id", targetField = "userId")
+	private List<Star> stars;
+
+	/**
+	 * 用户的公钥
+	 */
+	@RelationOneToMany(selfField = "id", targetField = "userId")
+	private List<PublicKey> keys;
 
 	/**
 	 * 创建时间
 	 */
-	@JsonIgnore
 	private LocalDateTime gmtCreated;
 
 	/**
 	 * 修改时间
 	 */
-	@JsonIgnore
 	private LocalDateTime gmtModified;
 
 }

@@ -11,9 +11,6 @@ values ('edit_user', '编辑用户', now(), now()),                -- id为1，�
 	   ('alter_system_setting', '修改系统设置', now(), now()), -- id为3，修改系统设置
 	   ('browse_article', '浏览内部文章', now(), now()); -- id为4，浏览内部文章
 
-insert into "setting" ("receive_update_email", "receive_new_email", "gmt_created", "gmt_modified")
-values (true, true, now(), now()); -- id为1
-
 insert into "role_permission"
 values (1, 1),
 	   (1, 2),
@@ -27,9 +24,13 @@ values (1, 1),
 	   (4, 2),
 	   (4, 4);
 
--- 初始管理员账户，用户名：admin，密码：789101112
-insert into "user" ("username", "password", "nickname", "email", "role_id", "setting_id", "gmt_created", "gmt_modified")
-values ('admin', '$2a$10$DnVDUKyYw77O5VTbQsi7XOktMOGUajGwq1xkoDn2BM6fKvMCtZNtu', 'Administrator', 'example@example.com', 1, 1, now(), now());
+-- 初始化管理员账户，用户名：admin，密码：789101112
+insert into "user" ("username", "password", "nickname", "email", "role_id", "gmt_created", "gmt_modified")
+values ('admin', '$2a$10$DnVDUKyYw77O5VTbQsi7XOktMOGUajGwq1xkoDn2BM6fKvMCtZNtu', 'Administrator', 'example@example.com', 1, now(), now());
+
+-- 初始化管理员账户的设置
+insert into "setting"
+values (1, true, true, now(), now());
 
 -- 初始化系统设置
 insert into "system_setting"
