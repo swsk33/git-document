@@ -29,5 +29,4 @@ public class SystemSettingKey {
 	 */
 	public static final String MAIN_BACKGROUND_IMAGE = "main_background_image";
 
-
 }

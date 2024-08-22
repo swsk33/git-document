@@ -1,44 +1,15 @@
 package com.gitee.swsk33.gitdocument.dao;
 
 import com.gitee.swsk33.gitdocument.dataobject.Star;
+import com.mybatisflex.core.BaseMapper;
+import com.mybatisflex.core.query.QueryWrapper;
 import org.apache.ibatis.annotations.Mapper;
 
-import java.util.List;
+import static com.gitee.swsk33.gitdocument.dataobject.table.StarTableDef.STAR;
+import static com.mybatisflex.core.query.QueryMethods.count;
 
 @Mapper
-public interface StarDAO {
-
-	/**
-	 * 插入一个收藏信息
-	 *
-	 * @param star 收藏信息
-	 * @return 插入记录条数
-	 */
-	int add(Star star);
-
-	/**
-	 * 删除一个收藏信息
-	 *
-	 * @param id 收藏信息id
-	 * @return 删除记录条数
-	 */
-	int delete(long id);
-
-	/**
-	 * 根据id获取收藏信息
-	 *
-	 * @param id 收藏信息id
-	 * @return 收藏信息
-	 */
-	Star getById(long id);
-
-	/**
-	 * 获取一个用户的全部收藏信息
-	 *
-	 * @param userId 用户id
-	 * @return 收藏信息列表
-	 */
-	List<Star> getByUserId(int userId);
+public interface StarDAO extends BaseMapper<Star> {
 
 	/**
 	 * 获得一个文集的收藏数
@@ -46,6 +17,8 @@ public interface StarDAO {
 	 * @param anthologyId 文集id
 	 * @return 对应文集的收藏数量
 	 */
-	Integer getAnthologyStarCount(long anthologyId);
+	default Integer getAnthologyStarCount(long anthologyId) {
+		return selectObjectByQueryAs(QueryWrapper.create().select(count(STAR.ALL_COLUMNS)).from(STAR).where(STAR.ANTHOLOGY_ID.eq(anthologyId)), Integer.class);
+	}
 
 }

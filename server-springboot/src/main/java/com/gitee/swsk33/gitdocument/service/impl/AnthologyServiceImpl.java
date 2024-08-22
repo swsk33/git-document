@@ -14,8 +14,8 @@ import com.gitee.swsk33.gitdocument.dataobject.User;
 import com.gitee.swsk33.gitdocument.git.GitCommitDAO;
 import com.gitee.swsk33.gitdocument.git.GitFileDAO;
 import com.gitee.swsk33.gitdocument.git.GitRepositoryInfoDAO;
-import com.gitee.swsk33.gitdocument.message.CreateEmailMessage;
-import com.gitee.swsk33.gitdocument.model.CommitInfo;
+import com.gitee.swsk33.gitdocument.model.CreateEmailMessage;
+import com.gitee.swsk33.gitdocument.model.CommitRecord;
 import com.gitee.swsk33.gitdocument.model.Result;
 import com.gitee.swsk33.gitdocument.param.AnthologyStatus;
 import com.gitee.swsk33.gitdocument.param.PermissionName;
@@ -26,7 +26,6 @@ import com.gitee.swsk33.gitdocument.util.ClassExamine;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jgit.revwalk.RevCommit;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
@@ -62,9 +61,6 @@ public class AnthologyServiceImpl implements AnthologyService {
 	private ConfigProperties configProperties;
 
 	@Autowired
-	private RabbitTemplate rabbitTemplate;
-
-	@Autowired
 	private SystemSettingDAO systemSettingDAO;
 
 	@Autowired
@@ -84,7 +80,7 @@ public class AnthologyServiceImpl implements AnthologyService {
 		// 从数据库获取文集仓库信息
 		List<Anthology> anthologies;
 		try {
-			anthologies = anthologyDAO.getAll();
+			anthologies = anthologyDAO.selectAll();
 		} catch (Exception e) {
 			log.error("连接数据库失败！请检查配置！终止！");
 			return;
@@ -174,7 +170,7 @@ public class AnthologyServiceImpl implements AnthologyService {
 	@Override
 	public Result<Void> delete(long id) {
 		// 查找仓库
-		Anthology getAnthology = anthologyDAO.getById(id);
+		Anthology getAnthology = anthologyDAO.selectOneWithRelationsById(id);
 		if (getAnthology == null) {
 			return Result.resultFailed("待删除文集不存在！");
 		}
@@ -197,7 +193,7 @@ public class AnthologyServiceImpl implements AnthologyService {
 			return Result.resultFailed("不允许手动修改commit id！");
 		}
 		// 补全
-		Anthology getAnthology = anthologyDAO.getById(anthology.getId());
+		Anthology getAnthology = anthologyDAO.selectOneWithRelationsById(anthology.getId());
 		ClassExamine.objectOverlap(anthology, getAnthology);
 		// 检查封面是否修改，若修改删除原封面
 		if (!StrUtil.isEmpty(anthology.getCover()) && !anthology.getCover().equals(getAnthology.getCover())) {
@@ -213,7 +209,7 @@ public class AnthologyServiceImpl implements AnthologyService {
 	@SaCheckPermission(PermissionName.BROWSE_ARTICLE)
 	@Override
 	public Result<Anthology> getById(long id) {
-		Anthology getAnthology = anthologyDAO.getById(id);
+		Anthology getAnthology = anthologyDAO.selectOneWithRelationsById(id);
 		if (getAnthology == null) {
 			return Result.resultFailed("该文集不存在！");
 		}
@@ -225,17 +221,17 @@ public class AnthologyServiceImpl implements AnthologyService {
 
 	@SaCheckPermission(PermissionName.BROWSE_ARTICLE)
 	@Override
-	public Result<List<CommitInfo>> getAllCommits(long id) {
-		Anthology getAnthology = anthologyDAO.getById(id);
+	public Result<List<CommitRecord>> getAllCommits(long id) {
+		Anthology getAnthology = anthologyDAO.selectOneWithRelationsById(id);
 		if (getAnthology == null) {
 			return Result.resultFailed("文集不存在！");
 		}
 		List<RevCommit> getCommits = gitCommitDAO.getAllCommits(getAnthology.getRepoPath());
 		// 结果列表
-		List<CommitInfo> commitInfos = new ArrayList<>();
+		List<CommitRecord> commitRecords = new ArrayList<>();
 		// 填充信息
 		getCommits.forEach(item -> {
-			CommitInfo info = new CommitInfo();
+			CommitRecord info = new CommitRecord();
 			// 获取用户信息
 			User getUser = userDAO.getByUsernameOrEmail(item.getAuthorIdent().getEmailAddress());
 			if (getUser == null) {
@@ -245,15 +241,15 @@ public class AnthologyServiceImpl implements AnthologyService {
 			info.setCommitter(getUser);
 			info.setMessage(item.getFullMessage());
 			info.setTimestamp(item.getCommitTime());
-			commitInfos.add(info);
+			commitRecords.add(info);
 		});
-		return Result.resultSuccess("获取成功！", commitInfos);
+		return Result.resultSuccess("获取成功！", commitRecords);
 	}
 
 	@SaCheckPermission(PermissionName.BROWSE_ARTICLE)
 	@Override
 	public Result<List<Anthology>> getAll() {
-		List<Anthology> anthologies = anthologyDAO.getAll();
+		List<Anthology> anthologies = anthologyDAO.selectAll();
 		// 填充时间信息
 		anthologies.forEach(item -> {
 			RevCommit commit = gitCommitDAO.getHeadCommit(item.getRepoPath());
@@ -265,7 +261,7 @@ public class AnthologyServiceImpl implements AnthologyService {
 	@SaCheckPermission(PermissionName.BROWSE_ARTICLE)
 	@Override
 	public Result<byte[]> getImageData(long id, String imageFilePath) {
-		Anthology getAnthology = anthologyDAO.getById(id);
+		Anthology getAnthology = anthologyDAO.selectOneWithRelationsById(id);
 		if (getAnthology == null) {
 			return Result.resultFailed("文集不存在！");
 		}
@@ -282,7 +278,7 @@ public class AnthologyServiceImpl implements AnthologyService {
 	@SaCheckPermission(PermissionName.EDIT_ANTHOLOGY)
 	@Override
 	public Result<List<Anthology>> getAnthologyNotInDatabase() {
-		List<Anthology> anthologyListInDB = anthologyDAO.getAll();
+		List<Anthology> anthologyListInDB = anthologyDAO.selectAll();
 		List<Anthology> notInDB = new ArrayList<>();
 		Stream<File> files = Stream.of(new File(configProperties.getRepoPath()).listFiles());
 		files.filter(file -> {

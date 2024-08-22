@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 自定义sa-token框架用户权限获取
+ * 自定义Sa-Token框架用户权限获取
  */
 @Component
 public class StpInterFaceImpl implements StpInterface {

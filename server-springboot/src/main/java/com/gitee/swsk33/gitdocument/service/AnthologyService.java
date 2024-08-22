@@ -1,7 +1,7 @@
 package com.gitee.swsk33.gitdocument.service;
 
 import com.gitee.swsk33.gitdocument.dataobject.Anthology;
-import com.gitee.swsk33.gitdocument.model.CommitInfo;
+import com.gitee.swsk33.gitdocument.model.CommitRecord;
 import com.gitee.swsk33.gitdocument.model.Result;
 import org.springframework.stereotype.Service;
 
@@ -53,7 +53,7 @@ public interface AnthologyService {
 	 *
 	 * @param id 文集id
 	 */
-	Result<List<CommitInfo>> getAllCommits(long id);
+	Result<List<CommitRecord>> getAllCommits(long id);
 
 	/**
 	 * 获取全部文集列表

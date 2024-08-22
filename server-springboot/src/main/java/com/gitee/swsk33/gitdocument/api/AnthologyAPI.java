@@ -2,7 +2,7 @@ package com.gitee.swsk33.gitdocument.api;
 
 import cn.hutool.core.io.FileUtil;
 import com.gitee.swsk33.gitdocument.dataobject.Anthology;
-import com.gitee.swsk33.gitdocument.model.CommitInfo;
+import com.gitee.swsk33.gitdocument.model.CommitRecord;
 import com.gitee.swsk33.gitdocument.model.Result;
 import com.gitee.swsk33.gitdocument.param.ValidationRules;
 import com.gitee.swsk33.gitdocument.service.AnthologyService;
@@ -54,7 +54,7 @@ public class AnthologyAPI {
 	}
 
 	@GetMapping("/get-all-commits/{id}")
-	public Result<List<CommitInfo>> getAllCommits(@PathVariable long id) {
+	public Result<List<CommitRecord>> getAllCommits(@PathVariable long id) {
 		return anthologyService.getAllCommits(id);
 	}
 

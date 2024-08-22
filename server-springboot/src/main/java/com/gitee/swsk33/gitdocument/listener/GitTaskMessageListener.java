@@ -6,8 +6,8 @@ import com.gitee.swsk33.gitdocument.dao.AnthologyDAO;
 import com.gitee.swsk33.gitdocument.dao.ArticleDAO;
 import com.gitee.swsk33.gitdocument.dataobject.Anthology;
 import com.gitee.swsk33.gitdocument.dataobject.Article;
-import com.gitee.swsk33.gitdocument.message.GitCreateTaskMessage;
-import com.gitee.swsk33.gitdocument.message.GitUpdateTaskMessage;
+import com.gitee.swsk33.gitdocument.model.GitCreateTaskMessage;
+import com.gitee.swsk33.gitdocument.model.GitUpdateTaskMessage;
 import com.gitee.swsk33.gitdocument.model.ArticleDirectory;
 import com.gitee.swsk33.gitdocument.param.RabbitMessageQueue;
 import com.gitee.swsk33.gitdocument.strategy.context.FileChangeStrategyContext;
@@ -42,7 +42,7 @@ public class GitTaskMessageListener {
 	@RabbitListener(queues = RabbitMessageQueue.Queue.GIT_CREATE_TASK_QUEUE)
 	public void getCreateTask(GitCreateTaskMessage message) {
 		log.info("接收到Git仓库创建任务！");
-		Anthology anthology = anthologyDAO.getById(message.getRepositoryId());
+		Anthology anthology = anthologyDAO.selectOneWithRelationsById(message.getRepositoryId());
 		List<Article> articles = new ArrayList<>();
 		message.getFileList().forEach(path -> {
 			Article article = new Article();
@@ -55,7 +55,7 @@ public class GitTaskMessageListener {
 			log.info("没有可录入的新文件，退出！");
 			return;
 		}
-		articleDAO.batchAdd(articles);
+		articleDAO.insertBatch(articles);
 		log.info("已将" + articles.size() + "个文件信息扫描进数据库！");
 		// 刷新文集仓库信息
 		anthology.setLatestCommitId(message.getCommitId());
@@ -79,7 +79,7 @@ public class GitTaskMessageListener {
 			FileChangeStrategyContext.executeStrategy(message.getRepositoryId(), diff);
 		});
 		// 完成更新后刷新文集仓库信息
-		Anthology anthology = anthologyDAO.getById(message.getRepositoryId());
+		Anthology anthology = anthologyDAO.selectOneWithRelationsById(message.getRepositoryId());
 		anthology.setLatestCommitId(message.getCommitId());
 		anthologyDAO.update(anthology);
 		log.info("已完成对文集仓库：" + anthology.getName() + "的信息更新任务！");

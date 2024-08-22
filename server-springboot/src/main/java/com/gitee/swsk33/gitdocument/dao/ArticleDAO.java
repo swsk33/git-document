@@ -1,36 +1,14 @@
 package com.gitee.swsk33.gitdocument.dao;
 
 import com.gitee.swsk33.gitdocument.dataobject.Article;
+import com.mybatisflex.core.BaseMapper;
+import com.mybatisflex.core.query.QueryWrapper;
 import org.apache.ibatis.annotations.Mapper;
 
-import java.util.List;
+import static com.gitee.swsk33.gitdocument.dataobject.table.ArticleTableDef.ARTICLE;
 
 @Mapper
-public interface ArticleDAO {
-
-	/**
-	 * 添加文章记录至数据库
-	 *
-	 * @param article 文章对象
-	 * @return 插入记录条数
-	 */
-	int add(Article article);
-
-	/**
-	 * 批量插入文章记录
-	 *
-	 * @param articles 文章列表
-	 * @return 插入记录条数
-	 */
-	int batchAdd(List<Article> articles);
-
-	/**
-	 * 删除文章
-	 *
-	 * @param id 要删除的文章id
-	 * @return 删除记录条数
-	 */
-	int delete(long id);
+public interface ArticleDAO extends BaseMapper<Article> {
 
 	/**
 	 * 根据文章文件路径删除文章
@@ -38,23 +16,9 @@ public interface ArticleDAO {
 	 * @param path 文章文件路径
 	 * @return 删除记录条数
 	 */
-	int deleteByPath(String path);
-
-	/**
-	 * 修改文章信息
-	 *
-	 * @param article 文章对象
-	 * @return 修改记录条数
-	 */
-	int update(Article article);
-
-	/**
-	 * 根据id获取文章
-	 *
-	 * @param id 文章id
-	 * @return 文章对象
-	 */
-	Article getById(long id);
+	default int deleteByPath(String path) {
+		return deleteByQuery(QueryWrapper.create().where(ARTICLE.FILE_PATH.eq(path)));
+	}
 
 	/**
 	 * 根据文件路径获取文章
@@ -62,14 +26,8 @@ public interface ArticleDAO {
 	 * @param path 文章文件路径
 	 * @return 文章对象
 	 */
-	Article getByPath(String path);
-
-	/**
-	 * 获取一个文集中全部的文章
-	 *
-	 * @param anthologyId 文集id
-	 * @return 文集中的文章列表
-	 */
-	List<Article> getByAnthology(long anthologyId);
+	default Article getByPath(String path) {
+		return selectOneWithRelationsByQuery(QueryWrapper.create().where(ARTICLE.FILE_PATH.eq(path)));
+	}
 
 }

@@ -4,22 +4,19 @@ import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.exception.NotPermissionException;
 import cn.dev33.satoken.exception.NotRoleException;
 import com.gitee.swsk33.gitdocument.model.Result;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
-
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 /**
  * 自定义全局异常，例如鉴权注解的异常等等
  */
 @Slf4j
-@ControllerAdvice
+@RestControllerAdvice
 public class GlobalExceptionConfig {
 
 	// 全局异常拦截（拦截项目中的所有异常）
-	@ResponseBody
 	@ExceptionHandler
 	public Result<Void> handlerException(Exception e, HttpServletResponse response) {
 		// 打印堆栈，以供调试

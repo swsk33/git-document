@@ -20,7 +20,7 @@ public class RoleServiceImpl implements RoleService {
 	@SaCheckPermission(PermissionName.EDIT_USER)
 	@Override
 	public Result<List<Role>> getAll() {
-		return Result.resultSuccess("获取角色完成！", roleDAO.getAll());
+		return Result.resultSuccess("获取角色完成！", roleDAO.selectAllWithRelations());
 	}
 
 }

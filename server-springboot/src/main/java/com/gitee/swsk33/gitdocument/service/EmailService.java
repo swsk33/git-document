@@ -1,8 +1,8 @@
 package com.gitee.swsk33.gitdocument.service;
 
 import com.gitee.swsk33.gitdocument.dataobject.User;
-import com.gitee.swsk33.gitdocument.message.CreateEmailMessage;
-import com.gitee.swsk33.gitdocument.message.UpdateEmailMessage;
+import com.gitee.swsk33.gitdocument.model.CreateEmailMessage;
+import com.gitee.swsk33.gitdocument.model.UpdateEmailMessage;
 import org.springframework.stereotype.Service;
 
 @Service

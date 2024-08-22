@@ -4,15 +4,17 @@ import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.StrUtil;
+import com.gitee.swsk33.gitdocument.dao.LoginRecordDAO;
 import com.gitee.swsk33.gitdocument.dao.SettingDAO;
 import com.gitee.swsk33.gitdocument.dao.SystemSettingDAO;
 import com.gitee.swsk33.gitdocument.dao.UserDAO;
+import com.gitee.swsk33.gitdocument.dataobject.LoginRecord;
 import com.gitee.swsk33.gitdocument.dataobject.Setting;
 import com.gitee.swsk33.gitdocument.dataobject.User;
 import com.gitee.swsk33.gitdocument.model.Result;
 import com.gitee.swsk33.gitdocument.param.CommonValue;
 import com.gitee.swsk33.gitdocument.param.PermissionName;
-import com.gitee.swsk33.gitdocument.param.RoleName;
+import com.gitee.swsk33.gitdocument.param.RoleIdName;
 import com.gitee.swsk33.gitdocument.service.EmailService;
 import com.gitee.swsk33.gitdocument.service.ImageService;
 import com.gitee.swsk33.gitdocument.service.UserService;
@@ -37,6 +39,9 @@ public class UserServiceImpl implements UserService {
 	private SettingDAO settingDAO;
 
 	@Autowired
+	private LoginRecordDAO loginRecordDAO;
+
+	@Autowired
 	private ImageService imageService;
 
 	@Autowired
@@ -54,77 +59,81 @@ public class UserServiceImpl implements UserService {
 				return Result.resultFailed("本站不允许访客注册！请联系管理员！");
 			}
 			// 注册权限检查
-			if (user.getRole().getId() != 3) {
+			if (user.getRoleId() != RoleIdName.MEMBER_ID) {
 				return Result.resultFailed("不允许注册为除了团队成员之外的角色！");
 			}
 		} else { // 登录的时候，是管理员添加用户行为
 			if (!StpUtil.hasPermission(PermissionName.EDIT_USER)) {
 				return Result.resultFailed("您没有添加用户的权限！");
 			}
-			if (user.getRole().getId() == 1) {
+			if (user.getRoleId() == RoleIdName.PRESERVE_ADMIN_ID) {
 				return Result.resultFailed("不允许增加预留管理员角色的用户！");
 			}
 		}
-		// 先检查用户是否已存在
-		User getUser = userDAO.getByUsernameOrEmail(user.getUsername());
-		if (getUser != null) {
+		// 先检查用户名是否已存在
+		if (userDAO.existsByUsername(user.getUsername())) {
 			return Result.resultFailed("该用户名已存在！");
 		}
 		// 然后检查用户邮箱是否被注册过
-		getUser = userDAO.getByUsernameOrEmail(user.getEmail());
-		if (getUser != null) {
+		if (userDAO.existsByEmail(user.getEmail())) {
 			return Result.resultFailed("该邮箱已被注册！");
 		}
 		// 加密密码，存入数据库
 		user.setPassword(BCryptEncoder.encode(user.getPassword()));
-		// 新建默认用户配置
+		userDAO.insert(user);
+		// 新建默认用户配置并插入
 		Setting setting = new Setting();
-		settingDAO.add(setting);
-		user.setSetting(setting);
-		userDAO.add(user);
+		setting.setUserId(user.getId());
+		settingDAO.insert(setting);
+		// 新建用户登录记录对象插入
+		LoginRecord record = new LoginRecord();
+		record.setUserId(user.getId());
+		loginRecordDAO.insert(record);
 		return Result.resultSuccess("注册用户成功！");
 	}
 
 	@SaCheckPermission(PermissionName.EDIT_USER)
 	@Override
 	public Result<Void> delete(int id) {
-		User getUser = userDAO.getById(id);
+		User getUser = userDAO.selectOneWithRelationsById(id);
 		if (getUser == null) {
 			return Result.resultFailed("用户不存在！");
 		}
-		if (getUser.getRole().getName().equals(RoleName.PRESERVE_ADMIN)) {
+		if (getUser.getRole().getName().equals(RoleIdName.PRESERVE_ADMIN_NAME)) {
 			return Result.resultFailed("预留管理员账户不可以删除！");
 		}
-		if (userDAO.delete(id) < 1) {
+		if (userDAO.deleteById(id) < 1) {
 			return Result.resultFailed("删除用户失败！");
 		}
+		// 使该用户退出登录
+		StpUtil.logout(id);
 		return Result.resultSuccess("删除用户成功！");
 	}
 
 	@SaCheckLogin
 	@Override
 	public Result<Void> update(User user) throws Exception {
-		User getUser = userDAO.getById(user.getId());
+		User getUser = userDAO.selectOneWithRelationsById(user.getId());
 		if (getUser == null) {
 			return Result.resultFailed("找不到该用户！");
 		}
 		// 权限判断
-		if (!StpUtil.hasPermission(PermissionName.EDIT_USER) && StpUtil.getLoginId(0) != user.getId().intValue()) {
+		if (!StpUtil.hasPermission(PermissionName.EDIT_USER) && StpUtil.getLoginIdAsInt() != user.getId()) {
 			return Result.resultFailed("您没有修改其他用户信息的权限！");
 		}
 		// 若权限发生修改，则进行一些判断
 		boolean roleChanged = false;
-		if (user.getRole() != null && user.getRole().getId().intValue() != getUser.getRole().getId().intValue()) {
+		if (user.getRoleId() != null && user.getRoleId().intValue() != getUser.getRoleId().intValue()) {
 			// 非管理员不能修改权限
 			if (!StpUtil.hasPermission(PermissionName.EDIT_USER)) {
 				return Result.resultFailed("非管理员不可以修改角色！");
 			}
 			// 不允许修改保留管理员的权限
-			if (getUser.getRole().getName().equals(RoleName.PRESERVE_ADMIN)) {
+			if (getUser.getRole().getName().equals(RoleIdName.PRESERVE_ADMIN_NAME)) {
 				return Result.resultFailed("不能修改预留管理员用户的权限！");
 			}
 			// 不能把用户修改成预留管理员
-			if (user.getRole().getId() == 1) {
+			if (user.getRoleId() == RoleIdName.PRESERVE_ADMIN_ID) {
 				return Result.resultFailed("不能把用户修改成预留管理员！");
 			}
 			roleChanged = true;
@@ -144,8 +153,8 @@ public class UserServiceImpl implements UserService {
 			user.setPassword(BCryptEncoder.encode(user.getPassword()));
 		}
 		userDAO.update(user);
-		// 重新获取用户数据用于刷新缓存
-		User getNewUser = userDAO.getById(user.getId());
+		// 重新获取用户数据用于刷新session缓存
+		User getNewUser = userDAO.selectOneWithRelationsById(user.getId());
 		// 角色发生变化则发送邮件
 		if (roleChanged) {
 			emailService.sendRoleChangeEmail(getNewUser, (User) StpUtil.getSession().get(CommonValue.SA_USER_SESSION_INFO_KEY));
@@ -176,7 +185,7 @@ public class UserServiceImpl implements UserService {
 	@SaCheckPermission(PermissionName.EDIT_USER)
 	@Override
 	public Result<List<User>> getAll() {
-		List<User> users = userDAO.getAll();
+		List<User> users = userDAO.selectAllWithRelations();
 		return Result.resultSuccess("查询全部用户成功！", users);
 	}
 

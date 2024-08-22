@@ -1,6 +1,7 @@
 package com.gitee.swsk33.gitdocument.dataobject;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.mybatisflex.annotation.Column;
 import com.mybatisflex.annotation.Id;
 import com.mybatisflex.annotation.KeyType;
 import com.mybatisflex.annotation.Table;
@@ -24,7 +25,7 @@ public class PublicKey {
 	private Integer id;
 
 	/**
-	 * 公钥内容
+	 * 公钥内容，转换成PEM格式，Base64编码后再存入数据库
 	 */
 	@NotEmpty(message = "公钥内容不能为空！")
 	private String content;
@@ -37,11 +38,13 @@ public class PublicKey {
 	/**
 	 * 创建时间
 	 */
+	@Column(onInsertValue = "now()")
 	private LocalDateTime gmtCreated;
 
 	/**
 	 * 修改时间
 	 */
+	@Column(onUpdateValue = "now()")
 	private LocalDateTime gmtModified;
 
 }

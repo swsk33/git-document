@@ -68,8 +68,8 @@ public class GitRepositoryListener implements Watcher {
 			log.warn("仓库：{}是空的！", gitRepository);
 		}
 		// 获取数据库中的commitId
-		Anthology getAnthology = anthologyDAO.getById(id);
-		String oldId = getAnthology.getLatestCommitId();
+		Anthology getAnthology = anthologyDAO.selectOneWithRelationsById(id);
+		String oldId = getAnthology.getLatestCommit();
 		// 若数据库中记录的commitId为空，说明这是第一次推送，执行仓库的创建操作
 		if (StrUtil.isEmpty(oldId)) {
 			gitRepositoryInfoDAO.doCreateTask(id, gitRepository, newId);

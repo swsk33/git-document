@@ -1,5 +1,6 @@
 package com.gitee.swsk33.gitdocument.dataobject;
 
+import com.mybatisflex.annotation.Column;
 import com.mybatisflex.annotation.Id;
 import com.mybatisflex.annotation.KeyType;
 import com.mybatisflex.annotation.Table;
@@ -33,11 +34,13 @@ public class Setting {
 	/**
 	 * 创建时间
 	 */
+	@Column(onInsertValue = "now()")
 	private LocalDateTime gmtCreated;
 
 	/**
 	 * 修改时间
 	 */
+	@Column(onUpdateValue = "now()")
 	private LocalDateTime gmtModified;
 
 }

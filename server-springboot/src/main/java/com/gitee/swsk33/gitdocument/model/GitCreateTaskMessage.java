@@ -1,6 +1,6 @@
-package com.gitee.swsk33.gitdocument.message;
+package com.gitee.swsk33.gitdocument.model;
 
-import com.gitee.swsk33.gitdocument.message.prototype.GitTaskMessage;
+import com.gitee.swsk33.gitdocument.model.prototype.GitTaskMessage;
 import lombok.Data;
 
 import java.util.List;

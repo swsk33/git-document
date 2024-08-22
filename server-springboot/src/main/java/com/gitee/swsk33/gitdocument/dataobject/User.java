@@ -61,12 +61,12 @@ public class User {
 	/**
 	 * 角色id（外键）
 	 */
+	@NotNull(groups = ValidationRules.DataAdd.class, message = "用户的角色id不能为空！")
 	private Integer roleId;
 
 	/**
 	 * 角色
 	 */
-	@NotNull(groups = ValidationRules.DataAdd.class, message = "角色不能为空！")
 	@RelationManyToOne(selfField = "roleId", targetField = "id")
 	private Role role;
 
@@ -97,11 +97,13 @@ public class User {
 	/**
 	 * 创建时间
 	 */
+	@Column(onInsertValue = "now()")
 	private LocalDateTime gmtCreated;
 
 	/**
 	 * 修改时间
 	 */
+	@Column(onUpdateValue = "now()")
 	private LocalDateTime gmtModified;
 
 }

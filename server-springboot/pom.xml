@@ -91,10 +91,10 @@
 			<version>${sa-token.version}</version>
 		</dependency>
 
-		<!-- Sa-Token整合Redis（使用JDK序列化方式）-->
+		<!-- Sa-Token整合Redis（使用JSON序列化方式）-->
 		<dependency>
 			<groupId>cn.dev33</groupId>
-			<artifactId>sa-token-redis</artifactId>
+			<artifactId>sa-token-redis-jackson</artifactId>
 			<version>${sa-token.version}</version>
 		</dependency>
 

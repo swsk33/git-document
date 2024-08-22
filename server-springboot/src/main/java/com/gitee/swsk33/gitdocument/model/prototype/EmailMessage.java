@@ -1,4 +1,4 @@
-package com.gitee.swsk33.gitdocument.message.prototype;
+package com.gitee.swsk33.gitdocument.model.prototype;
 
 import lombok.Data;
 

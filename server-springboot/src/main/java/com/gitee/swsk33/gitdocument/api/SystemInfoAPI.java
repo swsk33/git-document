@@ -28,7 +28,7 @@ public class SystemInfoAPI {
 	 */
 	@GetMapping("/ssh-port")
 	public Result<Integer> getSSHPort() {
-		return Result.resultSuccess("获取完成！", configProperties.getHostPort());
+		return Result.resultSuccess("获取完成！", configProperties.getSshServerPort());
 	}
 
 }

@@ -4,12 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.gitee.swsk33.gitdocument.param.ValidationRules;
 import com.gitee.swsk33.gitdocument.serializer.LongToStringSerializer;
-import com.mybatisflex.annotation.Id;
-import com.mybatisflex.annotation.KeyType;
-import com.mybatisflex.annotation.RelationManyToOne;
-import com.mybatisflex.annotation.Table;
+import com.mybatisflex.annotation.*;
 import com.mybatisflex.core.keygen.KeyGenerators;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
@@ -39,23 +35,25 @@ public class Star {
 	/**
 	 * 被收藏的文集id（外键）
 	 */
+	@NotNull(groups = ValidationRules.DataAdd.class, message = "收藏的文集id不能为空！")
 	private Long anthologyId;
 
 	/**
 	 * 被收藏的文集
 	 */
-	@NotEmpty(groups = ValidationRules.DataAdd.class, message = "收藏的文集不能为空！")
 	@RelationManyToOne(selfField = "anthologyId", targetField = "id")
 	private Anthology anthology;
 
 	/**
 	 * 创建时间
 	 */
+	@Column(onInsertValue = "now()")
 	private LocalDateTime gmtCreated;
 
 	/**
 	 * 修改时间
 	 */
+	@Column(onUpdateValue = "now()")
 	private LocalDateTime gmtModified;
 
 }

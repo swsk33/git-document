@@ -10,14 +10,13 @@ import com.gitee.swsk33.gitdocument.dataobject.User;
 import com.gitee.swsk33.gitdocument.git.GitCommitDAO;
 import com.gitee.swsk33.gitdocument.git.GitFileDAO;
 import com.gitee.swsk33.gitdocument.git.GitRepositoryInfoDAO;
-import com.gitee.swsk33.gitdocument.message.GitCreateTaskMessage;
-import com.gitee.swsk33.gitdocument.message.GitUpdateTaskMessage;
-import com.gitee.swsk33.gitdocument.message.UpdateEmailMessage;
-import com.gitee.swsk33.gitdocument.model.ArticleDiff;
+import com.gitee.swsk33.gitdocument.model.GitCreateTaskMessage;
+import com.gitee.swsk33.gitdocument.model.GitUpdateTaskMessage;
+import com.gitee.swsk33.gitdocument.model.UpdateEmailMessage;
+import com.gitee.swsk33.gitdocument.model.ArticleDifference;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.diff.DiffEntry;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -41,9 +40,6 @@ public class GitRepositoryInfoDAOImpl implements GitRepositoryInfoDAO {
 
 	@Autowired
 	private SystemSettingDAO systemSettingDAO;
-
-	@Autowired
-	private RabbitTemplate rabbitTemplate;
 
 	@Autowired
 	private GitCommitDAO gitCommitDAO;
@@ -75,7 +71,7 @@ public class GitRepositoryInfoDAOImpl implements GitRepositoryInfoDAO {
 				scriptOutput.write(content);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error(e.getMessage());
 			return false;
 		}
 		return repositoryFolder.exists();
@@ -109,7 +105,7 @@ public class GitRepositoryInfoDAOImpl implements GitRepositoryInfoDAO {
 		GitUpdateTaskMessage updateTaskMessage = new GitUpdateTaskMessage();
 		updateTaskMessage.setRepositoryId(id);
 		updateTaskMessage.setCommitId(newId);
-		updateTaskMessage.setDiffs(ArticleDiff.toArticleDiff(diffs));
+		updateTaskMessage.setDiffs(ArticleDifference.toArticleDiff(diffs));
 		rabbitTemplate.convertAndSend(GIT_TASK_TOPIC_EXCHANGE, GIT_UPDATE, updateTaskMessage);
 		log.info("已发布Git仓库更新任务消息至消息队列！");
 		// 准备进行邮件通知
@@ -129,7 +125,7 @@ public class GitRepositoryInfoDAOImpl implements GitRepositoryInfoDAO {
 			message.setTitle("GitDocument · " + systemSettingDAO.get(ORGANIZATION_NAME) + " - 文集更新通知");
 			message.setName(showName);
 			message.setCommitMessage(gitCommitDAO.getHeadCommit(gitRepository).getFullMessage());
-			message.setDiffEntries(ArticleDiff.toArticleDiff(diffs));
+			message.setDiffEntries(ArticleDifference.toArticleDiff(diffs));
 			message.setEmailList(emailList);
 			// 投递到消息队列
 			rabbitTemplate.convertAndSend(EMAIL_TOPIC_EXCHANGE, UPDATE_EMAIL, message);

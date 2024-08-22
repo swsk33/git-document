@@ -4,7 +4,7 @@ import cn.hutool.core.util.IdUtil;
 import com.gitee.swsk33.gitdocument.dao.ArticleDAO;
 import com.gitee.swsk33.gitdocument.dataobject.Anthology;
 import com.gitee.swsk33.gitdocument.dataobject.Article;
-import com.gitee.swsk33.gitdocument.model.ArticleDiff;
+import com.gitee.swsk33.gitdocument.model.ArticleDifference;
 import com.gitee.swsk33.gitdocument.strategy.GitFileChangeStrategy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,7 @@ public class FileAddStrategy implements GitFileChangeStrategy {
 	private ArticleDAO articleDAO;
 
 	@Override
-	public void doUpdate(long repositoryId, ArticleDiff diff) {
+	public void doUpdate(long repositoryId, ArticleDifference diff) {
 		// 排除掉增加的非md文件
 		if (!diff.getNewPath().endsWith(".md")) {
 			log.info(diff.getNewPath() + "不是一个md文件，不录入数据库！");
@@ -34,7 +34,7 @@ public class FileAddStrategy implements GitFileChangeStrategy {
 		article.setId(IdUtil.getSnowflakeNextId());
 		article.setFilePath(diff.getNewPath());
 		article.setAnthology(anthology);
-		articleDAO.add(article);
+		articleDAO.insert(article);
 		log.info("增加文件：" + diff.getNewPath());
 	}
 

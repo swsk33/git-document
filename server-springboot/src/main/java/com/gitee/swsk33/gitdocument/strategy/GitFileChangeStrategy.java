@@ -1,6 +1,6 @@
 package com.gitee.swsk33.gitdocument.strategy;
 
-import com.gitee.swsk33.gitdocument.model.ArticleDiff;
+import com.gitee.swsk33.gitdocument.model.ArticleDifference;
 import org.springframework.stereotype.Service;
 
 /**
@@ -15,6 +15,6 @@ public interface GitFileChangeStrategy {
 	 * @param repositoryId 仓库id
 	 * @param diff         差异信息
 	 */
-	void doUpdate(long repositoryId, ArticleDiff diff);
+	void doUpdate(long repositoryId, ArticleDifference diff);
 
 }

@@ -5,8 +5,11 @@ import lombok.Data;
 
 import java.io.Serializable;
 
+/**
+ * 仓库的提交记录
+ */
 @Data
-public class CommitInfo implements Serializable {
+public class CommitRecord implements Serializable {
 
 	/**
 	 * 贡献者

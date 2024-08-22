@@ -6,15 +6,15 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 
+@Data
 @Component
 @ConfigurationProperties(prefix = "com.gitee.swsk33.git-doc")
-@Data
 public class ConfigProperties {
 
 	/**
-	 * 宿主机ssh端口，当部署在容器中时，请配置为非22端口防止冲突
+	 * 内嵌ssh服务端端口，默认情况下请配置为非22端口防止冲突
 	 */
-	private int hostPort = 22;
+	private int sshServerPort;
 
 	/**
 	 * 存放所有文集仓库的目录，尽量不要修改

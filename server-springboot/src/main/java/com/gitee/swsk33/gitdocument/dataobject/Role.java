@@ -1,9 +1,6 @@
 package com.gitee.swsk33.gitdocument.dataobject;
 
-import com.mybatisflex.annotation.Id;
-import com.mybatisflex.annotation.KeyType;
-import com.mybatisflex.annotation.RelationManyToMany;
-import com.mybatisflex.annotation.Table;
+import com.mybatisflex.annotation.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
@@ -45,11 +42,13 @@ public class Role {
 	/**
 	 * 创建时间
 	 */
+	@Column(onInsertValue = "now()")
 	private LocalDateTime gmtCreated;
 
 	/**
 	 * 修改时间
 	 */
+	@Column(onUpdateValue = "now()")
 	private LocalDateTime gmtModified;
 
 }

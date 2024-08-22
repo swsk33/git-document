@@ -1,17 +1,17 @@
-# maven
-/**/target/
+# Maven
+target/
 
-# idea
-/**/.idea/
-/**/*.iml
+# IDEA
+.idea/
+*.iml
 
-# vite
-/**/node_modules/
-/**/dist/
+# Vite
+node_modules/
+dist/
 
 # draw.io
-/**/.$*.bkp
-/**/.$*.dtmp
+.$*.bkp
+.$*.dtmp
 
 # Docker
 /dockerfile/*.tar
@@ -20,3 +20,4 @@
 
 # 临时文件
 /server-springboot/images/
+/server-springboot/host-key

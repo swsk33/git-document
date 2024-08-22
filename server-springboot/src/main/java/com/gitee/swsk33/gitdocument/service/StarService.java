@@ -4,8 +4,6 @@ import com.gitee.swsk33.gitdocument.dataobject.Star;
 import com.gitee.swsk33.gitdocument.model.Result;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 /**
  * 收藏服务
  */
@@ -25,11 +23,6 @@ public interface StarService {
 	 * @param id 取消的收藏id
 	 */
 	Result<Void> delete(long id);
-
-	/**
-	 * 查询一个用户所有的收藏
-	 */
-	Result<List<Star>> getByUser();
 
 	/**
 	 * 查询一个文集的被收藏数

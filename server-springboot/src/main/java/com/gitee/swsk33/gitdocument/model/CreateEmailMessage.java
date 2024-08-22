@@ -1,6 +1,6 @@
-package com.gitee.swsk33.gitdocument.message;
+package com.gitee.swsk33.gitdocument.model;
 
-import com.gitee.swsk33.gitdocument.message.prototype.EmailMessage;
+import com.gitee.swsk33.gitdocument.model.prototype.EmailMessage;
 import lombok.Data;
 
 /**

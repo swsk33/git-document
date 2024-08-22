@@ -27,7 +27,7 @@ public class ArticleServiceImpl implements ArticleService {
 	@SaCheckPermission(PermissionName.BROWSE_ARTICLE)
 	@Override
 	public Result<Article> getById(long id) throws Exception {
-		Article getArticle = articleDAO.getById(id);
+		Article getArticle = articleDAO.selectOneById(id);
 		if (getArticle == null) {
 			return Result.resultFailed("文章不存在！");
 		}
