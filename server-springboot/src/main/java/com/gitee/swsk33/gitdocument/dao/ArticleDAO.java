@@ -5,6 +5,8 @@ import com.mybatisflex.core.BaseMapper;
 import com.mybatisflex.core.query.QueryWrapper;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 import static com.gitee.swsk33.gitdocument.dataobject.table.ArticleTableDef.ARTICLE;
 
 @Mapper
@@ -28,6 +30,16 @@ public interface ArticleDAO extends BaseMapper<Article> {
 	 */
 	default Article getByPath(String path) {
 		return selectOneWithRelationsByQuery(QueryWrapper.create().where(ARTICLE.FILE_PATH.eq(path)));
+	}
+
+	/**
+	 * 获取一个文集的全部文章
+	 *
+	 * @param anthologyId 文集id
+	 * @return 文章列表
+	 */
+	default List<Article> getByAnthologyId(long anthologyId) {
+		return selectListByQuery(QueryWrapper.create().where(ARTICLE.ANTHOLOGY_ID.eq(anthologyId)));
 	}
 
 }

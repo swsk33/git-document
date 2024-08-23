@@ -2,7 +2,6 @@ package com.gitee.swsk33.gitdocument.strategy.impl;
 
 import cn.hutool.core.util.IdUtil;
 import com.gitee.swsk33.gitdocument.dao.ArticleDAO;
-import com.gitee.swsk33.gitdocument.dataobject.Anthology;
 import com.gitee.swsk33.gitdocument.dataobject.Article;
 import com.gitee.swsk33.gitdocument.model.ArticleDifference;
 import com.gitee.swsk33.gitdocument.strategy.GitFileChangeStrategy;
@@ -28,12 +27,10 @@ public class FileAddStrategy implements GitFileChangeStrategy {
 			return;
 		}
 		// 把文件信息录入数据库
-		Anthology anthology = new Anthology();
-		anthology.setId(repositoryId);
 		Article article = new Article();
 		article.setId(IdUtil.getSnowflakeNextId());
 		article.setFilePath(diff.getNewPath());
-		article.setAnthology(anthology);
+		article.setAnthologyId(repositoryId);
 		articleDAO.insert(article);
 		log.info("增加文件：" + diff.getNewPath());
 	}

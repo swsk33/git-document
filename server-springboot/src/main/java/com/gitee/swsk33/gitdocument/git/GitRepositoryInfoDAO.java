@@ -17,7 +17,7 @@ public interface GitRepositoryInfoDAO {
 	boolean initGitBareRepository(String gitRepository);
 
 	/**
-	 * 当仓库收到第一次提交时，调用此方法将第一次提交的信息录入数据库完成仓库创建操作
+	 * 当仓库收到第一次提交时，调用此方法将第一次提交的信息作为消息对象传递给发布者Flux，进而使得订阅者接收并录入数据库完成仓库创建操作
 	 *
 	 * @param id            仓库的id
 	 * @param gitRepository 仓库文件夹位置（绝对路径）
@@ -26,7 +26,7 @@ public interface GitRepositoryInfoDAO {
 	void doCreateTask(long id, String gitRepository, String newId);
 
 	/**
-	 * 当仓库收到提交时，但不是第一次提交，调用此方法对比提交差异并的信息录入数据库完成仓库更新操作
+	 * 当仓库收到提交时，但不是第一次提交，调用此方法对比提交差异信息作为消息对象传递给发布者Flux，进而使得订阅者将信息录入数据库完成仓库更新操作
 	 *
 	 * @param id            仓库的id
 	 * @param showName      文集仓库的显示名

@@ -7,9 +7,7 @@ import com.gitee.swsk33.gitdocument.param.ValidationRules;
 import com.gitee.swsk33.gitdocument.serializer.LongToStringSerializer;
 import com.mybatisflex.annotation.*;
 import com.mybatisflex.core.keygen.KeyGenerators;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -28,13 +26,14 @@ public class Anthology {
 	 */
 	@Id(keyType = KeyType.Generator, value = KeyGenerators.snowFlakeId)
 	@JsonSerialize(using = LongToStringSerializer.class)
+	@Null(groups = ValidationRules.DataAdd.class, message = "新增数据时不能手动设定主键id！")
 	@NotNull(groups = ValidationRules.DataUpdate.class, message = "文集id不能为空！")
 	private Long id;
 
 	/**
 	 * 文集名
 	 */
-	@NotNull(groups = ValidationRules.DataAdd.class, message = "文集名称不能为空！")
+	@NotEmpty(groups = ValidationRules.DataAdd.class, message = "文集名称不能为空！")
 	@Size(groups = {ValidationRules.DataAdd.class, ValidationRules.DataUpdate.class}, max = 64, message = "文集名称长度不能超过64！")
 	@Pattern(groups = {ValidationRules.DataAdd.class, ValidationRules.DataUpdate.class}, regexp = "^[0-9a-zA-Z_]+$", message = "文集名只能是由英文字母、数字和下划线组成！")
 	private String name;
@@ -42,7 +41,7 @@ public class Anthology {
 	/**
 	 * 显示名
 	 */
-	@NotNull(groups = ValidationRules.DataAdd.class, message = "文集显示名不能为空！")
+	@NotEmpty(groups = ValidationRules.DataAdd.class, message = "文集显示名不能为空！")
 	@Size(max = 64, message = "文集显示名长度不能超过64！")
 	private String showName;
 
@@ -54,6 +53,7 @@ public class Anthology {
 	/**
 	 * 文集最后更新的时间戳
 	 */
+	@Column(ignore = true)
 	private Integer updateTime;
 
 	/**
@@ -64,6 +64,7 @@ public class Anthology {
 	/**
 	 * 最后一次的Git Commit提交id，新仓库为null
 	 */
+	@Null(groups = {ValidationRules.DataAdd.class, ValidationRules.DataUpdate.class}, message = "请勿手动设定或修改commitId！")
 	private String latestCommit;
 
 	/**

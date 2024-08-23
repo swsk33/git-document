@@ -3,7 +3,7 @@ package com.gitee.swsk33.gitdocument.context;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.watch.WatchMonitor;
 import cn.hutool.core.io.watch.watchers.DelayWatcher;
-import com.gitee.swsk33.gitdocument.listener.GitRepositoryListener;
+import com.gitee.swsk33.gitdocument.listener.GitRepositoryFileListener;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +37,7 @@ public class GitFileListenerContext {
 	 */
 	public void addMonitor(long id, String gitRepository) {
 		// 新建文件观察者
-		GitRepositoryListener watcher = beanFactory.getBean(GitRepositoryListener.class);
+		GitRepositoryFileListener watcher = beanFactory.getBean(GitRepositoryFileListener.class);
 		watcher.setId(id);
 		watcher.setGitRepository(gitRepository);
 		// 创建监视器

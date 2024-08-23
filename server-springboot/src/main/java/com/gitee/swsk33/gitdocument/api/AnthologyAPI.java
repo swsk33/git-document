@@ -31,7 +31,7 @@ public class AnthologyAPI {
 	}
 
 	@PostMapping("/batch-add")
-	public Result<Void> batchAdd(@RequestBody List<Anthology> anthologies) {
+	public Result<Void> batchAdd(@Validated(ValidationRules.DataAdd.class) @RequestBody List<Anthology> anthologies) {
 		return anthologyService.batchAdd(anthologies);
 	}
 

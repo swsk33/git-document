@@ -21,6 +21,7 @@ public class User {
 	 * 主键id
 	 */
 	@Id(keyType = KeyType.Auto)
+	@Null(groups = ValidationRules.DataAdd.class, message = "新增数据时不能手动设定主键id！")
 	@NotNull(groups = ValidationRules.DataUpdate.class, message = "用户id不能为空！")
 	private Integer id;
 

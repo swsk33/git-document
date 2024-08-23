@@ -6,18 +6,21 @@ import com.mybatisflex.core.query.QueryWrapper;
 import org.apache.ibatis.annotations.Mapper;
 
 import static com.gitee.swsk33.gitdocument.dataobject.table.AnthologyTableDef.ANTHOLOGY;
+import static com.mybatisflex.core.query.QueryMethods.number;
 
 @Mapper
 public interface AnthologyDAO extends BaseMapper<Anthology> {
 
 	/**
-	 * 根据文集名获取文集
+	 * 根据文集名判断文集是否存在
 	 *
 	 * @param name 文集名
-	 * @return 查询到的文集对象
+	 * @return 存在返回true
 	 */
-	default Anthology getByName(String name) {
-		return selectOneByQuery(QueryWrapper.create().where(ANTHOLOGY.NAME.eq(name)));
+	default boolean existsByName(String name) {
+		QueryWrapper wrapper = QueryWrapper.create().select(number(1)).where(ANTHOLOGY.NAME.eq(name));
+		Long exists = selectObjectByQueryAs(wrapper, Long.class);
+		return exists != null;
 	}
 
 }

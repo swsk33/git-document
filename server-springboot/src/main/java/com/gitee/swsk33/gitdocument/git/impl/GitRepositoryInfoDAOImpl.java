@@ -10,10 +10,12 @@ import com.gitee.swsk33.gitdocument.dataobject.User;
 import com.gitee.swsk33.gitdocument.git.GitCommitDAO;
 import com.gitee.swsk33.gitdocument.git.GitFileDAO;
 import com.gitee.swsk33.gitdocument.git.GitRepositoryInfoDAO;
+import com.gitee.swsk33.gitdocument.model.ArticleDifference;
 import com.gitee.swsk33.gitdocument.model.GitCreateTaskMessage;
 import com.gitee.swsk33.gitdocument.model.GitUpdateTaskMessage;
 import com.gitee.swsk33.gitdocument.model.UpdateEmailMessage;
-import com.gitee.swsk33.gitdocument.model.ArticleDifference;
+import com.gitee.swsk33.gitdocument.publisher.GitMessagePublisher;
+import com.gitee.swsk33.gitdocument.service.EmailService;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.diff.DiffEntry;
@@ -26,9 +28,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 
-import static com.gitee.swsk33.gitdocument.param.RabbitMessageQueue.Exchange.EMAIL_TOPIC_EXCHANGE;
-import static com.gitee.swsk33.gitdocument.param.RabbitMessageQueue.Exchange.GIT_TASK_TOPIC_EXCHANGE;
-import static com.gitee.swsk33.gitdocument.param.RabbitMessageQueue.RoutingKey.*;
 import static com.gitee.swsk33.gitdocument.param.SystemSettingKey.ORGANIZATION_NAME;
 
 @Slf4j
@@ -47,6 +46,14 @@ public class GitRepositoryInfoDAOImpl implements GitRepositoryInfoDAO {
 	@Autowired
 	private GitFileDAO gitFileDAO;
 
+	@Autowired
+	private GitMessagePublisher gitCreateTaskPublisher;
+
+	@Autowired
+	private GitMessagePublisher gitUpdateTaskPublisher;
+
+	@Autowired
+	private EmailService emailService;
 
 	@Override
 	public boolean initGitBareRepository(String gitRepository) {
@@ -84,8 +91,8 @@ public class GitRepositoryInfoDAOImpl implements GitRepositoryInfoDAO {
 		createTaskMessage.setRepositoryId(id);
 		createTaskMessage.setCommitId(newId);
 		createTaskMessage.setFileList(gitFileDAO.getLatestFileList(gitRepository));
-		rabbitTemplate.convertAndSend(GIT_TASK_TOPIC_EXCHANGE, GIT_CREATE, createTaskMessage);
-		log.info("已发布Git仓库创建任务消息至消息队列！");
+		gitCreateTaskPublisher.publishMessage(createTaskMessage);
+		log.info("已发布Git仓库创建任务消息至Flux对象！");
 	}
 
 	@Override
@@ -106,8 +113,8 @@ public class GitRepositoryInfoDAOImpl implements GitRepositoryInfoDAO {
 		updateTaskMessage.setRepositoryId(id);
 		updateTaskMessage.setCommitId(newId);
 		updateTaskMessage.setDiffs(ArticleDifference.toArticleDiff(diffs));
-		rabbitTemplate.convertAndSend(GIT_TASK_TOPIC_EXCHANGE, GIT_UPDATE, updateTaskMessage);
-		log.info("已发布Git仓库更新任务消息至消息队列！");
+		gitUpdateTaskPublisher.publishMessage(updateTaskMessage);
+		log.info("已发布Git仓库更新任务消息至Flux对象！");
 		// 准备进行邮件通知
 		if (sendEmail) {
 			// 获取收藏这个文集的用户
@@ -127,8 +134,8 @@ public class GitRepositoryInfoDAOImpl implements GitRepositoryInfoDAO {
 			message.setCommitMessage(gitCommitDAO.getHeadCommit(gitRepository).getFullMessage());
 			message.setDiffEntries(ArticleDifference.toArticleDiff(diffs));
 			message.setEmailList(emailList);
-			// 投递到消息队列
-			rabbitTemplate.convertAndSend(EMAIL_TOPIC_EXCHANGE, UPDATE_EMAIL, message);
+			// 异步发送
+			emailService.sendAnthologyUpdateNotify(message);
 		}
 	}
 

@@ -13,7 +13,7 @@ public interface ArticleService {
 	 *
 	 * @param id 文章id
 	 */
-	Result<Article> getById(long id) throws Exception;
+	Result<Article> getById(long id);
 
 	/**
 	 * 获取一个文集的所有文章

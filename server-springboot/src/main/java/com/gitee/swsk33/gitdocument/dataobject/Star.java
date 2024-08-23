@@ -7,6 +7,7 @@ import com.gitee.swsk33.gitdocument.serializer.LongToStringSerializer;
 import com.mybatisflex.annotation.*;
 import com.mybatisflex.core.keygen.KeyGenerators;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Null;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -24,6 +25,7 @@ public class Star {
 	 */
 	@Id(keyType = KeyType.Generator, value = KeyGenerators.snowFlakeId)
 	@JsonSerialize(using = LongToStringSerializer.class)
+	@Null(groups = ValidationRules.DataAdd.class, message = "新增数据时不能手动设定主键id！")
 	@NotNull(groups = ValidationRules.DataUpdate.class, message = "星星id不能为空！")
 	private Long id;
 

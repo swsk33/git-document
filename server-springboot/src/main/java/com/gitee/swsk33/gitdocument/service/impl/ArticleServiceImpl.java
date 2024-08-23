@@ -2,6 +2,7 @@ package com.gitee.swsk33.gitdocument.service.impl;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.gitee.swsk33.gitdocument.cache.ArticleTreeCache;
+import com.gitee.swsk33.gitdocument.dao.AnthologyDAO;
 import com.gitee.swsk33.gitdocument.dao.ArticleDAO;
 import com.gitee.swsk33.gitdocument.dataobject.Article;
 import com.gitee.swsk33.gitdocument.git.GitFileDAO;
@@ -19,6 +20,9 @@ public class ArticleServiceImpl implements ArticleService {
 	private ArticleDAO articleDAO;
 
 	@Autowired
+	private AnthologyDAO anthologyDAO;
+
+	@Autowired
 	private ArticleTreeCache articleTreeCache;
 
 	@Autowired
@@ -26,13 +30,14 @@ public class ArticleServiceImpl implements ArticleService {
 
 	@SaCheckPermission(PermissionName.BROWSE_ARTICLE)
 	@Override
-	public Result<Article> getById(long id) throws Exception {
+	public Result<Article> getById(long id) {
 		Article getArticle = articleDAO.selectOneById(id);
 		if (getArticle == null) {
 			return Result.resultFailed("文章不存在！");
 		}
 		// 去文章仓库中取出文章内容
-		getArticle.setContent(gitFileDAO.getFileTextContentInLatestCommit(getArticle.getAnthology().getRepoPath(), getArticle.getFilePath()));
+		String anthologyPath = anthologyDAO.selectOneById(getArticle.getAnthologyId()).getRepoPath();
+		getArticle.setContent(gitFileDAO.getFileTextContentInLatestCommit(anthologyPath, getArticle.getFilePath()));
 		return Result.resultSuccess("查找文章成功！", getArticle);
 	}
 
@@ -43,7 +48,7 @@ public class ArticleServiceImpl implements ArticleService {
 		ArticleDirectory getDirectory = articleTreeCache.getById(anthologyId);
 		// 若Redis为空再去MySQL取出文章列表并进行目录树转换
 		if (getDirectory == null) {
-			getDirectory = new ArticleDirectory(articleDAO.getByAnthology(anthologyId));
+			getDirectory = new ArticleDirectory(articleDAO.getByAnthologyId(anthologyId));
 			// 存入缓存
 			articleTreeCache.setOrAdd(anthologyId, getDirectory);
 		}
