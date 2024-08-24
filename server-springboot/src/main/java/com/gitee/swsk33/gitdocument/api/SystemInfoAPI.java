@@ -2,7 +2,7 @@ package com.gitee.swsk33.gitdocument.api;
 
 import com.gitee.swsk33.gitdocument.model.Result;
 import com.gitee.swsk33.gitdocument.param.CommonValue;
-import com.gitee.swsk33.gitdocument.property.ConfigProperties;
+import com.gitee.swsk33.gitdocument.property.SshServerProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class SystemInfoAPI {
 
 	@Autowired
-	private ConfigProperties configProperties;
+	private SshServerProperties sshServerProperties;
 
 	/**
 	 * 获取运行应用的用户名
@@ -24,11 +24,11 @@ public class SystemInfoAPI {
 	}
 
 	/**
-	 * 获取宿主机的SSH端口
+	 * 获取广播的SSH端口
 	 */
 	@GetMapping("/ssh-port")
 	public Result<Integer> getSSHPort() {
-		return Result.resultSuccess("获取完成！", configProperties.getSshServerPort());
+		return Result.resultSuccess("获取完成！", sshServerProperties.getAdvertisedSshServerPort());
 	}
 
 }

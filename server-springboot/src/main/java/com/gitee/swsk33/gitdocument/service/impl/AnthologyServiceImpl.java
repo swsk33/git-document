@@ -18,7 +18,7 @@ import com.gitee.swsk33.gitdocument.model.CreateEmailMessage;
 import com.gitee.swsk33.gitdocument.model.Result;
 import com.gitee.swsk33.gitdocument.param.AnthologyStatus;
 import com.gitee.swsk33.gitdocument.param.PermissionName;
-import com.gitee.swsk33.gitdocument.property.ConfigProperties;
+import com.gitee.swsk33.gitdocument.property.GitRepositoryProperties;
 import com.gitee.swsk33.gitdocument.service.AnthologyService;
 import com.gitee.swsk33.gitdocument.service.EmailService;
 import com.gitee.swsk33.gitdocument.service.ImageService;
@@ -59,7 +59,7 @@ public class AnthologyServiceImpl implements AnthologyService {
 	private GitFileListenerContext listenerContext;
 
 	@Autowired
-	private ConfigProperties configProperties;
+	private GitRepositoryProperties gitRepositoryProperties;
 
 	@Autowired
 	private SystemSettingDAO systemSettingDAO;
@@ -79,13 +79,13 @@ public class AnthologyServiceImpl implements AnthologyService {
 	@PostConstruct
 	private void startRepositoryUpdateTask() {
 		// 文集仓库根目录不存在则创建
-		if (configProperties.getRepoPath().equals("null")) {
+		if (gitRepositoryProperties.getRepositoryPath().equals("null")) {
 			log.warn("文集仓库根路径未配置！重置为默认值！");
-			configProperties.setRepoPath(System.getProperty("user.home") + File.separator + "git-doc-repos");
+			gitRepositoryProperties.setRepositoryPath(System.getProperty("user.home") + File.separator + "git-doc-repos");
 		}
-		if (!FileUtil.exist(configProperties.getRepoPath())) {
-			log.warn("文集仓库根路径{}不存在！即将创建...", configProperties.getRepoPath());
-			FileUtil.mkdir(configProperties.getRepoPath());
+		if (!FileUtil.exist(gitRepositoryProperties.getRepositoryPath())) {
+			log.warn("文集仓库根路径{}不存在！即将创建...", gitRepositoryProperties.getRepositoryPath());
+			FileUtil.mkdir(gitRepositoryProperties.getRepositoryPath());
 		}
 		// 从数据库获取文集仓库信息
 		List<Anthology> anthologies;
@@ -129,7 +129,7 @@ public class AnthologyServiceImpl implements AnthologyService {
 			}
 		});
 		log.info("已开启全部文集仓库监听！");
-		log.info("所有仓库位于：{}", configProperties.getRepoPath());
+		log.info("所有仓库位于：{}", gitRepositoryProperties.getRepositoryPath());
 	}
 
 	@SaCheckPermission(PermissionName.EDIT_ANTHOLOGY)
@@ -139,7 +139,7 @@ public class AnthologyServiceImpl implements AnthologyService {
 			return Result.resultFailed("该文集名已被使用！");
 		}
 		// 先去创建一个Git仓库，并加入到监听列表
-		String repoPath = configProperties.getRepoPath() + File.separator + anthology.getName() + ".git";
+		String repoPath = gitRepositoryProperties.getRepositoryPath() + File.separator + anthology.getName() + ".git";
 		if (!gitRepositoryInfoDAO.initGitBareRepository(repoPath)) {
 			return Result.resultFailed("创建文集仓库失败！请联系开发者！");
 		}
@@ -286,7 +286,7 @@ public class AnthologyServiceImpl implements AnthologyService {
 	public Result<List<Anthology>> getAnthologyNotInDatabase() {
 		List<Anthology> anthologyListInDB = anthologyDAO.selectAll();
 		List<Anthology> notInDB = new ArrayList<>();
-		Stream<File> files = Stream.of(new File(configProperties.getRepoPath()).listFiles());
+		Stream<File> files = Stream.of(FileUtil.file(gitRepositoryProperties.getRepositoryPath()).listFiles());
 		files.filter(file -> {
 			if (file.isFile()) {
 				return false;

@@ -74,7 +74,11 @@ com:
   gitee:
     swsk33:
       git-doc:
-        # 内嵌sshd服务端端口
-        ssh-server-port: ${GITDOC_SSH_PORT:2333}
-        # 存放所有文集仓库的目录，尽量不要修改
-        repo-path: "${GITDOC_REPO_PATH:null}"
+        ssh:
+          # 内嵌sshd服务端端口
+          embed-ssh-server-port: ${GITDOC_SSH_PORT:2333}
+          # 广播sshd服务端端口
+          advertised-ssh-server-port: ${GITDOC_ADVERTISED_SSH_PORT:2333}
+        git:
+          # 存放所有文集仓库的目录，尽量不要修改
+          repository-path: "${GITDOC_REPO_PATH:null}"

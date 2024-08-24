@@ -1,7 +1,7 @@
 package com.gitee.swsk33.gitdocument.config;
 
 import com.gitee.swsk33.gitdocument.dao.PublicKeyDAO;
-import com.gitee.swsk33.gitdocument.property.ConfigProperties;
+import com.gitee.swsk33.gitdocument.property.SshServerProperties;
 import com.gitee.swsk33.gitdocument.util.PublicKeyUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.sshd.server.SshServer;
@@ -23,7 +23,7 @@ import java.util.List;
 public class SshdServerConfig {
 
 	@Autowired
-	private ConfigProperties configProperties;
+	private SshServerProperties sshServerProperties;
 
 	@Autowired
 	private PublicKeyDAO publicKeyDAO;
@@ -38,7 +38,7 @@ public class SshdServerConfig {
 		// 创建一个ssh服务端对象
 		SshServer sshd = SshServer.setUpDefaultServer();
 		// 设定端口
-		sshd.setPort(configProperties.getSshServerPort());
+		sshd.setPort(sshServerProperties.getEmbedSshServerPort());
 		// 设置服务端私钥路径，私钥不存在会自动生成
 		sshd.setKeyPairProvider(new SimpleGeneratorHostKeyProvider(Paths.get("host-key")));
 		// 设定命令工厂，设定后用户可通过SSH直接执行命令而非交互式执行
@@ -60,7 +60,7 @@ public class SshdServerConfig {
 		sshd.setSubsystemFactories(List.of(new SftpSubsystemFactory()));
 		// 启动服务端
 		sshd.start();
-		log.info("------- sshd服务端，启动！端口号：{} -------", configProperties.getSshServerPort());
+		log.info("------- sshd服务端，启动！sshd端口号：{} 广播端口号：{} -------", sshServerProperties.getEmbedSshServerPort(), sshServerProperties.getAdvertisedSshServerPort());
 		return sshd;
 	}
 

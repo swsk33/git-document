@@ -32,6 +32,10 @@ values ('admin', '$2a$10$DnVDUKyYw77O5VTbQsi7XOktMOGUajGwq1xkoDn2BM6fKvMCtZNtu',
 insert into "setting"
 values (1, true, true, now(), now());
 
+-- 初始化登录记录
+insert into "login_record" ("user_id", "gmt_created")
+values (1, now());
+
 -- 初始化系统设置
 insert into "system_setting"
 values ('organization_name', '组织名'),
