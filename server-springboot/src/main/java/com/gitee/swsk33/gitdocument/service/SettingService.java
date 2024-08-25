@@ -10,6 +10,6 @@ public interface SettingService {
 	/**
 	 * 修改用户偏好设置
 	 */
-	Result<Void> update(Setting setting) throws Exception;
+	Result<Void> update(Setting setting);
 
 }

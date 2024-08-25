@@ -33,7 +33,7 @@ public class SshdServerConfig {
 	 *
 	 * @return sshd服务端对象
 	 */
-	@Bean
+	@Bean(destroyMethod = "close")
 	public SshServer sshdServer() throws Exception {
 		// 创建一个ssh服务端对象
 		SshServer sshd = SshServer.setUpDefaultServer();

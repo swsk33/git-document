@@ -44,7 +44,7 @@ public interface UserDAO extends BaseMapper<User> {
 	 */
 	default List<User> getByReceiveCreate() {
 		return selectListByQuery(QueryWrapper.create().select(USER.ALL_COLUMNS).from(USER)
-				.innerJoin(SETTING).on(USER.ID.eq(STAR.USER_ID))
+				.innerJoin(SETTING).on(USER.ID.eq(SETTING.USER_ID))
 				.where(SETTING.RECEIVE_NEW_EMAIL.eq(true)));
 	}
 

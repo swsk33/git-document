@@ -24,9 +24,9 @@ public class GitTaskFluxConfig {
 	/**
 	 * 用于发布仓库创建消息的发布者
 	 */
-	@Bean
+	@Bean(destroyMethod = "stopPublish")
 	public GitMessagePublisher gitCreateTaskPublisher() {
-		return new GitMessagePublisher();
+		return new GitMessagePublisher("Git创建消息发布者");
 	}
 
 	/**
@@ -38,16 +38,16 @@ public class GitTaskFluxConfig {
 		Flux<GitTaskMessage> flux = Flux.create(gitCreateTaskPublisher::setSink);
 		// 订阅
 		flux.subscribe(beanFactory.getBean(GitCreateTaskListener.class));
-		log.info("Git仓库创建任务消息发布者已准备完毕！");
+		log.info("------- Git仓库创建任务消息发布者已准备完毕！ -------");
 		return flux;
 	}
 
 	/**
 	 * 用于发布仓库更新消息的发布者
 	 */
-	@Bean
+	@Bean(destroyMethod = "stopPublish")
 	public GitMessagePublisher gitUpdateTaskPublisher() {
-		return new GitMessagePublisher();
+		return new GitMessagePublisher("Git更新消息发布者");
 	}
 
 	@Bean
@@ -56,7 +56,7 @@ public class GitTaskFluxConfig {
 		Flux<GitTaskMessage> flux = Flux.create(gitUpdateTaskPublisher::setSink);
 		// 订阅
 		flux.subscribe(beanFactory.getBean(GitUpdateTaskListener.class));
-		log.info("Git仓库更新任务消息发布者已准备完毕！");
+		log.info("------- Git仓库更新任务消息发布者已准备完毕！ -------");
 		return flux;
 	}
 

@@ -11,8 +11,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.GenericToStringSerializer;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
-import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 /**
  * Redis序列化配置
@@ -22,10 +22,9 @@ public class RedisSerdeConfig {
 
 	@Bean
 	public RedisTemplate<Object, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
-		// 字符串序列化器
-		StringRedisSerializer stringRedisSerializer = new StringRedisSerializer();
-		// JSON序列化器
-		// Jackson序列化的映射器配置
+		// 准备用于key的任意类型转字符串序列化器
+		GenericToStringSerializer<Object> genericToStringSerializer = new GenericToStringSerializer<>(Object.class);
+		// 准备用于value的JSON序列化器
 		ObjectMapper mapper = new ObjectMapper();
 		// 添加Java 8时间支持模块
 		mapper.registerModule(new JavaTimeModule());
@@ -42,8 +41,8 @@ public class RedisSerdeConfig {
 		RedisTemplate<Object, Object> redisTemplate = new RedisTemplate<>();
 		redisTemplate.setConnectionFactory(redisConnectionFactory);
 		// key和hashKey通常使用字符串序列化方式
-		redisTemplate.setKeySerializer(stringRedisSerializer);
-		redisTemplate.setHashKeySerializer(stringRedisSerializer);
+		redisTemplate.setKeySerializer(genericToStringSerializer);
+		redisTemplate.setHashKeySerializer(genericToStringSerializer);
 		// value和hashValue通常使用JSON序列化方式
 		redisTemplate.setValueSerializer(jsonSerializer);
 		redisTemplate.setHashValueSerializer(jsonSerializer);

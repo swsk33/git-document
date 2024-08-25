@@ -19,7 +19,7 @@ public class SettingAPI {
 	private SettingService settingService;
 
 	@PatchMapping("/update")
-	public Result<Void> updateSetting(@RequestBody @Valid Setting setting, BindingResult error) throws Exception {
+	public Result<Void> updateSetting(@RequestBody @Valid Setting setting, BindingResult error) {
 		if (error.hasErrors()) {
 			return Result.resultFailed(error.getFieldError().getDefaultMessage());
 		}

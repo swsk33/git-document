@@ -12,14 +12,13 @@ import com.gitee.swsk33.gitdocument.dataobject.LoginRecord;
 import com.gitee.swsk33.gitdocument.dataobject.Setting;
 import com.gitee.swsk33.gitdocument.dataobject.User;
 import com.gitee.swsk33.gitdocument.model.Result;
-import com.gitee.swsk33.gitdocument.param.CommonValue;
 import com.gitee.swsk33.gitdocument.param.PermissionName;
 import com.gitee.swsk33.gitdocument.param.RoleIdName;
 import com.gitee.swsk33.gitdocument.service.EmailService;
 import com.gitee.swsk33.gitdocument.service.ImageService;
 import com.gitee.swsk33.gitdocument.service.UserService;
+import com.gitee.swsk33.gitdocument.session.UserSession;
 import com.gitee.swsk33.gitdocument.util.BCryptEncoder;
-import com.gitee.swsk33.gitdocument.util.ClassExamine;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -42,13 +41,16 @@ public class UserServiceImpl implements UserService {
 	private LoginRecordDAO loginRecordDAO;
 
 	@Autowired
+	private SystemSettingDAO systemSettingDAO;
+
+	@Autowired
 	private ImageService imageService;
 
 	@Autowired
 	private EmailService emailService;
 
 	@Autowired
-	private SystemSettingDAO systemSettingDAO;
+	private UserSession userSession;
 
 	@Override
 	public Result<Void> register(User user) {
@@ -112,17 +114,16 @@ public class UserServiceImpl implements UserService {
 
 	@SaCheckLogin
 	@Override
-	public Result<Void> update(User user) throws Exception {
+	public Result<Void> update(User user) {
 		User getUser = userDAO.selectOneWithRelationsById(user.getId());
 		if (getUser == null) {
 			return Result.resultFailed("找不到该用户！");
 		}
 		// 权限判断
-		if (!StpUtil.hasPermission(PermissionName.EDIT_USER) && StpUtil.getLoginIdAsInt() != user.getId()) {
+		if (StpUtil.getLoginIdAsInt() != user.getId() && !StpUtil.hasPermission(PermissionName.EDIT_USER)) {
 			return Result.resultFailed("您没有修改其他用户信息的权限！");
 		}
 		// 若权限发生修改，则进行一些判断
-		boolean roleChanged = false;
 		if (user.getRoleId() != null && user.getRoleId().intValue() != getUser.getRoleId().intValue()) {
 			// 非管理员不能修改权限
 			if (!StpUtil.hasPermission(PermissionName.EDIT_USER)) {
@@ -136,10 +137,7 @@ public class UserServiceImpl implements UserService {
 			if (user.getRoleId() == RoleIdName.PRESERVE_ADMIN_ID) {
 				return Result.resultFailed("不能把用户修改成预留管理员！");
 			}
-			roleChanged = true;
 		}
-		// 信息覆盖
-		ClassExamine.objectOverlap(user, getUser);
 		// 检查头像是否修改
 		if (!StrUtil.isEmpty(user.getAvatar()) && !user.getAvatar().equals(getUser.getAvatar())) {
 			log.info("头像被修改！");
@@ -149,18 +147,10 @@ public class UserServiceImpl implements UserService {
 			}
 		}
 		// 密码被修改则加密储存
-		if (!user.getPassword().equals(getUser.getPassword())) {
+		if (!StrUtil.isEmpty(user.getPassword()) && !user.getPassword().equals(getUser.getPassword())) {
 			user.setPassword(BCryptEncoder.encode(user.getPassword()));
 		}
 		userDAO.update(user);
-		// 重新获取用户数据用于刷新session缓存
-		User getNewUser = userDAO.selectOneWithRelationsById(user.getId());
-		// 角色发生变化则发送邮件
-		if (roleChanged) {
-			emailService.sendRoleChangeEmail(getNewUser, (User) StpUtil.getSession().get(CommonValue.SA_USER_SESSION_INFO_KEY));
-		}
-		// 刷新用户session数据
-		StpUtil.getSessionByLoginId(user.getId()).set(CommonValue.SA_USER_SESSION_INFO_KEY, getNewUser);
 		return Result.resultSuccess("修改用户成功！");
 	}
 
@@ -177,8 +167,8 @@ public class UserServiceImpl implements UserService {
 		}
 		// 执行登录
 		StpUtil.login(getUser.getId());
-		// 登录后，把信息存入用户session
-		StpUtil.getSession().set(CommonValue.SA_USER_SESSION_INFO_KEY, getUser);
+		// 登录后，把信息存入用户Session
+		userSession.saveUserSession(getUser);
 		return Result.resultSuccess("登录成功！");
 	}
 
@@ -186,6 +176,13 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public Result<List<User>> getAll() {
 		List<User> users = userDAO.selectAllWithRelations();
+		// 去除部分属性
+		users.forEach(user -> {
+			user.setKeys(null);
+			user.setSetting(null);
+			user.setStars(null);
+			user.setEmail(null);
+		});
 		return Result.resultSuccess("查询全部用户成功！", users);
 	}
 

@@ -22,7 +22,7 @@ public class PublicKeyServiceImpl implements PublicKeyService {
 
 	@SaCheckPermission(PermissionName.EDIT_ANTHOLOGY)
 	@Override
-	public Result<Void> add(PublicKey publicKey) throws Exception {
+	public Result<Void> add(PublicKey publicKey) {
 		// 处理公钥内容
 		String opensshKey = publicKey.getContent().replace("\r", "").replace("\n", "");
 		// 转换成PEM的Base64格式
@@ -36,7 +36,7 @@ public class PublicKeyServiceImpl implements PublicKeyService {
 		}
 		// 设定公钥内容
 		publicKey.setContent(pemBase64Key);
-		// 从session获取当前登录用户id
+		// 从Session获取当前登录用户id
 		publicKey.setUserId(StpUtil.getLoginIdAsInt());
 		// 存入数据库
 		publicKeyDAO.insert(publicKey);
@@ -45,7 +45,7 @@ public class PublicKeyServiceImpl implements PublicKeyService {
 
 	@SaCheckPermission(PermissionName.EDIT_ANTHOLOGY)
 	@Override
-	public Result<Void> delete(int id) throws Exception {
+	public Result<Void> delete(int id) {
 		PublicKey getKey = publicKeyDAO.selectOneById(id);
 		if (getKey == null) {
 			return Result.resultFailed("没有这个密钥！");

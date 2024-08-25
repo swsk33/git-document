@@ -4,6 +4,7 @@ import com.mybatisflex.annotation.Column;
 import com.mybatisflex.annotation.Id;
 import com.mybatisflex.annotation.KeyType;
 import com.mybatisflex.annotation.Table;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -19,6 +20,7 @@ public class Setting {
 	 * 设置对应的用户id
 	 */
 	@Id(keyType = KeyType.None)
+	@NotNull(message = "设置的用户id不能为空！")
 	private Integer userId;
 
 	/**

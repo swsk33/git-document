@@ -28,7 +28,7 @@ public interface UserService {
 	 *
 	 * @param user 新的用户对象
 	 */
-	Result<Void> update(User user) throws Exception;
+	Result<Void> update(User user);
 
 	/**
 	 * 用户登录

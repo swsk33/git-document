@@ -6,11 +6,6 @@ package com.gitee.swsk33.gitdocument.param;
 public class CommonValue {
 
 	/**
-	 * sa-token的用户登录缓存额外信息键
-	 */
-	public static final String SA_USER_SESSION_INFO_KEY = "userSession";
-
-	/**
 	 * 运行程序的用户名
 	 */
 	public static final String RUN_USER_NAME = System.getProperty("user.name");

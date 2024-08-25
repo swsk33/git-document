@@ -12,13 +12,13 @@ public interface PublicKeyService {
 	 *
 	 * @param publicKey 公钥对象
 	 */
-	Result<Void> add(PublicKey publicKey) throws Exception;
+	Result<Void> add(PublicKey publicKey);
 
 	/**
 	 * 删除公钥
 	 *
 	 * @param id 公钥id
 	 */
-	Result<Void> delete(int id) throws Exception;
+	Result<Void> delete(int id);
 
 }

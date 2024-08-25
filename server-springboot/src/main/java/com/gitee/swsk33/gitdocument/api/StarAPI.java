@@ -2,10 +2,11 @@ package com.gitee.swsk33.gitdocument.api;
 
 import com.gitee.swsk33.gitdocument.dataobject.Star;
 import com.gitee.swsk33.gitdocument.model.Result;
+import com.gitee.swsk33.gitdocument.param.ValidationRules;
 import com.gitee.swsk33.gitdocument.service.StarService;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,7 +17,7 @@ public class StarAPI {
 	private StarService starService;
 
 	@PostMapping("/add")
-	public Result<Void> add(@Valid @RequestBody Star star, BindingResult errors) {
+	public Result<Void> add(@Validated({ValidationRules.DataAdd.class}) @RequestBody Star star, BindingResult errors) {
 		if (errors.hasErrors()) {
 			return Result.resultFailed(errors.getFieldError().getDefaultMessage());
 		}

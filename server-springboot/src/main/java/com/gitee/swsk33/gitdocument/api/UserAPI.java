@@ -3,9 +3,11 @@ package com.gitee.swsk33.gitdocument.api;
 import cn.dev33.satoken.stp.StpUtil;
 import com.gitee.swsk33.gitdocument.dataobject.User;
 import com.gitee.swsk33.gitdocument.model.Result;
-import com.gitee.swsk33.gitdocument.param.CommonValue;
 import com.gitee.swsk33.gitdocument.param.ValidationRules;
+import com.gitee.swsk33.gitdocument.service.LoginRecordService;
 import com.gitee.swsk33.gitdocument.service.UserService;
+import com.gitee.swsk33.gitdocument.session.UserSession;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -19,6 +21,12 @@ public class UserAPI {
 
 	@Autowired
 	private UserService userService;
+
+	@Autowired
+	private LoginRecordService loginRecordService;
+
+	@Autowired
+	private UserSession userSession;
 
 	@PostMapping("/register")
 	public Result<Void> register(@RequestBody @Validated(ValidationRules.DataAdd.class) User user, BindingResult errors) {
@@ -62,11 +70,13 @@ public class UserAPI {
 	}
 
 	@GetMapping("/is-login")
-	public Result<User> isLogin() {
+	public Result<User> isLogin(HttpServletRequest request) {
 		if (!StpUtil.isLogin()) {
 			return Result.resultFailed("用户没有登录！");
 		}
-		return Result.resultSuccess("用户已登录！", (User) StpUtil.getSession().get(CommonValue.SA_USER_SESSION_INFO_KEY));
+		// 更新用户登录记录
+		loginRecordService.update(request);
+		return Result.resultSuccess("用户已登录！", userSession.getCurrentLoginSessionUser());
 	}
 
 	@PostMapping("/reset-password/{code}")

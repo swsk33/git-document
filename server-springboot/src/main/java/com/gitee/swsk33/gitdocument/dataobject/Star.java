@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
  */
 @Data
 @Table("star")
-@JsonIgnoreProperties(allowSetters = true, value = {"userId", "anthologyId"})
+@JsonIgnoreProperties(allowSetters = true, value = {"userId", "anthology"})
 public class Star {
 
 	/**
@@ -38,6 +38,7 @@ public class Star {
 	 * 被收藏的文集id（外键）
 	 */
 	@NotNull(groups = ValidationRules.DataAdd.class, message = "收藏的文集id不能为空！")
+	@JsonSerialize(using = LongToStringSerializer.class)
 	private Long anthologyId;
 
 	/**

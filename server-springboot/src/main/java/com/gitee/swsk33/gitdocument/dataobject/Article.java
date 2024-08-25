@@ -39,6 +39,7 @@ public class Article {
 	/**
 	 * 所属文集id（外键）
 	 */
+	@JsonSerialize(using = LongToStringSerializer.class)
 	private Long anthologyId;
 
 	/**

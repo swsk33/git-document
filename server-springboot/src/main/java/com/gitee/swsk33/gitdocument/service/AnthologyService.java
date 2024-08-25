@@ -39,7 +39,7 @@ public interface AnthologyService {
 	 *
 	 * @param anthology 文集对象
 	 */
-	Result<Void> update(Anthology anthology) throws Exception;
+	Result<Void> update(Anthology anthology);
 
 	/**
 	 * 根据id获取文集
@@ -64,7 +64,7 @@ public interface AnthologyService {
 	 * 获取一个文集仓库中的图片文件
 	 *
 	 * @param id            文集id
-	 * @param imageFilePath 图片文件在文集仓库中的绝对路径
+	 * @param imageFilePath 图片文件在文集仓库中的绝对路径（不以/开头）
 	 */
 	Result<byte[]> getImageData(long id, String imageFilePath);
 

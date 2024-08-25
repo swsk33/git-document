@@ -1,7 +1,6 @@
 package com.gitee.swsk33.gitdocument.service.impl;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
-import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
 import com.gitee.swsk33.gitdocument.context.GitFileListenerContext;
@@ -22,7 +21,7 @@ import com.gitee.swsk33.gitdocument.property.GitRepositoryProperties;
 import com.gitee.swsk33.gitdocument.service.AnthologyService;
 import com.gitee.swsk33.gitdocument.service.EmailService;
 import com.gitee.swsk33.gitdocument.service.ImageService;
-import com.gitee.swsk33.gitdocument.util.ClassExamine;
+import com.gitee.swsk33.gitdocument.session.UserSession;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -35,7 +34,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static com.gitee.swsk33.gitdocument.param.CommonValue.SA_USER_SESSION_INFO_KEY;
 import static com.gitee.swsk33.gitdocument.param.SystemSettingKey.ORGANIZATION_NAME;
 
 @Slf4j
@@ -50,6 +48,18 @@ public class AnthologyServiceImpl implements AnthologyService {
 	private UserDAO userDAO;
 
 	@Autowired
+	private SystemSettingDAO systemSettingDAO;
+
+	@Autowired
+	private GitRepositoryInfoDAO gitRepositoryInfoDAO;
+
+	@Autowired
+	private GitCommitDAO gitCommitDAO;
+
+	@Autowired
+	private GitFileDAO gitFileDAO;
+
+	@Autowired
 	private ImageService imageService;
 
 	@Autowired
@@ -62,16 +72,7 @@ public class AnthologyServiceImpl implements AnthologyService {
 	private GitRepositoryProperties gitRepositoryProperties;
 
 	@Autowired
-	private SystemSettingDAO systemSettingDAO;
-
-	@Autowired
-	private GitRepositoryInfoDAO gitRepositoryInfoDAO;
-
-	@Autowired
-	private GitCommitDAO gitCommitDAO;
-
-	@Autowired
-	private GitFileDAO gitFileDAO;
+	private UserSession userSession;
 
 	/**
 	 * 启动时，开始监听现有的每个仓库，并开启文件更新任务队列
@@ -147,22 +148,24 @@ public class AnthologyServiceImpl implements AnthologyService {
 		// 补充信息
 		anthology.setRepoPath(repoPath);
 		anthology.setStatus(AnthologyStatus.UPDATING);
-		// 加入监听
-		listenerContext.addMonitor(anthology.getId(), repoPath);
 		// 存入数据库
 		anthologyDAO.insert(anthology);
+		// 加入监听
+		listenerContext.addMonitor(anthology.getId(), repoPath);
 		// 发送通知
 		// 获取订阅新文集创建通知的用户
 		List<User> receivers = userDAO.getByReceiveCreate();
-		List<String> emails = receivers.stream().map(User::getEmail).toList();
-		// 准备任务消息
-		CreateEmailMessage message = new CreateEmailMessage();
-		message.setTitle("GitDocument · " + systemSettingDAO.get(ORGANIZATION_NAME) + " - 新文集发布通知");
-		message.setName(anthology.getShowName());
-		message.setEmailList(emails);
-		message.setPublisher(((User) StpUtil.getSession().get(SA_USER_SESSION_INFO_KEY)).getNickname());
-		// 异步发送邮件
-		emailService.sendAnthologyCreateNotify(message);
+		if (!receivers.isEmpty()) {
+			List<String> emails = receivers.stream().map(User::getEmail).toList();
+			// 准备任务消息
+			CreateEmailMessage message = new CreateEmailMessage();
+			message.setTitle("GitDocument · " + systemSettingDAO.get(ORGANIZATION_NAME) + " - 新文集发布通知");
+			message.setName(anthology.getShowName());
+			message.setEmailList(emails);
+			message.setPublisher(userSession.getCurrentLoginSessionUser().getNickname());
+			// 异步发送邮件
+			emailService.sendAnthologyCreateNotify(message);
+		}
 		return Result.resultSuccess("创建文集仓库成功！");
 	}
 
@@ -197,10 +200,11 @@ public class AnthologyServiceImpl implements AnthologyService {
 
 	@SaCheckPermission(PermissionName.EDIT_ANTHOLOGY)
 	@Override
-	public Result<Void> update(Anthology anthology) throws Exception {
-		// 补全
+	public Result<Void> update(Anthology anthology) {
 		Anthology getAnthology = anthologyDAO.selectOneById(anthology.getId());
-		ClassExamine.objectOverlap(anthology, getAnthology);
+		if (getAnthology == null) {
+			return Result.resultFailed("对应的文集id不存在！");
+		}
 		// 检查封面是否修改，若修改删除原封面
 		if (!StrUtil.isEmpty(anthology.getCover()) && !anthology.getCover().equals(getAnthology.getCover())) {
 			log.info("文集封面修改！");
@@ -255,7 +259,7 @@ public class AnthologyServiceImpl implements AnthologyService {
 	@SaCheckPermission(PermissionName.BROWSE_ARTICLE)
 	@Override
 	public Result<List<Anthology>> getAll() {
-		List<Anthology> anthologies = anthologyDAO.selectAllWithRelations();
+		List<Anthology> anthologies = anthologyDAO.selectAll();
 		// 填充时间信息
 		anthologies.forEach(item -> {
 			RevCommit commit = gitCommitDAO.getHeadCommit(item.getRepoPath());

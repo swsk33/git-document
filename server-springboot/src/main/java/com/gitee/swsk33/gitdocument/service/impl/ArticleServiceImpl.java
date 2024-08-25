@@ -46,7 +46,7 @@ public class ArticleServiceImpl implements ArticleService {
 	public Result<ArticleDirectory> getByAnthology(long anthologyId) {
 		// 先去Redis里面取
 		ArticleDirectory getDirectory = articleTreeCache.getById(anthologyId);
-		// 若Redis为空再去MySQL取出文章列表并进行目录树转换
+		// 若Redis为空再去数据库取出文章列表并进行目录树转换
 		if (getDirectory == null) {
 			getDirectory = new ArticleDirectory(articleDAO.getByAnthologyId(anthologyId));
 			// 存入缓存
