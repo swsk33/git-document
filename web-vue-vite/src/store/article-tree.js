@@ -1,22 +1,6 @@
 // 在这个Store中，定义文档目录树结构以及解析方式，将后端的文件系统形式目录树转化为Element-Plus中树形组件形式
 
 /**
- * @typedef Article 文章
- * @property {String} id 文章id
- * @property {String} name 文章名
- *
- * @typedef ArticleFileTree 文档文件目录树，该对象可以表示一个文件夹
- * @property {String} name 目录名
- * @property {Array<ArticleFileTree>} directories 该目录下的目录列表
- * @property {Array<Article>} articles 该目录下文件列表
- *
- * @typedef ArticleTreeNode 组件式树结构的节点
- * @property {String} id 节点id（即为文章id，如果是目录则id为null）
- * @property {String} label 当前节点显示名
- * @property {Array<ArticleTreeNode>} children 子节点
- */
-
-/**
  * 组件树节点构造函数
  * @param {String} id 节点id（即为文章id，如果不是叶子节点则id为null）
  * @param {String} label 节点显示名

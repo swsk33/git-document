@@ -1,10 +1,11 @@
 import axios from 'axios';
 
 /**
+ * @template T
  * @typedef {Object} Result
  * @property {Boolean} success 结果是否成功
  * @property {String} message 操作消息
- * @property {Object} data 返回的内容
+ * @property {T} data 返回的内容
  */
 
 /**
@@ -63,7 +64,6 @@ async function uploadFile(url, method, formData) {
 		},
 		data: formData
 	};
-	// 发送请求
 	// 发送请求
 	try {
 		const response = await axios(requestParam);

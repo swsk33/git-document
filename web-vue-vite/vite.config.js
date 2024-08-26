@@ -21,7 +21,7 @@ export default defineConfig({
 		proxy: {
 			// 请求代理
 			'/api': {
-				target: 'http://localhost:8801/',
+				target: 'http://localhost:5354/',
 				changeOrigin: true
 			}
 		}
