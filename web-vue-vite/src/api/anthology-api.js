@@ -3,7 +3,7 @@
 import { REQUEST_METHOD, sendRequest } from '../utils/request.js';
 
 /**
- * @typedef {Object} Anthology 文集仓库对象
+ * @typedef Anthology 文集仓库对象
  * @property {String} id 主键id
  * @property {String} name 名称
  * @property {String} showName 显示名

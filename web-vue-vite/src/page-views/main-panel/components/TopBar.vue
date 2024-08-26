@@ -5,25 +5,25 @@
 			<div class="info">{{ userStore.userData.nickname }} <br> <span class="role-name">{{ userStore.userData.role.showName }}</span></div>
 			<ul class="menu-body">
 				<li @click="toUserInfo">个人设置</li>
-				<li @click="userLogout">退出登录</li>
+				<li @click="logout">退出登录</li>
 			</ul>
 		</div>
 	</div>
 </template>
 
 <script setup>
-import { sendRequest, REQUEST_METHOD } from '../../../utils/request';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { parseAvatarURL, REQUEST_PREFIX } from '../../../param/request-prefix';
 
 const router = useRouter();
 
 let menuShow = ref(false);
 
 // pinia
-import { useUserStore } from '../../../store/user';
-import { showNotification } from '../../../utils/message';
+import { useUserStore } from '../../../store/user.js';
+import { showNotification } from '../../../utils/message.js';
+import { userLogout } from '../../../api/user-api.js';
+import { parseAvatarURL } from '../../../api/image-api.js';
 
 const userStore = useUserStore();
 
@@ -46,8 +46,8 @@ function toUserInfo() {
 /**
  * 用户退出
  */
-async function userLogout() {
-	await sendRequest(REQUEST_PREFIX.USER + 'logout', REQUEST_METHOD.GET);
+async function logout() {
+	await userLogout();
 	await userStore.checkLogin();
 	showNotification('成功', '已退出登录！');
 	await router.push('/login');

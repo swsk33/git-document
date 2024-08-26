@@ -20,9 +20,10 @@
 import { useRouter } from 'vue-router';
 import { ref, reactive, shallowRef } from 'vue';
 import { Lock, Message, Coin } from '@element-plus/icons-vue';
-import { REQUEST_METHOD, sendRequest } from '../../../utils/request';
-import { REQUEST_PREFIX } from '../../../param/request-prefix';
-import { MESSAGE_TYPE, showNotification } from '../../../utils/message';
+import { MESSAGE_TYPE, showNotification } from '../../../utils/message.js';
+import { isEmpty } from '../../../utils/string.js';
+import { emailPasswordResetCode } from '../../../api/email-api.js';
+import { userResetPassword } from '../../../api/user-api.js';
 
 const router = useRouter();
 
@@ -63,11 +64,11 @@ const sendCodeText = ref('发送验证码');
  */
 async function sendCode() {
 	// 检验空
-	if (resetUser.email === undefined || resetUser.email === '') {
+	if (isEmpty(resetUser.email)) {
 		showNotification('错误', '邮箱不能为空！', MESSAGE_TYPE.error);
 		return;
 	}
-	const response = await sendRequest(REQUEST_PREFIX.EMAIL + 'password-reset/' + resetUser.email, REQUEST_METHOD.GET);
+	const response = await emailPasswordResetCode(resetUser.email);
 	if (!response.success) {
 		showNotification('错误', response.message, MESSAGE_TYPE.error);
 		return;
@@ -92,12 +93,12 @@ async function sendCode() {
  * 发送密码重置请求
  */
 async function resetPassword() {
-// 检验空
-	if (resetUser.password === undefined || code.value === undefined || resetUser.password === '' || code.value === '') {
+	// 检验空
+	if (isEmpty(resetUser.password) || isEmpty(code.value)) {
 		showNotification('错误', '新密码或者验证码不能为空！', MESSAGE_TYPE.error);
 		return;
 	}
-	const response = await sendRequest(REQUEST_PREFIX.USER + 'reset-password/' + code.value, REQUEST_METHOD.POST, resetUser);
+	const response = await userResetPassword(resetUser, code.value);
 	if (!response.success) {
 		showNotification('错误', response.message, MESSAGE_TYPE.error);
 		return;

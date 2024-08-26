@@ -20,7 +20,14 @@ public class RoleServiceImpl implements RoleService {
 	@SaCheckPermission(PermissionName.EDIT_USER)
 	@Override
 	public Result<List<Role>> getAll() {
-		return Result.resultSuccess("获取角色完成！", roleDAO.selectAllWithRelations());
+		List<Role> roles = roleDAO.selectAllWithRelations();
+		// 移除重合的部分属性
+		roles.forEach(role -> {
+			role.getPermissions().forEach(permission -> {
+				permission.setRoles(null);
+			});
+		});
+		return Result.resultSuccess("获取角色完成！", roles);
 	}
 
 }

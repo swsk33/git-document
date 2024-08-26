@@ -14,9 +14,8 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { REQUEST_METHOD, uploadFile } from '../../../utils/request';
-import { parseImageURL, REQUEST_PREFIX } from '../../../param/request-prefix';
-import { MESSAGE_TYPE, showNotification } from '../../../utils/message';
+import { MESSAGE_TYPE, showNotification } from '../../../utils/message.js';
+import { imageUpload, parseImageURL } from '../../../api/image-api.js';
 
 // 引用上传按钮
 const uploadButton = ref(null);
@@ -60,9 +59,7 @@ async function uploadAndGetUrl() {
 		return null;
 	}
 	// 创建表单对象
-	let form = new FormData();
-	form.append(props.uploadName, beforeUploadImage.value);
-	const response = await uploadFile(REQUEST_PREFIX.IMAGE + 'upload', REQUEST_METHOD.POST, form);
+	const response = await imageUpload(props.uploadName, beforeUploadImage.value);
 	if (!response.success) {
 		showNotification('失败', response.message, MESSAGE_TYPE.error);
 		return;

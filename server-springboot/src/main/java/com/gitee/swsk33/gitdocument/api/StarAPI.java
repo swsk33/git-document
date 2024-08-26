@@ -17,7 +17,7 @@ public class StarAPI {
 	private StarService starService;
 
 	@PostMapping("/add")
-	public Result<Void> add(@Validated({ValidationRules.DataAdd.class}) @RequestBody Star star, BindingResult errors) {
+	public Result<Star> add(@Validated({ValidationRules.DataAdd.class}) @RequestBody Star star, BindingResult errors) {
 		if (errors.hasErrors()) {
 			return Result.resultFailed(errors.getFieldError().getDefaultMessage());
 		}

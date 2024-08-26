@@ -1,7 +1,7 @@
 // 用户相关接口请求
 
 /**
- * @typedef {Object} User 用户对象
+ * @typedef User 用户对象
  * @property {Number} id 主键id
  * @property {String} username 用户名
  * @property {String} password 密码
@@ -9,6 +9,18 @@
  * @property {String} avatar 头像id
  * @property {String} email 邮箱
  * @property {Number} roleId 用户角色id
+ * @property {Role} role 用户角色
+ * @property {LoginRecord} loginRecord 上次登录记录
+ * @property {Setting} setting 用户偏好设定
+ * @property {Array<Star>} stars 用户的收藏列表
+ * @property {Array<PublicKey>} keys 用户的公钥
+ *
+ * @typedef LoginRecord 用户登录记录
+ * @property {Number} userId 关联用户id
+ * @property {String} ip 上次登录ip
+ * @property {String} location 上次登录位置
+ * @property {Date} gmtCreated 记录创建时间
+ * @property {Date} gmtModified 上次登录时间
  */
 
 import { REQUEST_METHOD, sendRequest } from '../utils/request.js';

@@ -4,9 +4,9 @@
 </template>
 
 <script setup>
-import { useUserStore } from './store/user';
-import { useUrlPathStore } from './store/url-path';
-import { useMetaDataStore } from './store/meta-data';
+import { useUserStore } from './store/user.js';
+import { useUrlPathStore } from './store/url-path.js';
+import { useMetaDataStore } from './store/meta-data.js';
 
 // pinia
 const userStore = useUserStore();

@@ -16,11 +16,10 @@
 
 <script setup>
 import { reactive, shallowRef } from 'vue';
-import { sendRequest, REQUEST_METHOD } from '../../../utils/request';
 import { Avatar, Lock, CollectionTag, Postcard } from '@element-plus/icons-vue';
 import { useRouter } from 'vue-router';
-import { REQUEST_PREFIX } from '../../../param/request-prefix';
-import { MESSAGE_TYPE, showNotification } from '../../../utils/message';
+import { MESSAGE_TYPE, showNotification } from '../../../utils/message.js';
+import { userRegister } from '../../../api/user-api.js';
 
 const router = useRouter();
 
@@ -51,7 +50,7 @@ const icons = reactive({
  * 注册方法
  */
 async function register() {
-	const response = await sendRequest(REQUEST_PREFIX.USER + 'register', REQUEST_METHOD.POST, userData);
+	const response = await userRegister(userData);
 	if (!response.success) {
 		showNotification('失败', response.message, MESSAGE_TYPE.error);
 		return;

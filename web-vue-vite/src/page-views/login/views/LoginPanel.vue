@@ -15,18 +15,17 @@
 
 <script setup>
 import { Avatar, Lock } from '@element-plus/icons-vue';
-import { REQUEST_METHOD, sendRequest } from '../../../utils/request';
 import { reactive, shallowRef } from 'vue';
 import { useRouter } from 'vue-router';
-import { MESSAGE_TYPE, showNotification } from '../../../utils/message';
+import { MESSAGE_TYPE, showNotification } from '../../../utils/message.js';
 
 const router = useRouter();
 
 // pinia
-import { useUserStore } from '../../../store/user';
-import { useMetaDataStore } from '../../../store/meta-data';
-import { useUrlPathStore } from '../../../store/url-path';
-import { REQUEST_PREFIX } from '../../../param/request-prefix';
+import { useUserStore } from '../../../store/user.js';
+import { useMetaDataStore } from '../../../store/meta-data.js';
+import { useUrlPathStore } from '../../../store/url-path.js';
+import { userLogin } from '../../../api/user-api.js';
 
 const userStore = useUserStore();
 const metaStore = useMetaDataStore();
@@ -63,7 +62,7 @@ function toRegister() {
  * 登录方法
  */
 async function login() {
-	let response = await sendRequest(REQUEST_PREFIX.USER + 'login', REQUEST_METHOD.POST, userData);
+	let response = await userLogin(userData);
 	if (!response.success) {
 		showNotification('错误', response.message, MESSAGE_TYPE.error);
 		return;

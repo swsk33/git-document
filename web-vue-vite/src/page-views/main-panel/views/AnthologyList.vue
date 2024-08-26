@@ -8,7 +8,7 @@
 		<!-- 文集列表 -->
 		<ul class="anthology-list">
 			<!-- 每个文集 -->
-			<li v-for="item in list" :key="item.id" v-show="!showStarOnly || (showStarOnly && containStar(item.id))">
+			<li v-for="item in list" :key="item.id" v-show="!showStarOnly || (showStarOnly && userStarMap.has(item.id))">
 				<!-- 文集封面 -->
 				<div class="image">
 					<img :src="parseCoverURL(item.cover)" alt="undefined"/>
@@ -28,7 +28,7 @@
 				<!-- 按钮盒子 -->
 				<div class="button-box">
 					<div class="star-box">
-						<el-button type="info" plain class="star" :icon="containStar(item.id) ? StarFilled : Star" @click="containStar(item.id) ? cancelStar(item.id) : doStar(item.id)" circle/>
+						<el-button type="info" plain class="star" :icon="userStarMap.has(item.id) ? StarFilled : Star" @click="userStarMap.has(item.id) ? cancelStar(item.id) : doStar(item.id)" circle/>
 						<el-tooltip placement="top" :content="'收藏数：' + item.starCount">
 							<div class="count">{{ item.starCount }}</div>
 						</el-tooltip>
@@ -46,11 +46,11 @@
 			<template v-slot:content>
 				<div class="name">
 					<div class="text">文集名：</div>
-					<el-input class="input" size="large" v-model="addAnthologyInfo.name" placeholder="请输入文集名，由英文和数字组成"/>
+					<el-input class="input" size="large" v-model="addAnthologyObject.name" placeholder="请输入文集名，由英文和数字组成"/>
 				</div>
 				<div class="show-name">
 					<div class="text">文集显示名：</div>
-					<el-input class="input" size="large" v-model="addAnthologyInfo.showName" placeholder="请输入文集显示名"/>
+					<el-input class="input" size="large" v-model="addAnthologyObject.showName" placeholder="请输入文集显示名"/>
 				</div>
 			</template>
 			<template v-slot:button-box>
@@ -62,16 +62,16 @@
 		<InfoDialog class="edit-anthology" ref="editAnthologyRef">
 			<template v-slot:title>修改文集</template>
 			<template v-slot:content>
-				<upload-image class="cover" :default-image="parseCoverURL(null)" :init-image="editAnthologyInfo.cover" upload-name="image" ref="uploadImage">
+				<upload-image class="cover" :default-image="parseCoverURL(null)" :init-image="editAnthologyObject.cover" upload-name="image" ref="uploadImage">
 					<template v-slot:text>上传封面：</template>
 				</upload-image>
 				<div class="show-name">
 					<div class="text">文集显示名：</div>
-					<el-input class="input" size="large" v-model="editAnthologyInfo.showName" placeholder="请输入文集显示名"/>
+					<el-input class="input" size="large" v-model="editAnthologyObject.showName" placeholder="请输入文集显示名"/>
 				</div>
 				<div class="status">
 					<div class="text">文集状态：</div>
-					<el-select class="select" v-model="editAnthologyInfo.status" size="large">
+					<el-select class="select" v-model="editAnthologyObject.status" size="large">
 						<el-option v-for="item in ANTHOLOGY_STATUS.values()" :key="item.name" :label="item.showName" :value="item.name"/>
 					</el-select>
 				</div>
@@ -91,15 +91,12 @@
 
 <script setup>
 import ClipBoard from 'clipboard';
-
-import { sendRequest, REQUEST_METHOD } from '../../../utils/request';
-import { timestampToDateString } from '../../../utils/time-convert';
 import { reactive, ref, computed, onBeforeMount, watch } from 'vue';
-import { Star, StarFilled } from '@element-plus/icons-vue';
 import { useRouter } from 'vue-router';
-import { parseCoverURL, REQUEST_PREFIX } from '../../../param/request-prefix';
-import { MESSAGE_TYPE, showNotification } from '../../../utils/message';
-import { ANTHOLOGY_STATUS } from '../../../param/anthology-status';
+import { Star, StarFilled } from '@element-plus/icons-vue';
+import { timestampToDateString } from '../../../utils/time-convert.js';
+import { MESSAGE_TYPE, showNotification } from '../../../utils/message.js';
+import { ANTHOLOGY_STATUS } from '../../../param/anthology-status.js';
 
 const router = useRouter();
 
@@ -112,8 +109,12 @@ const editAnthologyRef = ref(null);
 const uploadImage = ref(null);
 
 // pinia
-import { useUserStore } from '../../../store/user';
-import { useMetaDataStore } from '../../../store/meta-data';
+import { useUserStore } from '../../../store/user.js';
+import { useMetaDataStore } from '../../../store/meta-data.js';
+import { anthologyAdd, anthologyDelete, anthologyGetAll, anthologyUpdate } from '../../../api/anthology-api.js';
+import { parseCoverURL } from '../../../api/image-api.js';
+import { starAdd, starDelete, starGetCount } from '../../../api/star-api.js';
+import { isEmpty } from '../../../utils/string.js';
 
 const userStore = useUserStore();
 const metaStore = useMetaDataStore();
@@ -131,7 +132,7 @@ const loadingDone = ref(false);
 /**
  * 当前要添加的文集信息
  */
-const addAnthologyInfo = reactive({
+const addAnthologyObject = reactive({
 	name: undefined,
 	showName: undefined
 });
@@ -139,16 +140,7 @@ const addAnthologyInfo = reactive({
 /**
  * 当前正在编辑的文集信息
  */
-const editAnthologyInfo = ref(undefined);
-
-/**
- * 用户收藏的文集列表
- */
-const userStar = ref([]);
-/**
- * 是否只显示收藏
- */
-const showStarOnly = ref(false);
+const editAnthologyObject = ref(undefined);
 
 /**
  * 将时间戳转换为标准时间
@@ -158,25 +150,11 @@ const getUpdateTime = computed(() => (timestamp) => {
 });
 
 /**
- * 判断传入的文集id是否是当前用户收藏的文集
- * @param {number} anthologyId 文集id
- * @return {boolean} 是否是当前用户收藏的
- */
-const containStar = computed(() => (anthologyId) => {
-	for (let item of userStar.value) {
-		if (item.anthology.id === anthologyId) {
-			return true;
-		}
-	}
-	return false;
-});
-
-/**
  * 获取文集列表
  */
 async function getAnthologyList() {
 	loadingDone.value = false;
-	const response = await sendRequest(REQUEST_PREFIX.ANTHOLOGY + 'get-all', REQUEST_METHOD.GET);
+	const response = await anthologyGetAll();
 	loadingDone.value = true;
 	if (!response.success) {
 		showNotification('错误', response.message, MESSAGE_TYPE.error);
@@ -186,27 +164,10 @@ async function getAnthologyList() {
 }
 
 /**
- * 复制文集Git SSH克隆地址
- * @param id 传入文集id
- * @param repoPath 传入仓库路径
- */
-function copySSH(id, repoPath) {
-	const clipBoard = new ClipBoard('#copy-ssh-' + id, {
-		text() {
-			return metaStore.sshPort !== 22 ? 'ssh://' + metaStore.systemUser + '@' + location.hostname + ':' + metaStore.sshPort + repoPath : metaStore.systemUser + '@' + location.hostname + ':' + repoPath;
-		}
-	});
-	clipBoard.on('success', () => {
-		showNotification('成功', '复制成功！');
-		clipBoard.destroy();
-	});
-}
-
-/**
  * 添加文集
  */
 async function addAnthology() {
-	const response = await sendRequest(REQUEST_PREFIX.ANTHOLOGY + 'add', REQUEST_METHOD.POST, addAnthologyInfo);
+	const response = await anthologyAdd(addAnthologyObject);
 	if (!response.success) {
 		showNotification('错误', response.message, MESSAGE_TYPE.error);
 		return;
@@ -223,7 +184,7 @@ async function addAnthology() {
  * @param anthology 文集对象
  */
 function showEditDialog(anthology) {
-	editAnthologyInfo.value = anthology;
+	editAnthologyObject.value = anthology;
 	editAnthologyRef.value.frameShow = true;
 }
 
@@ -232,9 +193,9 @@ function showEditDialog(anthology) {
  */
 async function editAnthology() {
 	// 修改信息之前，先上传图片
-	editAnthologyInfo.value.cover = await uploadImage.value.uploadAndGetUrl();
+	editAnthologyObject.value.cover = await uploadImage.value.uploadAndGetUrl();
 	// 修改文集数据
-	const response = await sendRequest(REQUEST_PREFIX.ANTHOLOGY + 'update', REQUEST_METHOD.PATCH, editAnthologyInfo.value);
+	const response = await anthologyUpdate(editAnthologyObject.value);
 	if (!response.success) {
 		showNotification('失败', response.message, MESSAGE_TYPE.error);
 		return;
@@ -243,7 +204,6 @@ async function editAnthology() {
 	editAnthologyRef.value.frameShow = false;
 	// 刷新列表
 	await getAnthologyList();
-	await getUserStar();
 	await getStarCount();
 }
 
@@ -251,7 +211,7 @@ async function editAnthology() {
  * 删除当前编辑的文集
  */
 async function deleteAnthology() {
-	const response = await sendRequest(REQUEST_PREFIX.ANTHOLOGY + 'delete/' + editAnthologyInfo.value.id, REQUEST_METHOD.DELETE);
+	const response = await anthologyDelete(editAnthologyObject.value.id);
 	if (!response.success) {
 		showNotification('失败', response.message, MESSAGE_TYPE.error);
 		return;
@@ -260,41 +220,63 @@ async function deleteAnthology() {
 	editAnthologyRef.value.frameShow = false;
 	// 刷新列表
 	await getAnthologyList();
-	await getUserStar();
 	await getStarCount();
 }
 
 /**
- * 获取当前用户收藏的文集
+ * 复制文集Git SSH克隆地址
+ * @param id 传入文集id
+ * @param repoPath 传入仓库路径
  */
-async function getUserStar() {
-	const response = await sendRequest(REQUEST_PREFIX.STAR + 'get-by-user', REQUEST_METHOD.GET);
-	if (response.success) {
-		userStar.value = response.data;
-	}
+function copySSH(id, repoPath) {
+	const clipBoard = new ClipBoard('#copy-ssh-' + id, {
+		text() {
+			return metaStore.sshPort !== 22 ? `ssh://${metaStore.systemUser}@${location.hostname}:${metaStore.sshPort}${repoPath}` : `${metaStore.systemUser}@${location.hostname}:${repoPath}`;
+		}
+	});
+	clipBoard.on('success', () => {
+		showNotification('成功', '复制成功！');
+		clipBoard.destroy();
+	});
 }
+
+/**
+ * 用户收藏的文集id对应收藏id的哈希表<br>
+ * - 键：被收藏的文集id
+ * - 值：收藏对象id
+ */
+const userStarMap = ref(new Map());
+
+/**
+ * 是否只显示收藏
+ */
+const showStarOnly = ref(false);
+
+/**
+ * 读取用户信息，初始化用户收藏的文集id集合
+ */
+const initializeStarMap = () => {
+	const map = userStarMap.value;
+	map.clear();
+	for (let star of userStore.userData.stars) {
+		map.set(star.anthologyId, star.id);
+	}
+};
 
 /**
  * 收藏文集
  * @param anthologyId 要收藏的文集id
  */
 async function doStar(anthologyId) {
-	const response = await sendRequest(REQUEST_PREFIX.STAR + 'add', REQUEST_METHOD.POST, {
-		user: {
-			id: userStore.userData.id
-		},
-		anthology: {
-			id: anthologyId
-		}
-	});
+	const response = await starAdd(anthologyId);
 	if (!response.success) {
 		showNotification('失败', response.message, MESSAGE_TYPE.error);
 		return;
 	}
 	showNotification('成功', response.message);
-	// 刷新列表
-	await getUserStar();
-	await getStarCount();
+	// 同步更改到收藏哈希表
+	userStarMap.value.set(response.data.anthologyId, response.data.id);
+	await getStarCount(anthologyId);
 }
 
 /**
@@ -302,31 +284,37 @@ async function doStar(anthologyId) {
  * @param anthologyId 取消收藏的文集id
  */
 async function cancelStar(anthologyId) {
-	let starId;
-	for (let item of userStar.value) {
-		if (item.anthology.id === anthologyId) {
-			starId = item.id;
-			break;
-		}
-	}
-	const response = await sendRequest(REQUEST_PREFIX.STAR + 'delete/' + starId, REQUEST_METHOD.DELETE);
+	const response = await starDelete(userStarMap.value.get(anthologyId));
 	if (!response.success) {
 		showNotification('失败', response.message, MESSAGE_TYPE.error);
 		return;
 	}
 	showNotification('成功', response.message);
-	// 刷新列表
-	await getUserStar();
-	await getStarCount();
+	// 同步更改到收藏哈希表
+	userStarMap.value.delete(anthologyId);
+	await getStarCount(anthologyId);
 }
 
 /**
- * 获取并设定每个文集的收藏数
+ * 获取并设定所有文集或者对应文集的收藏数
+ * @param {String} anthologyId 要获取收藏数的文集id，当该参数省略时，则获取全部文集的收藏数
  */
-async function getStarCount() {
+async function getStarCount(anthologyId = null) {
+	// 指定id时只获取对应id的文集收藏数
+	if (!isEmpty(anthologyId)) {
+		const response = await starGetCount(anthologyId);
+		if (!response.success) {
+			return;
+		}
+		for (let item of list.value) {
+			item.starCount = response.data;
+		}
+		return;
+	}
+	// 未指定id时，获取全部文章收藏数
 	for (let item of list.value) {
 		item.starCount = 0;
-		const response = await sendRequest(REQUEST_PREFIX.STAR + 'get-star-count/' + item.id, REQUEST_METHOD.GET);
+		const response = await starGetCount(item.id);
 		if (!response.success) {
 			continue;
 		}
@@ -342,7 +330,8 @@ watch(showStarOnly, (newValue) => {
 onBeforeMount(async () => {
 	// 挂载组件时获取文集列表
 	await getAnthologyList();
-	await getUserStar();
+	// 加载用户收藏信息
+	initializeStarMap();
 	await getStarCount();
 	// 获取本地缓存中的显示全部/仅显示收藏选项
 	let item = localStorage.getItem('show-star-only');

@@ -1,6 +1,7 @@
-import { sendRequest, REQUEST_METHOD } from '../utils/request';
-import { parseImageURL, REQUEST_PREFIX } from '../param/request-prefix';
 import { defineStore } from 'pinia';
+import { systemGetAllowPublic, systemGetLoginImage, systemGetMainImage, systemGetOrganizationName } from '../api/system-setting-api.js';
+import { systemInfoGetSSHPort, systemInfoGetUser } from '../api/system-info-api.js';
+import { parseImageURL } from '../api/image-api.js';
 
 export const useMetaDataStore = defineStore('meta-data', {
 	state() {
@@ -36,7 +37,7 @@ export const useMetaDataStore = defineStore('meta-data', {
 		 * 从后端获取组织名
 		 */
 		async requestName() {
-			const response = await sendRequest(REQUEST_PREFIX.SYSTEM_SETTING + 'get-organization', REQUEST_METHOD.GET);
+			const response = await systemGetOrganizationName();
 			if (response.success) {
 				this.organizationName = response.data;
 			}
@@ -45,7 +46,7 @@ export const useMetaDataStore = defineStore('meta-data', {
 		 * 从后端获取是否允许公开注册
 		 */
 		async requestAllowPublic() {
-			const response = await sendRequest(REQUEST_PREFIX.SYSTEM_SETTING + 'get-allow-public', REQUEST_METHOD.GET);
+			const response = await systemGetAllowPublic();
 			if (response.success) {
 				this.allowPublic = response.data;
 			}
@@ -54,7 +55,7 @@ export const useMetaDataStore = defineStore('meta-data', {
 		 * 获取后端系统用户
 		 */
 		async getSystemUser() {
-			const response = await sendRequest(REQUEST_PREFIX.SYSTEM_INFO + 'system-user', REQUEST_METHOD.GET);
+			const response = await systemInfoGetUser();
 			if (response.success) {
 				this.systemUser = response.data;
 			}
@@ -63,7 +64,7 @@ export const useMetaDataStore = defineStore('meta-data', {
 		 * 获取SSH端口
 		 */
 		async getSSHPort() {
-			const response = await sendRequest(REQUEST_PREFIX.SYSTEM_INFO + 'ssh-port', REQUEST_METHOD.GET);
+			const response = await systemInfoGetSSHPort();
 			if (response.success) {
 				this.sshPort = response.data;
 			}
@@ -73,7 +74,7 @@ export const useMetaDataStore = defineStore('meta-data', {
 		 */
 		async getLoginImage() {
 			// 首先获取自定义图片
-			const response = await sendRequest(REQUEST_PREFIX.SYSTEM_SETTING + 'get-login-image', REQUEST_METHOD.GET);
+			const response = await systemGetLoginImage();
 			if (response.data != null) {
 				this.loginBackground = parseImageURL(response.data);
 				return;
@@ -96,7 +97,7 @@ export const useMetaDataStore = defineStore('meta-data', {
 		 */
 		async getMainImage() {
 			// 首先获取自定义图片
-			const response = await sendRequest(REQUEST_PREFIX.SYSTEM_SETTING + 'get-main-image', REQUEST_METHOD.GET);
+			const response = await systemGetMainImage();
 			if (response.data != null) {
 				this.mainBackground = parseImageURL(response.data);
 				return;

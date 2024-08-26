@@ -28,7 +28,7 @@ import { useRouter } from 'vue-router';
 const router = useRouter();
 
 // pinia
-import { useUserStore } from '../../../store/user';
+import { useUserStore } from '../../../store/user.js';
 
 const userStore = useUserStore();
 </script>

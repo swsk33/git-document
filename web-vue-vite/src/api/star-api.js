@@ -14,7 +14,7 @@ const apiPrefix = '/api/star';
 /**
  * 新增一个收藏
  * @param {String} anthologyId 收藏的文集id
- * @returns {Promise<Result<void>>} 响应体
+ * @returns {Promise<Result<Star>>} 响应体，包含新增的收藏信息
  */
 export async function starAdd(anthologyId) {
 	return sendRequest(`${apiPrefix}/add`, REQUEST_METHOD.POST, {
@@ -29,4 +29,13 @@ export async function starAdd(anthologyId) {
  */
 export async function starDelete(id) {
 	return sendRequest(`${apiPrefix}/delete/${id}`, REQUEST_METHOD.DELETE);
+}
+
+/**
+ * 获取一个文集的收藏数
+ * @param {String} anthologyId 文集id
+ * @returns {Promise<Result<Number>>}
+ */
+export async function starGetCount(anthologyId) {
+	return sendRequest(`${apiPrefix}/get-star-count/${anthologyId}`, REQUEST_METHOD.GET);
 }

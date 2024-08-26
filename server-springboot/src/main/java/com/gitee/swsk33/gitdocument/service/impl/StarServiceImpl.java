@@ -17,13 +17,13 @@ public class StarServiceImpl implements StarService {
 
 	@SaCheckLogin
 	@Override
-	public Result<Void> add(Star star) {
+	public Result<Star> add(Star star) {
 		// 获取登录的用户id并设定给Star对象
 		star.setUserId(StpUtil.getLoginIdAsInt());
 		if (starDAO.insert(star) < 1) {
 			return Result.resultFailed("收藏失败！请联系开发者！");
 		}
-		return Result.resultSuccess("收藏成功！");
+		return Result.resultSuccess("收藏成功！", star);
 	}
 
 	@SaCheckLogin

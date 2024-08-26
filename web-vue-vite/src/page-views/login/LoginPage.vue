@@ -12,8 +12,8 @@ import { useRouter } from 'vue-router';
 const router = useRouter();
 
 // pinia
-import { useMetaDataStore } from '../../store/meta-data';
-import { useUserStore } from '../../store/user';
+import { useMetaDataStore } from '../../store/meta-data.js';
+import { useUserStore } from '../../store/user.js';
 
 const metaStore = useMetaDataStore();
 const userStore = useUserStore();

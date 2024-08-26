@@ -14,8 +14,9 @@ public interface StarService {
 	 * 添加收藏
 	 *
 	 * @param star 收藏信息
+	 * @return 新增的收藏对象
 	 */
-	Result<Void> add(Star star);
+	Result<Star> add(Star star);
 
 	/**
 	 * 取消收藏
