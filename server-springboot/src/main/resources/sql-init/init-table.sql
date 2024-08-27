@@ -68,6 +68,7 @@ create table "login_record"
 create table "public_key"
 (
 	"id"           serial primary key,
+	"name"         varchar(16)   not null,
 	"content"      varchar(1024) not null,
 	"user_id"      int           not null,
 	"gmt_created"  timestamp,

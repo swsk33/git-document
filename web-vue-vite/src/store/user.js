@@ -4,6 +4,7 @@ import { userIsLogin } from '../api/user-api.js';
 import { roleGetAll } from '../api/role-api.js';
 import { starGetByLoginUser } from '../api/star-api.js';
 import { publicKeyGetByLoginUser } from '../api/public-key-api.js';
+import { dateToString } from '../utils/time-convert.js';
 
 export const useUserStore = defineStore('user', {
 	state() {
@@ -35,9 +36,14 @@ export const useUserStore = defineStore('user', {
 			// 若登录，则设定用户数据及其收藏列表
 			if (response.success) {
 				this.userData = response.data;
+				// 设定收藏列表
 				this.starMap.clear();
 				for (let star of this.userData.stars) {
 					this.starMap.set(star.anthologyId, star.id);
+				}
+				// 转换公钥时间
+				for (let key of this.userData.keys) {
+					key.gmtCreated = dateToString(key.gmtCreated);
 				}
 			}
 			return response.success;
@@ -63,6 +69,10 @@ export const useUserStore = defineStore('user', {
 			const response = await publicKeyGetByLoginUser();
 			if (response.success) {
 				this.userData.keys = response.data;
+				// 转换公钥时间
+				for (let key of this.userData.keys) {
+					key.gmtCreated = dateToString(key.gmtCreated);
+				}
 			}
 			return response.success;
 		},

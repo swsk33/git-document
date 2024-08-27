@@ -3,6 +3,7 @@ package com.gitee.swsk33.gitdocument.dao;
 import com.gitee.swsk33.gitdocument.dataobject.User;
 import com.mybatisflex.core.BaseMapper;
 import com.mybatisflex.core.query.QueryWrapper;
+import com.mybatisflex.core.relation.RelationManager;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -32,7 +33,8 @@ public interface UserDAO extends BaseMapper<User> {
 	 * @return 收藏这个文集的用户列表
 	 */
 	default List<User> getByStarAnthology(long anthologyId) {
-		return selectListByQuery(QueryWrapper.create().select(USER.ALL_COLUMNS).from(USER)
+		RelationManager.addQueryRelations("setting");
+		return selectListWithRelationsByQuery(QueryWrapper.create().select(USER.ALL_COLUMNS).from(USER)
 				.innerJoin(STAR).on(USER.ID.eq(STAR.USER_ID))
 				.where(STAR.ANTHOLOGY_ID.eq(anthologyId)));
 	}

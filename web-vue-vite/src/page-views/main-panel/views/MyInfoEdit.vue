@@ -45,7 +45,8 @@
 						<template #reference>
 							<el-button class="add" type="success" size="small" @click="popOverShow.publicKeyAdd = true">添加SSH公钥</el-button>
 						</template>
-						<el-input v-model="editDataObject.addPublicKey" type="textarea" :cols="50" :rows="5" resize="none" placeholder="请粘贴公钥内容至此"/>
+						<el-input class="key-name-input" style="margin-bottom: 10px" v-model="editDataObject.publicKey.name" placeholder="请填写公钥名称"/>
+						<el-input class="key-content-input" v-model="editDataObject.publicKey.content" type="textarea" :cols="50" :rows="5" resize="none" placeholder="请粘贴公钥内容至此"/>
 						<div class="button-box" style="display: flex;margin-top: 12px">
 							<el-button type="success" size="small" @click="addPublicKeyRequest">确认</el-button>
 							<el-button type="warning" size="small" @click="popOverShow.publicKeyAdd = false">取消</el-button>
@@ -55,7 +56,8 @@
 				<!-- 公钥显示表格 -->
 				<el-table class="data" :data="userStore.userData.keys" border empty-text="暂无公钥，添加公钥后才能推送文章！">
 					<el-table-column width="50" :resizable="false" label="id" prop="id" align="center"/>
-					<el-table-column width="600" show-overflow-tooltip label="公钥内容" prop="content"/>
+					<el-table-column width="220" show-overflow-tooltip label="公钥名称" prop="name" align="center"/>
+					<el-table-column width="280" show-overflow-tooltip label="创建时间" prop="gmtCreated" align="center"/>
 					<el-table-column class-name="column-operate" align="center" label="操作">
 						<template #default="scope">
 							<el-popconfirm title="确认删除？" confirm-button-text="是的" cancel-button-text="再想想" confirm-button-type="danger" cancel-button-type="success" @confirm="deleteKey(scope.row.id)">
@@ -127,7 +129,10 @@ const editDataObject = reactive({
 	/**
 	 * 待添加的公钥
 	 */
-	addPublicKey: undefined
+	publicKey: {
+		name: undefined,
+		content: undefined
+	}
 });
 
 /**
@@ -171,16 +176,15 @@ async function deleteKey(id) {
  * 发送增加公钥请求
  */
 async function addPublicKeyRequest() {
-	const response = await publicKeyAdd({
-		content: editDataObject.addPublicKey
-	});
+	const response = await publicKeyAdd(editDataObject.publicKey);
 	if (!response.success) {
 		showNotification('错误', response.message, MESSAGE_TYPE.error);
 		return;
 	}
 	showNotification('成功', response.message);
 	popOverShow.publicKeyAdd = false;
-	editDataObject.addPublicKey = undefined;
+	editDataObject.publicKey.name = undefined;
+	editDataObject.publicKey.content = undefined;
 	// 刷新视图
 	await userStore.refreshUserPublicKey();
 }

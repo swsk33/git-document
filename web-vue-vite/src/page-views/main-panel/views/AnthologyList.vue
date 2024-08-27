@@ -29,8 +29,8 @@
 				<div class="button-box">
 					<div class="star-box">
 						<el-button type="info" plain class="star" :icon="userStore.starMap.has(item.id) ? StarFilled : Star" @click="userStore.starMap.has(item.id) ? cancelStar(item.id) : doStar(item.id)" circle/>
-						<el-tooltip placement="top" :content="'收藏数：' + item.stars.length">
-							<div class="count">{{ item.stars.length }}</div>
+						<el-tooltip placement="top" :content="'收藏数：' + anthologyStore.starCountMap.get(item.id)">
+							<div class="count">{{ anthologyStore.starCountMap.get(item.id) }}</div>
 						</el-tooltip>
 					</div>
 					<el-button type="primary" plain class="copy-ssh" :id="'copy-ssh-' + item.id" v-if="userStore.hasPermission('edit_anthology') && item.status !== 'ARCHIVE'" @click="copySSH(item.id, item.repoPath)">复制Git SSH地址</el-button>
@@ -319,7 +319,7 @@ onBeforeMount(async () => {
 			display: flex;
 			justify-content: flex-start;
 			align-items: center;
-			height: 15vh;
+			height: 12.5vh;
 			width: 96%;
 			left: 2%;
 			border-bottom: #d0d0d0 1px solid;
@@ -327,8 +327,8 @@ onBeforeMount(async () => {
 			user-select: none;
 
 			.image {
-				height: 10vh;
-				width: 10vh;
+				height: 11vh;
+				width: 11vh;
 				display: flex;
 				justify-content: center;
 				align-items: center;
@@ -336,8 +336,8 @@ onBeforeMount(async () => {
 				box-sizing: border-box;
 
 				img {
-					max-width: 10vh;
-					max-height: 10vh;
+					max-width: 9vh;
+					max-height: 9vh;
 					border-radius: 17px;
 					border: #e844ff 1px solid;
 				}
@@ -362,12 +362,11 @@ onBeforeMount(async () => {
 				font-size: 15px;
 				line-height: 18px;
 				height: 18px;
-				width: 4%;
+				width: 4.5%;
 				border-radius: 5px;
 				border-style: solid;
 				border-width: 1px;
 				padding: 2px 4px;
-				margin-left: 1%;
 				text-align: center;
 				box-sizing: content-box;
 				text-overflow: ellipsis;
@@ -376,7 +375,7 @@ onBeforeMount(async () => {
 			}
 
 			.update-time {
-				width: 18%;
+				width: 17%;
 				font-size: 13px;
 				text-align: center;
 				color: #5500ff;
@@ -387,9 +386,9 @@ onBeforeMount(async () => {
 				display: flex;
 				justify-content: space-evenly;
 				align-items: center;
-				width: 36%;
+				width: 38%;
 				height: 6vh;
-				margin-left: 2%;
+				margin-left: 1%;
 
 				.star-box {
 					display: flex;

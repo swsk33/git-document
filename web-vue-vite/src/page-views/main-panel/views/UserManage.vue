@@ -6,15 +6,19 @@
 		</div>
 		<!-- 全部用户列表 -->
 		<el-table class="user-list" :data="userList" border row-class-name="user-list-row" empty-text="没有用户">
-			<el-table-column prop="id" label="id" width="60" align="center"/>
-			<el-table-column label="头像" width="120" :resizable="false" align="center">
+			<el-table-column label="头像" width="75" :resizable="false" align="center">
 				<template #default="scope">
 					<img :src="parseAvatarURL(scope.row.avatar)" alt="无法显示">
 				</template>
 			</el-table-column>
-			<el-table-column prop="username" show-overflow-tooltip label="用户名" width="250"/>
-			<el-table-column prop="nickname" show-overflow-tooltip label="昵称" width="250"/>
-			<el-table-column label="角色" width="150">
+			<el-table-column prop="username" show-overflow-tooltip label="用户名" width="175" align="center"/>
+			<el-table-column prop="nickname" show-overflow-tooltip label="昵称" width="200" align="center"/>
+			<el-table-column label="上次登录记录" align="center">
+				<el-table-column prop="loginRecord.ip" label="IP地址" width="145" show-overflow-tooltip align="center"/>
+				<el-table-column prop="loginRecord.location" label="登录地理位置" width="235" show-overflow-tooltip align="center"/>
+				<el-table-column prop="loginRecord.gmtModified" label="登录时间" width="180" show-overflow-tooltip align="center"/>
+			</el-table-column>
+			<el-table-column label="角色" width="145" align="center">
 				<template #default="scope">
 					<el-dropdown @command="changeUserRole">
 						<div class="current-value" style="user-select: none">
@@ -67,8 +71,8 @@
 				</div>
 				<div class="role">
 					<div class="text">角色：</div>
-					<el-radio-group v-model="addUserData.role.id" class="input">
-						<el-radio v-for="item in availableRole" :label="item.id" size="large">{{ item.showName }}</el-radio>
+					<el-radio-group v-model="addUserData.roleId" class="input">
+						<el-radio v-for="item in availableRole" :value="item.id" size="large">{{ item.showName }}</el-radio>
 					</el-radio-group>
 				</div>
 			</template>
@@ -86,6 +90,7 @@ import { onBeforeMount, reactive, ref } from 'vue';
 import { MESSAGE_TYPE, showNotification } from '../../../utils/message.js';
 import { userDelete, userGetAll, userRegister, userUpdate } from '../../../api/user-api.js';
 import { parseAvatarURL } from '../../../api/image-api.js';
+import { dateToString } from '../../../utils/time-convert.js';
 
 // 组件引入
 import InfoDialog from '../components/InfoDialog.vue';
@@ -136,6 +141,10 @@ async function getUserList() {
 	if (!response.success) {
 		showNotification('失败', response.message, MESSAGE_TYPE.error);
 		return;
+	}
+	// 转换其中的登录时间属性
+	for (let user of response.data) {
+		user.loginRecord.gmtModified = dateToString(user.loginRecord.gmtModified);
 	}
 	userList.value = response.data;
 }
@@ -231,8 +240,8 @@ onBeforeMount(async () => {
 
 		.user-list-row {
 			img {
-				max-height: 75px;
-				max-width: 75px;
+				max-height: 50px;
+				max-width: 50px;
 				border-radius: 50%;
 				border: #7462ff 2px solid;
 				box-sizing: border-box;

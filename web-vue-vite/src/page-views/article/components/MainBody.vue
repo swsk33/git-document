@@ -24,9 +24,9 @@ import ClipBoard from 'clipboard';
 import renderMathInElement from 'katex/dist/contrib/auto-render';
 import { markedHighlight } from 'marked-highlight';
 import hljs from 'highlight.js';
-import { REQUEST_METHOD, sendRequest } from '../../../utils/request.js';
-import { joinPath } from '../../../utils/file-path.js';
 import { MESSAGE_TYPE, showNotification } from '../../../utils/message.js';
+import { anthologyGetImageURL } from '../../../api/anthology-api.js';
+import { articleGet } from '../../../api/article-api.js';
 
 const route = useRoute();
 
@@ -36,8 +36,6 @@ const content = ref(null);
 // pinia
 import { useArticlePageThemeStore } from '../../../store/article-page-theme.js';
 import { useArticleTreeStore } from '../../../store/article-tree.js';
-import { anthologyGetImageURL } from '../../../api/anthology-api.js';
-import { articleGet } from '../../../api/article-api.js';
 
 const themeStore = useArticlePageThemeStore();
 const articleTreeStore = useArticleTreeStore();
@@ -447,11 +445,6 @@ onUpdated(() => {
 			}
 		}
 
-		// 加粗字体和斜体调整
-		strong, em {
-			padding-bottom: 1px;
-		}
-
 		// 调整一号标题代码样式
 		h1 {
 			code {
@@ -474,7 +467,7 @@ onUpdated(() => {
 
 		// 定义引用块
 		blockquote {
-			margin: 0;
+			margin: 8px 0;
 			border-radius: 4px;
 			padding-top: 2px;
 			padding-bottom: 2px;
@@ -485,19 +478,17 @@ onUpdated(() => {
 			}
 		}
 
-		// 图片居中
-		p {
-			img {
-				display: block;
-				margin: 0 auto;
-				// 设定图片最大宽度
-				max-width: 100%;
-			}
+		// 图片
+		img {
+			display: block;
+			margin: 16px auto;
+			// 设定图片最大宽度
+			max-width: 100%;
 		}
 
 		// 定义列表
 		table {
-			margin: 0 auto;
+			margin: 24px auto;
 			border-collapse: collapse;
 
 			th, td {

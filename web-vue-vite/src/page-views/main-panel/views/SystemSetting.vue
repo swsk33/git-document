@@ -329,7 +329,7 @@ async function doAnthologyRecovery() {
 				padding: 0 3px;
 
 				li {
-					width: 100%;
+					padding: 2px 10px;
 					font-size: 20px;
 					line-height: 32px;
 					color: #140068;

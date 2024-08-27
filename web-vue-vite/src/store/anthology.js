@@ -13,7 +13,7 @@ export const useAnthologyStore = defineStore('anthology', {
 			 */
 			anthologyMap: new Map(),
 			/**
-			 * 每个文集仓库对应的收藏数量哈希表<br>
+			 * 每个文集仓库对应的收藏数量的哈希表<br>
 			 * - 键：文集仓库id
 			 * - 值：文集仓库的收藏数量
 			 */

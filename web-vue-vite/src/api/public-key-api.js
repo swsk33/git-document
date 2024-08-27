@@ -5,6 +5,7 @@ import { REQUEST_METHOD, sendRequest } from '../utils/request.js';
 /**
  * @typedef PublicKey 公钥对象
  * @property {Number} id 主键id
+ * @property {String} name 公钥名称
  * @property {String} content 公钥内容
  * @property {Number} userId 所属用户id
  */

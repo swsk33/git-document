@@ -4,11 +4,9 @@ import cn.dev33.satoken.stp.StpUtil;
 import com.gitee.swsk33.gitdocument.dao.UserDAO;
 import com.gitee.swsk33.gitdocument.dataobject.User;
 import com.gitee.swsk33.gitdocument.session.UserSession;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Slf4j
 @Component
 public class UserSessionImpl implements UserSession {
 
@@ -23,7 +21,6 @@ public class UserSessionImpl implements UserSession {
 	@Override
 	public void saveUserSession(User user) {
 		StpUtil.getSessionByLoginId(user.getId()).set(SA_USER_SESSION_INFO_KEY, user);
-		log.info("已保存id为{}的用户信息至Session缓存！", user.getId());
 	}
 
 	@Override

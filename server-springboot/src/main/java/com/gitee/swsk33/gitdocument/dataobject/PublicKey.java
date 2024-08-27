@@ -6,6 +6,7 @@ import com.mybatisflex.annotation.Id;
 import com.mybatisflex.annotation.KeyType;
 import com.mybatisflex.annotation.Table;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -15,7 +16,7 @@ import java.time.LocalDateTime;
  */
 @Data
 @Table("public_key")
-@JsonIgnoreProperties(allowSetters = true, value = {"userId"})
+@JsonIgnoreProperties(allowSetters = true, value = {"userId", "content"})
 public class PublicKey {
 
 	/**
@@ -23,6 +24,13 @@ public class PublicKey {
 	 */
 	@Id(keyType = KeyType.Auto)
 	private Integer id;
+
+	/**
+	 * 公钥显示名称
+	 */
+	@NotEmpty(message = "公钥名称不可为空！")
+	@Size(max = 16, message = "公钥名称不可超过16个字符！")
+	private String name;
 
 	/**
 	 * 公钥内容，转换成PEM格式，Base64编码后再存入数据库
