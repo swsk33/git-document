@@ -9,6 +9,8 @@ import com.gitee.swsk33.gitdocument.service.StarService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class StarServiceImpl implements StarService {
 
@@ -43,8 +45,8 @@ public class StarServiceImpl implements StarService {
 
 	@SaCheckLogin
 	@Override
-	public Result<Integer> getAnthologyStarCount(long anthologyId) {
-		return Result.resultSuccess("获取文集收藏数完成！", starDAO.getAnthologyStarCount(anthologyId));
+	public Result<List<Star>> getByLoginUser() {
+		return Result.resultSuccess("查询用户收藏成功！", starDAO.getByUser(StpUtil.getLoginIdAsInt()));
 	}
 
 }

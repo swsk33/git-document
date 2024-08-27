@@ -28,3 +28,11 @@ export async function publicKeyAdd(publicKey) {
 export async function publicKeyDelete(id) {
 	return sendRequest(`${apiPrefix}/delete/${id}`, REQUEST_METHOD.DELETE);
 }
+
+/**
+ * 根据当前登录用户获取公钥列表
+ * @returns {Promise<Result<PublicKey>>} 公钥列表响应体
+ */
+export async function publicKeyGetByLoginUser() {
+	return sendRequest(`${apiPrefix}/get-by-login-user`, REQUEST_METHOD.GET);
+}

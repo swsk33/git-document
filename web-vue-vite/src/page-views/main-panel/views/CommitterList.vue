@@ -23,12 +23,12 @@
 </template>
 
 <script setup>
-import { sendRequest, REQUEST_METHOD } from '../../../utils/request';
-import { timestampToDateString } from '../../../utils/time-convert';
+import { timestampToDateString } from '../../../utils/time-convert.js';
 import { computed, onBeforeMount, ref } from 'vue';
 import { useRoute } from 'vue-router';
-import { parseAvatarURL, REQUEST_PREFIX } from '../../../param/request-prefix';
-import { MESSAGE_TYPE, showNotification } from '../../../utils/message';
+import { MESSAGE_TYPE, showNotification } from '../../../utils/message.js';
+import { anthologyGetCommit } from '../../../api/anthology-api.js';
+import { parseAvatarURL } from '../../../api/image-api.js';
 
 const route = useRoute();
 
@@ -43,7 +43,7 @@ const getUpdateTime = computed(() => (timestamp) => {
 
 onBeforeMount(async () => {
 	// 拉取贡献者列表
-	const response = await sendRequest(REQUEST_PREFIX.ANTHOLOGY + 'get-all-commits/' + route.params.id, REQUEST_METHOD.GET);
+	const response = await anthologyGetCommit(route.params.id);
 	loadingDone.value = true;
 	if (!response.success) {
 		showNotification('错误', response.message, MESSAGE_TYPE.error);

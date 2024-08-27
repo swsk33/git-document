@@ -68,7 +68,6 @@ public class UserSessionRefreshAspect {
 		Object result = joinPoint.proceed();
 		if (((Result<?>) result).isSuccess()) {
 			userSession.refreshUserSessionById(user.getId());
-			System.out.println(user.getId());
 		}
 		return result;
 	}

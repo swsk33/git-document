@@ -5,7 +5,7 @@ import cn.hutool.core.util.StrUtil;
 import com.gitee.swsk33.gitdocument.dao.AnthologyDAO;
 import com.gitee.swsk33.gitdocument.dataobject.Anthology;
 import com.gitee.swsk33.gitdocument.git.GitCommitDAO;
-import com.gitee.swsk33.gitdocument.git.GitRepositoryInfoDAO;
+import com.gitee.swsk33.gitdocument.git.GitRepositoryDAO;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +51,7 @@ public class GitRepositoryFileListener implements Watcher {
 	private GitCommitDAO gitCommitDAO;
 
 	@Autowired
-	private GitRepositoryInfoDAO gitRepositoryInfoDAO;
+	private GitRepositoryDAO gitRepositoryDAO;
 
 	@Override
 	public void onCreate(WatchEvent<?> watchEvent, Path path) {
@@ -72,10 +72,10 @@ public class GitRepositoryFileListener implements Watcher {
 		String oldId = getAnthology.getLatestCommit();
 		// 若数据库中记录的commitId为空，说明这是第一次推送，执行仓库的创建操作
 		if (StrUtil.isEmpty(oldId)) {
-			gitRepositoryInfoDAO.doCreateTask(id, gitRepository, newId);
+			gitRepositoryDAO.doCreateTask(id, gitRepository, newId);
 		} else {
 			// 否则，进行更新操作
-			gitRepositoryInfoDAO.doUpdateTask(id, getAnthology.getShowName(), gitRepository, true, oldId, newId);
+			gitRepositoryDAO.doUpdateTask(id, getAnthology.getShowName(), gitRepository, true, oldId, newId);
 		}
 	}
 

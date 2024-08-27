@@ -42,12 +42,6 @@ public class Star {
 	private Long anthologyId;
 
 	/**
-	 * 被收藏的文集
-	 */
-	@RelationManyToOne(selfField = "anthologyId", targetField = "id")
-	private Anthology anthology;
-
-	/**
 	 * 创建时间
 	 */
 	@Column(onInsertValue = "now()")

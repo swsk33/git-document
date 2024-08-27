@@ -5,6 +5,8 @@ import com.mybatisflex.core.BaseMapper;
 import com.mybatisflex.core.query.QueryWrapper;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 import static com.gitee.swsk33.gitdocument.dataobject.table.PublicKeyTableDef.PUBLIC_KEY;
 import static com.mybatisflex.core.query.QueryMethods.number;
 
@@ -33,6 +35,16 @@ public interface PublicKeyDAO extends BaseMapper<PublicKey> {
 		QueryWrapper wrapper = QueryWrapper.create().select(number(1)).from(PUBLIC_KEY).where(PUBLIC_KEY.ID.eq(id));
 		Long exists = selectObjectByQueryAs(wrapper, Long.class);
 		return exists != null;
+	}
+
+	/**
+	 * 根据用户id获取用户的公钥列表
+	 *
+	 * @param userId 用户id
+	 * @return 用户公钥列表
+	 */
+	default List<PublicKey> getByUserId(int userId) {
+		return selectListByQuery(QueryWrapper.create().where(PUBLIC_KEY.USER_ID.eq(userId)));
 	}
 
 }

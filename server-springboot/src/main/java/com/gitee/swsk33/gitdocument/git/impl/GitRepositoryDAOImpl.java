@@ -6,10 +6,11 @@ import cn.hutool.core.util.RuntimeUtil;
 import cn.hutool.core.util.StrUtil;
 import com.gitee.swsk33.gitdocument.dao.SystemSettingDAO;
 import com.gitee.swsk33.gitdocument.dao.UserDAO;
+import com.gitee.swsk33.gitdocument.dataobject.Anthology;
 import com.gitee.swsk33.gitdocument.dataobject.User;
 import com.gitee.swsk33.gitdocument.git.GitCommitDAO;
 import com.gitee.swsk33.gitdocument.git.GitFileDAO;
-import com.gitee.swsk33.gitdocument.git.GitRepositoryInfoDAO;
+import com.gitee.swsk33.gitdocument.git.GitRepositoryDAO;
 import com.gitee.swsk33.gitdocument.model.ArticleDifference;
 import com.gitee.swsk33.gitdocument.model.GitCreateTaskMessage;
 import com.gitee.swsk33.gitdocument.model.GitUpdateTaskMessage;
@@ -20,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -32,7 +34,8 @@ import static com.gitee.swsk33.gitdocument.param.SystemSettingKey.ORGANIZATION_N
 
 @Slf4j
 @Component
-public class GitRepositoryInfoDAOImpl implements GitRepositoryInfoDAO {
+@DependsOn({"gitCreateTaskFlux", "gitUpdateTaskFlux"})
+public class GitRepositoryDAOImpl implements GitRepositoryDAO {
 
 	@Autowired
 	private UserDAO userDAO;
@@ -56,7 +59,7 @@ public class GitRepositoryInfoDAOImpl implements GitRepositoryInfoDAO {
 	private EmailService emailService;
 
 	@Override
-	public boolean initGitBareRepository(String gitRepository) {
+	public boolean createGitBareRepository(String gitRepository) {
 		// 裸仓库文件夹
 		File repositoryFolder = FileUtil.file(gitRepository);
 		// 钩子脚本所在位置
@@ -136,6 +139,28 @@ public class GitRepositoryInfoDAOImpl implements GitRepositoryInfoDAO {
 			message.setEmailList(emailList);
 			// 异步发送
 			emailService.sendAnthologyUpdateNotify(message);
+		}
+	}
+
+	@Override
+	public void checkGitRepositoryUpdate(Anthology anthology) {
+		// 获取本地仓库的commit信息
+		String localCommitId = gitCommitDAO.getHeadCommitId(anthology.getRepoPath());
+		// 如果说本地仓库commit为空，说明是刚创建的仓库，则不进行对比
+		if (StrUtil.isEmpty(localCommitId)) {
+			log.warn("本地仓库：{}的commitId为空！可能是刚创建的仓库，跳过比对！", anthology.getName());
+			return;
+		}
+		// 如果数据库中commit为空，说明需要执行创建任务
+		if (StrUtil.isEmpty(anthology.getLatestCommit())) {
+			log.warn("发现本地仓库：{}在数据库中的commitId为空，进行创建操作...", anthology.getName());
+			doCreateTask(anthology.getId(), anthology.getRepoPath(), localCommitId);
+			return;
+		}
+		// 如果只是单纯的两者不同，说明需要进行更新同步操作
+		if (!anthology.getLatestCommit().equals(localCommitId)) {
+			log.warn("发现本地仓库：{}与数据库的commit不同，进行更新操作...", anthology.getName());
+			doUpdateTask(anthology.getId(), anthology.getShowName(), anthology.getRepoPath(), false, anthology.getLatestCommit(), localCommitId);
 		}
 	}
 

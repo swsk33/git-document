@@ -5,20 +5,21 @@ import com.mybatisflex.core.BaseMapper;
 import com.mybatisflex.core.query.QueryWrapper;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 import static com.gitee.swsk33.gitdocument.dataobject.table.StarTableDef.STAR;
-import static com.mybatisflex.core.query.QueryMethods.count;
 
 @Mapper
 public interface StarDAO extends BaseMapper<Star> {
 
 	/**
-	 * 获得一个文集的收藏数
+	 * 获取一个用户的全部收藏列表
 	 *
-	 * @param anthologyId 文集id
-	 * @return 对应文集的收藏数量
+	 * @param userId 用户id
+	 * @return 对应用户收藏列表
 	 */
-	default Integer getAnthologyStarCount(long anthologyId) {
-		return selectObjectByQueryAs(QueryWrapper.create().select(count(STAR.ALL_COLUMNS)).from(STAR).where(STAR.ANTHOLOGY_ID.eq(anthologyId)), Integer.class);
+	default List<Star> getByUser(int userId) {
+		return selectListByQuery(QueryWrapper.create().where(STAR.USER_ID.eq(userId)));
 	}
 
 }

@@ -21,13 +21,6 @@ public interface AnthologyService {
 	Result<Void> add(Anthology anthology);
 
 	/**
-	 * 批量添加文集
-	 *
-	 * @param anthologies 文集对象
-	 */
-	Result<Void> batchAdd(List<Anthology> anthologies);
-
-	/**
 	 * 删除一个文集
 	 *
 	 * @param id 文集id
@@ -74,5 +67,12 @@ public interface AnthologyService {
 	 * @return 在本地但是不在数据库中的文集仓库
 	 */
 	Result<List<Anthology>> getAnthologyNotInDatabase();
+
+	/**
+	 * 将位于本地但是不在数据库中的文集恢复到数据库中
+	 *
+	 * @param anthologies 传入在本地但是不在数据库中的文集仓库，必须指定name和showName属性，其中name属性必须是已存在的裸仓库文件夹
+	 */
+	Result<Void> restoreAnthologyNotInDatabase(List<Anthology> anthologies);
 
 }

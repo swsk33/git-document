@@ -9,6 +9,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/star")
 public class StarAPI {
@@ -29,9 +31,9 @@ public class StarAPI {
 		return starService.delete(id);
 	}
 
-	@GetMapping("/get-star-count/{anthologyId}")
-	public Result<Integer> getAnthologyStarCount(@PathVariable long anthologyId) {
-		return starService.getAnthologyStarCount(anthologyId);
+	@GetMapping("/get-by-login-user")
+	public Result<List<Star>> getByUser() {
+		return starService.getByLoginUser();
 	}
 
 }

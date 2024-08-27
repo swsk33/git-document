@@ -30,11 +30,6 @@ public class AnthologyAPI {
 		return anthologyService.add(anthology);
 	}
 
-	@PostMapping("/batch-add")
-	public Result<Void> batchAdd(@Validated(ValidationRules.DataAdd.class) @RequestBody List<Anthology> anthologies) {
-		return anthologyService.batchAdd(anthologies);
-	}
-
 	@DeleteMapping("/delete/{id}")
 	public Result<Void> delete(@PathVariable long id) {
 		return anthologyService.delete(id);
@@ -75,6 +70,11 @@ public class AnthologyAPI {
 	@GetMapping("/get-not-in-database")
 	public Result<List<Anthology>> getNotInDB() {
 		return anthologyService.getAnthologyNotInDatabase();
+	}
+
+	@PostMapping("/restore-not-in-database")
+	public Result<Void> batchAdd(@Validated(ValidationRules.DataAdd.class) @RequestBody List<Anthology> anthologies) {
+		return anthologyService.restoreAnthologyNotInDatabase(anthologies);
 	}
 
 }

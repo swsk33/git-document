@@ -13,6 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Slf4j
 @Component
 public class PublicKeyServiceImpl implements PublicKeyService {
@@ -56,6 +58,12 @@ public class PublicKeyServiceImpl implements PublicKeyService {
 		}
 		publicKeyDAO.deleteById(id);
 		return Result.resultSuccess("移除公钥完成！");
+	}
+
+	@SaCheckPermission(PermissionName.EDIT_ANTHOLOGY)
+	@Override
+	public Result<List<PublicKey>> getByLoginUser() {
+		return Result.resultSuccess("获取用户公钥列表成功！", publicKeyDAO.getByUserId(StpUtil.getLoginIdAsInt()));
 	}
 
 }

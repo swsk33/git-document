@@ -29,13 +29,12 @@
 </template>
 
 <script setup>
-import { sendRequest, REQUEST_METHOD } from '../../../utils/request.js';
 import { Folder, Document } from '@element-plus/icons-vue';
 import { computed, onBeforeMount, reactive, ref, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { REQUEST_PREFIX } from '../../../param/request-prefix';
-import { MESSAGE_TYPE, showNotification } from '../../../utils/message';
-import { useArticleTreeStore } from '../../../store/article-tree';
+import { MESSAGE_TYPE, showNotification } from '../../../utils/message.js';
+import { useArticleTreeStore } from '../../../store/article-tree.js';
+import { articleGetList } from '../../../api/article-api.js';
 
 const articleTreeStore = useArticleTreeStore();
 
@@ -181,7 +180,7 @@ function goToLast() {
 
 onBeforeMount(async () => {
 	// 获取文章目录列表
-	const response = await sendRequest(REQUEST_PREFIX.ARTICLE + 'get-article-list/' + route.params.id, REQUEST_METHOD.GET);
+	const response = await articleGetList(route.params.id);
 	loadingDone.value = true;
 	if (!response.success) {
 		showNotification('错误', response.message, MESSAGE_TYPE.error);

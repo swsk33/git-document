@@ -12,6 +12,7 @@ import { REQUEST_METHOD, sendRequest } from '../utils/request.js';
  * @property {String} repoPath 文集仓库路径
  * @property {String} latestCommit 最新的一次提交id
  * @property {String} status 仓库状态
+ * @property {Array<Star>} stars 该仓库的收藏列表
  */
 
 const apiPrefix = '/api/anthology';
@@ -23,15 +24,6 @@ const apiPrefix = '/api/anthology';
  */
 export async function anthologyAdd(anthology) {
 	return sendRequest(`${apiPrefix}/add`, REQUEST_METHOD.POST, anthology);
-}
-
-/**
- * 批量增加文集仓库
- * @param {Array<Anthology>} anthologyList 文集仓库列表
- * @returns {Promise<Result<void>>} 响应体
- */
-export async function anthologyBatchAdd(anthologyList) {
-	return sendRequest(`${apiPrefix}/batch-add`, REQUEST_METHOD.POST, anthologyList);
 }
 
 /**
@@ -84,4 +76,13 @@ export async function anthologyGetCommit(id) {
  */
 export async function anthologyGetNotInDB() {
 	return sendRequest(`${apiPrefix}/get-not-in-database`, REQUEST_METHOD.GET);
+}
+
+/**
+ * 批量增加文集仓库
+ * @param {Array<Anthology>} anthologyList 文集仓库列表
+ * @returns {Promise<Result<void>>} 响应体
+ */
+export async function anthologyRestore(anthologyList) {
+	return sendRequest(`${apiPrefix}/restore-not-in-database`, REQUEST_METHOD.POST, anthologyList);
 }

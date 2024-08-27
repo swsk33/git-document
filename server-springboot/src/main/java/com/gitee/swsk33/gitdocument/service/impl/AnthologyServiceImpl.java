@@ -11,7 +11,7 @@ import com.gitee.swsk33.gitdocument.dataobject.Anthology;
 import com.gitee.swsk33.gitdocument.dataobject.User;
 import com.gitee.swsk33.gitdocument.git.GitCommitDAO;
 import com.gitee.swsk33.gitdocument.git.GitFileDAO;
-import com.gitee.swsk33.gitdocument.git.GitRepositoryInfoDAO;
+import com.gitee.swsk33.gitdocument.git.GitRepositoryDAO;
 import com.gitee.swsk33.gitdocument.model.CommitRecord;
 import com.gitee.swsk33.gitdocument.model.CreateEmailMessage;
 import com.gitee.swsk33.gitdocument.model.Result;
@@ -22,6 +22,7 @@ import com.gitee.swsk33.gitdocument.service.AnthologyService;
 import com.gitee.swsk33.gitdocument.service.EmailService;
 import com.gitee.swsk33.gitdocument.service.ImageService;
 import com.gitee.swsk33.gitdocument.session.UserSession;
+import com.mybatisflex.core.relation.RelationManager;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -38,7 +39,7 @@ import static com.gitee.swsk33.gitdocument.param.SystemSettingKey.ORGANIZATION_N
 
 @Slf4j
 @Component
-@DependsOn({"SQLInitializeAutoConfigure", "gitTaskFluxConfig"})
+@DependsOn("SQLInitializeAutoConfigure")
 public class AnthologyServiceImpl implements AnthologyService {
 
 	@Autowired
@@ -51,7 +52,7 @@ public class AnthologyServiceImpl implements AnthologyService {
 	private SystemSettingDAO systemSettingDAO;
 
 	@Autowired
-	private GitRepositoryInfoDAO gitRepositoryInfoDAO;
+	private GitRepositoryDAO gitRepositoryDAO;
 
 	@Autowired
 	private GitCommitDAO gitCommitDAO;
@@ -78,7 +79,7 @@ public class AnthologyServiceImpl implements AnthologyService {
 	 * 启动时，开始监听现有的每个仓库，并开启文件更新任务队列
 	 */
 	@PostConstruct
-	private void startRepositoryUpdateTask() {
+	public void checkRepository() {
 		// 文集仓库根目录不存在则创建
 		if (gitRepositoryProperties.getRepositoryPath().equals("null")) {
 			log.warn("文集仓库根路径未配置！重置为默认值！");
@@ -94,36 +95,19 @@ public class AnthologyServiceImpl implements AnthologyService {
 			anthologies = anthologyDAO.selectAll();
 		} catch (Exception e) {
 			log.error("连接数据库失败！请检查配置！终止！");
-			e.printStackTrace();
+			log.error(e.getMessage());
 			return;
 		}
 		log.info("共获取到：{}个文集仓库！", anthologies.size());
 		// 对比本地仓库和数据库中的仓库，若有不同则进行更新
 		log.info("开始对比本地仓库和数据库仓库信息...");
 		anthologies.forEach(anthology -> {
-			// 若有commitId不同的情况，以本地仓库为准，刷新到数据库
-			String newCommitId;
 			try {
-				newCommitId = gitCommitDAO.getHeadCommitId(anthology.getRepoPath());
-				// 如果说刚创建的仓库，则不进行对比
-				if (newCommitId == null) {
-					log.warn("本地仓库：{}的commitId为空！可能是刚创建的仓库，跳过比对！", anthology.getName());
-					return;
-				}
-				// 如果数据库中commitId为空，说明需要执行创建任务
-				if (anthology.getLatestCommit() == null) {
-					log.warn("发现本地仓库：{}在数据库中的commitId为空，进行创建操作...", anthology.getName());
-					gitRepositoryInfoDAO.doCreateTask(anthology.getId(), anthology.getRepoPath(), newCommitId);
-					return;
-				}
-				// 如果只是单纯的两者不同，说明需要进行更新同步操作
-				if (!anthology.getLatestCommit().equals(newCommitId)) {
-					log.warn("发现本地仓库：{}与数据库的commit不同，进行更新操作...", anthology.getName());
-					gitRepositoryInfoDAO.doUpdateTask(anthology.getId(), anthology.getShowName(), anthology.getRepoPath(), false, anthology.getLatestCommit(), newCommitId);
-				}
+				// 检查每个文集仓库本地和数据库的差异，并进行同步
+				gitRepositoryDAO.checkGitRepositoryUpdate(anthology);
 			} catch (Exception e) {
 				log.error("发生错误！本地仓库{}可能不存在！继续！", anthology.getName());
-				e.printStackTrace();
+				log.error(e.getMessage());
 			} finally {
 				// 检查更新完成后，对其加入监听
 				listenerContext.addMonitor(anthology.getId(), anthology.getRepoPath());
@@ -139,9 +123,10 @@ public class AnthologyServiceImpl implements AnthologyService {
 		if (anthologyDAO.existsByName(anthology.getName())) {
 			return Result.resultFailed("该文集名已被使用！");
 		}
-		// 先去创建一个Git仓库，并加入到监听列表
+		// 计算创建的仓库路径
 		String repoPath = gitRepositoryProperties.getRepositoryPath() + File.separator + anthology.getName() + ".git";
-		if (!gitRepositoryInfoDAO.initGitBareRepository(repoPath)) {
+		// 创建裸仓库
+		if (!gitRepositoryDAO.createGitBareRepository(repoPath)) {
 			return Result.resultFailed("创建文集仓库失败！请联系开发者！");
 		}
 		log.info("成功创建文集仓库！位于：{}", repoPath);
@@ -167,15 +152,6 @@ public class AnthologyServiceImpl implements AnthologyService {
 			emailService.sendAnthologyCreateNotify(message);
 		}
 		return Result.resultSuccess("创建文集仓库成功！");
-	}
-
-	@SaCheckPermission(PermissionName.EDIT_ANTHOLOGY)
-	@Override
-	public Result<Void> batchAdd(List<Anthology> anthologies) {
-		for (Anthology anthology : anthologies) {
-			add(anthology);
-		}
-		return Result.resultSuccess("批量添加完成！");
 	}
 
 	@SaCheckPermission(PermissionName.EDIT_ANTHOLOGY)
@@ -259,7 +235,8 @@ public class AnthologyServiceImpl implements AnthologyService {
 	@SaCheckPermission(PermissionName.BROWSE_ARTICLE)
 	@Override
 	public Result<List<Anthology>> getAll() {
-		List<Anthology> anthologies = anthologyDAO.selectAll();
+		RelationManager.addQueryRelations("stars");
+		List<Anthology> anthologies = anthologyDAO.selectAllWithRelations();
 		// 填充时间信息
 		anthologies.forEach(item -> {
 			RevCommit commit = gitCommitDAO.getHeadCommit(item.getRepoPath());
@@ -313,6 +290,28 @@ public class AnthologyServiceImpl implements AnthologyService {
 			notInDB.add(anthology);
 		});
 		return Result.resultSuccess("查找到下列文集仓库没有录入数据库！", notInDB);
+	}
+
+	@SaCheckPermission(PermissionName.EDIT_ANTHOLOGY)
+	@Override
+	public Result<Void> restoreAnthologyNotInDatabase(List<Anthology> anthologies) {
+		for (Anthology anthology : anthologies) {
+			// 计算创建的仓库路径
+			String repoPath = gitRepositoryProperties.getRepositoryPath() + File.separator + anthology.getName() + ".git";
+			if (!FileUtil.exist(repoPath)) {
+				continue;
+			}
+			// 补充信息
+			anthology.setRepoPath(repoPath);
+			anthology.setStatus(AnthologyStatus.UPDATING);
+			// 存入数据库
+			anthologyDAO.insert(anthology);
+			// 比对差异
+			gitRepositoryDAO.checkGitRepositoryUpdate(anthology);
+			// 加入监听
+			listenerContext.addMonitor(anthology.getId(), repoPath);
+		}
+		return Result.resultSuccess("已恢复对应的文集仓库！");
 	}
 
 }

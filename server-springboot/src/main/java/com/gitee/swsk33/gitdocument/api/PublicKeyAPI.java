@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/public-key")
 public class PublicKeyAPI {
@@ -24,8 +26,13 @@ public class PublicKeyAPI {
 	}
 
 	@DeleteMapping("/delete/{id}")
-	public Result<Void> delete(@PathVariable int id) throws Exception {
+	public Result<Void> delete(@PathVariable int id) {
 		return publicKeyService.delete(id);
+	}
+
+	@GetMapping("/get-by-login-user")
+	public Result<List<PublicKey>> getByLoginUser() {
+		return publicKeyService.getByLoginUser();
 	}
 
 }

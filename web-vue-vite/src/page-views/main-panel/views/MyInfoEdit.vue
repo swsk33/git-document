@@ -51,7 +51,7 @@
 						</div>
 					</el-popover>
 				</div>
-				<el-table class="data" :data="publicKeys" border empty-text="暂无公钥，添加公钥后才能推送文章！">
+				<el-table class="data" :data="userStore.userData.keys" border empty-text="暂无公钥，添加公钥后才能推送文章！">
 					<el-table-column width="50" :resizable="false" label="id" prop="id" align="center"/>
 					<el-table-column width="600" show-overflow-tooltip label="公钥内容" prop="content"/>
 					<el-table-column class-name="column-operate" align="center" label="操作">
@@ -71,10 +71,14 @@
 </template>
 
 <script setup>
-import { sendRequest, REQUEST_METHOD } from '../../../utils/request';
 import { Check, Close } from '@element-plus/icons-vue';
 import { onMounted, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { MESSAGE_TYPE, showNotification } from '../../../utils/message.js';
+import { publicKeyAdd, publicKeyDelete } from '../../../api/public-key-api.js';
+import { userUpdate } from '../../../api/user-api.js';
+import { parseAvatarURL } from '../../../api/image-api.js';
+import { settingUpdate } from '../../../api/setting-api.js';
 
 const router = useRouter();
 
@@ -84,42 +88,9 @@ import UploadImage from '../components/UploadImage.vue';
 const imageUpload = ref(null);
 
 // pinia
-import { useUserStore } from '../../../store/user';
-import { parseAvatarURL, REQUEST_PREFIX } from '../../../param/request-prefix';
-import { MESSAGE_TYPE, showNotification } from '../../../utils/message';
+import { useUserStore } from '../../../store/user.js';
 
 const userStore = useUserStore();
-
-/**
- * 编辑的用户信息
- */
-const editUserData = reactive({
-	id: undefined,
-	avatar: undefined,
-	email: undefined,
-	username: undefined,
-	nickname: undefined,
-	password: undefined
-});
-
-/**
- * 编辑的设置信息
- */
-const editSetting = reactive({
-	id: undefined,
-	receiveUpdateEmail: undefined,
-	receiveNewEmail: undefined
-});
-
-/**
- * 公钥列表
- */
-const publicKeys = ref([]);
-
-/**
- * 添加的公钥
- */
-const addPublicKey = ref(undefined);
 
 /**
  * 显示弹窗
@@ -129,25 +100,75 @@ const popOverShow = reactive({
 });
 
 /**
+ * 被编辑的用户、设置和公钥信息
+ */
+const editDataObject = reactive({
+	/**
+	 * 用户信息
+	 */
+	user: {
+		id: undefined,
+		username: undefined,
+		password: undefined,
+		nickname: undefined,
+		avatar: undefined,
+		email: undefined
+	},
+	/**
+	 * 用户偏好设定
+	 */
+	setting: {
+		userId: undefined,
+		receiveUpdateEmail: undefined,
+		receiveNewEmail: undefined
+	},
+	/**
+	 * 待添加的公钥
+	 */
+	addPublicKey: undefined
+});
+
+/**
+ * 从userStore中刷新编辑信息
+ */
+async function refreshEditDataObject() {
+	// 为空则刷新
+	if (userStore.userData == null) {
+		await userStore.checkLogin();
+	}
+	// 填充用户信息
+	editDataObject.user.id = userStore.userData.id;
+	editDataObject.user.username = userStore.userData.username;
+	editDataObject.user.nickname = userStore.userData.nickname;
+	editDataObject.user.avatar = userStore.userData.avatar;
+	editDataObject.user.email = userStore.userData.email;
+	// 填充偏好设置
+	editDataObject.setting.userId = userStore.userData.id;
+	editDataObject.setting.receiveUpdateEmail = userStore.userData.setting.receiveUpdateEmail;
+	editDataObject.setting.receiveNewEmail = userStore.userData.setting.receiveNewEmail;
+	// 刷新头像显示
+	imageUpload.value.refreshPreviewImage(editDataObject.user.avatar);
+}
+
+/**
  * 删除公钥
  * @param id 公钥id
  */
 async function deleteKey(id) {
-	const response = await sendRequest(REQUEST_PREFIX.PUBLIC_KEY + 'delete/' + id, REQUEST_METHOD.DELETE);
+	const response = await publicKeyDelete(id);
 	if (!response.success) {
 		showNotification('错误', response.message, MESSAGE_TYPE.error);
 		return;
 	}
 	showNotification('成功', '删除成功！');
-	await getPublicKeyList();
 }
 
 /**
  * 发送增加公钥请求
  */
 async function addPublicKeyRequest() {
-	const response = await sendRequest(REQUEST_PREFIX.PUBLIC_KEY + 'add', REQUEST_METHOD.POST, {
-		content: addPublicKey.value
+	const response = await publicKeyAdd({
+		content: editDataObject.addPublicKey
 	});
 	if (!response.success) {
 		showNotification('错误', response.message, MESSAGE_TYPE.error);
@@ -155,8 +176,7 @@ async function addPublicKeyRequest() {
 	}
 	showNotification('成功', response.message);
 	popOverShow.publicKeyAdd = false;
-	addPublicKey.value = '';
-	await getPublicKeyList();
+	editDataObject.addPublicKey = undefined;
 }
 
 /**
@@ -165,11 +185,15 @@ async function addPublicKeyRequest() {
 async function updateUserData() {
 	editUserData.avatar = await imageUpload.value.uploadAndGetUrl();
 	// 修改用户信息
-	const updateUserInfo = await sendRequest(REQUEST_PREFIX.USER + 'update', REQUEST_METHOD.PATCH, editUserData);
+	const updateUserResponse = await userUpdate(editUserData);
 	// 修改用户设置
-	const updateUserSetting = await sendRequest(REQUEST_PREFIX.SETTING + 'update', REQUEST_METHOD.PATCH, editSetting);
-	if (!updateUserInfo.success || !updateUserSetting.success) {
-		showNotification('错误', updateUserInfo.message, MESSAGE_TYPE.error);
+	const updateSettingResponse = await settingUpdate(editSetting);
+	if (!updateUserResponse.success) {
+		showNotification('错误', updateUserResponse.message, MESSAGE_TYPE.error);
+		return;
+	}
+	if (!updateSettingResponse.success) {
+		showNotification('错误', updateSettingResponse.message, MESSAGE_TYPE.error);
 		return;
 	}
 	showNotification('成功', '修改用户信息和偏好设置成功！');
@@ -178,38 +202,9 @@ async function updateUserData() {
 	await userStore.checkLogin();
 }
 
-/**
- * 获取公钥列表
- */
-async function getPublicKeyList() {
-	const response = await sendRequest(REQUEST_PREFIX.PUBLIC_KEY + 'get-by-user', REQUEST_METHOD.GET);
-	if (!response.success) {
-		showNotification('错误', response.message, MESSAGE_TYPE.error);
-		return;
-	}
-	publicKeys.value = response.data;
-}
-
 onMounted(async () => {
-	if (userStore.userData === undefined) {
-		await userStore.checkLogin();
-	}
-	// 填充现有用户信息
-	editUserData.id = userStore.userData.id;
-	editUserData.avatar = userStore.userData.avatar;
-	editUserData.email = userStore.userData.email;
-	editUserData.username = userStore.userData.username;
-	editUserData.nickname = userStore.userData.nickname;
-	// 填充偏好设置
-	editSetting.id = userStore.userData.setting.id;
-	editSetting.receiveUpdateEmail = userStore.userData.setting.receiveUpdateEmail;
-	editSetting.receiveNewEmail = userStore.userData.setting.receiveNewEmail;
-	// 管理员用户获取公钥
-	if (userStore.hasPermission('edit_anthology')) {
-		await getPublicKeyList();
-	}
-	// 刷新头像显示
-	imageUpload.value.refreshPreviewImage(editUserData.avatar);
+	// 加载页面时立刻刷新显示信息
+	await refreshEditDataObject();
 });
 </script>
 

@@ -79,6 +79,12 @@ public class Anthology {
 	private List<Article> articles;
 
 	/**
+	 * 这个文集的收藏列表
+	 */
+	@RelationOneToMany(selfField = "id", targetField = "anthologyId")
+	private List<Star> stars;
+
+	/**
 	 * 创建时间
 	 */
 	@Column(onInsertValue = "now()")

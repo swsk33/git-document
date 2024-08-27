@@ -8,7 +8,7 @@
 		<!-- 文集列表 -->
 		<ul class="anthology-list">
 			<!-- 每个文集 -->
-			<li v-for="item in list" :key="item.id" v-show="!showStarOnly || (showStarOnly && userStarMap.has(item.id))">
+			<li v-for="item in list" :key="item.id" v-show="!showStarOnly || (showStarOnly && userStore.starMap.has(item.id))">
 				<!-- 文集封面 -->
 				<div class="image">
 					<img :src="parseCoverURL(item.cover)" alt="undefined"/>
@@ -28,9 +28,9 @@
 				<!-- 按钮盒子 -->
 				<div class="button-box">
 					<div class="star-box">
-						<el-button type="info" plain class="star" :icon="userStarMap.has(item.id) ? StarFilled : Star" @click="userStarMap.has(item.id) ? cancelStar(item.id) : doStar(item.id)" circle/>
-						<el-tooltip placement="top" :content="'收藏数：' + item.starCount">
-							<div class="count">{{ item.starCount }}</div>
+						<el-button type="info" plain class="star" :icon="userStore.starMap.has(item.id) ? StarFilled : Star" @click="userStore.starMap.has(item.id) ? cancelStar(item.id) : doStar(item.id)" circle/>
+						<el-tooltip placement="top" :content="'收藏数：' + item.stars.length">
+							<div class="count">{{ item.stars.length }}</div>
 						</el-tooltip>
 					</div>
 					<el-button type="primary" plain class="copy-ssh" :id="'copy-ssh-' + item.id" v-if="userStore.hasPermission('edit_anthology') && item.status !== 'ARCHIVE'" @click="copySSH(item.id, item.repoPath)">复制Git SSH地址</el-button>
@@ -113,8 +113,7 @@ import { useUserStore } from '../../../store/user.js';
 import { useMetaDataStore } from '../../../store/meta-data.js';
 import { anthologyAdd, anthologyDelete, anthologyGetAll, anthologyUpdate } from '../../../api/anthology-api.js';
 import { parseCoverURL } from '../../../api/image-api.js';
-import { starAdd, starDelete, starGetCount } from '../../../api/star-api.js';
-import { isEmpty } from '../../../utils/string.js';
+import { starAdd, starDelete } from '../../../api/star-api.js';
 
 const userStore = useUserStore();
 const metaStore = useMetaDataStore();
@@ -176,7 +175,6 @@ async function addAnthology() {
 	addAnthologyRef.value.frameShow = false;
 	// 重新获取文集列表
 	await getAnthologyList();
-	await getStarCount();
 }
 
 /**
@@ -204,7 +202,6 @@ async function editAnthology() {
 	editAnthologyRef.value.frameShow = false;
 	// 刷新列表
 	await getAnthologyList();
-	await getStarCount();
 }
 
 /**
@@ -220,7 +217,6 @@ async function deleteAnthology() {
 	editAnthologyRef.value.frameShow = false;
 	// 刷新列表
 	await getAnthologyList();
-	await getStarCount();
 }
 
 /**
@@ -241,27 +237,9 @@ function copySSH(id, repoPath) {
 }
 
 /**
- * 用户收藏的文集id对应收藏id的哈希表<br>
- * - 键：被收藏的文集id
- * - 值：收藏对象id
- */
-const userStarMap = ref(new Map());
-
-/**
  * 是否只显示收藏
  */
 const showStarOnly = ref(false);
-
-/**
- * 读取用户信息，初始化用户收藏的文集id集合
- */
-const initializeStarMap = () => {
-	const map = userStarMap.value;
-	map.clear();
-	for (let star of userStore.userData.stars) {
-		map.set(star.anthologyId, star.id);
-	}
-};
 
 /**
  * 收藏文集
@@ -274,9 +252,8 @@ async function doStar(anthologyId) {
 		return;
 	}
 	showNotification('成功', response.message);
-	// 同步更改到收藏哈希表
-	userStarMap.value.set(response.data.anthologyId, response.data.id);
-	await getStarCount(anthologyId);
+	// 刷新用户信息
+	await userStore.checkLogin();
 }
 
 /**
@@ -284,42 +261,14 @@ async function doStar(anthologyId) {
  * @param anthologyId 取消收藏的文集id
  */
 async function cancelStar(anthologyId) {
-	const response = await starDelete(userStarMap.value.get(anthologyId));
+	const response = await starDelete(userStore.starMap.get(anthologyId));
 	if (!response.success) {
 		showNotification('失败', response.message, MESSAGE_TYPE.error);
 		return;
 	}
 	showNotification('成功', response.message);
-	// 同步更改到收藏哈希表
-	userStarMap.value.delete(anthologyId);
-	await getStarCount(anthologyId);
-}
-
-/**
- * 获取并设定所有文集或者对应文集的收藏数
- * @param {String} anthologyId 要获取收藏数的文集id，当该参数省略时，则获取全部文集的收藏数
- */
-async function getStarCount(anthologyId = null) {
-	// 指定id时只获取对应id的文集收藏数
-	if (!isEmpty(anthologyId)) {
-		const response = await starGetCount(anthologyId);
-		if (!response.success) {
-			return;
-		}
-		for (let item of list.value) {
-			item.starCount = response.data;
-		}
-		return;
-	}
-	// 未指定id时，获取全部文章收藏数
-	for (let item of list.value) {
-		item.starCount = 0;
-		const response = await starGetCount(item.id);
-		if (!response.success) {
-			continue;
-		}
-		item.starCount = response.data;
-	}
+	// 刷新用户信息
+	await userStore.checkLogin();
 }
 
 // 监听是否只显示收藏按钮，将结果存入本地缓存
@@ -330,9 +279,6 @@ watch(showStarOnly, (newValue) => {
 onBeforeMount(async () => {
 	// 挂载组件时获取文集列表
 	await getAnthologyList();
-	// 加载用户收藏信息
-	initializeStarMap();
-	await getStarCount();
 	// 获取本地缓存中的显示全部/仅显示收藏选项
 	let item = localStorage.getItem('show-star-only');
 	if (item != null) {

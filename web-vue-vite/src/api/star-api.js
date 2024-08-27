@@ -32,10 +32,9 @@ export async function starDelete(id) {
 }
 
 /**
- * 获取一个文集的收藏数
- * @param {String} anthologyId 文集id
- * @returns {Promise<Result<Number>>}
+ * 获取当前登录用户的收藏列表
+ * @returns {Promise<Result<Array<Star>>>} 收藏列表响应体
  */
-export async function starGetCount(anthologyId) {
-	return sendRequest(`${apiPrefix}/get-star-count/${anthologyId}`, REQUEST_METHOD.GET);
+export async function starGetByLoginUser() {
+	return sendRequest(`${apiPrefix}/get-by-login-user`, REQUEST_METHOD.GET);
 }

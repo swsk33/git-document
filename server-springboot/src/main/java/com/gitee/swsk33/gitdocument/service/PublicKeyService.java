@@ -4,6 +4,8 @@ import com.gitee.swsk33.gitdocument.dataobject.PublicKey;
 import com.gitee.swsk33.gitdocument.model.Result;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public interface PublicKeyService {
 
@@ -20,5 +22,10 @@ public interface PublicKeyService {
 	 * @param id 公钥id
 	 */
 	Result<Void> delete(int id);
+
+	/**
+	 * 获取当前登录的用户公钥列表
+	 */
+	Result<List<PublicKey>> getByLoginUser();
 
 }

@@ -15,7 +15,13 @@ export const useUserStore = defineStore('user', {
 			 * 全部用户角色列表
 			 * @type Array<Role>
 			 */
-			roleList: []
+			roleList: [],
+			/**
+			 * 用户的文集收藏列表<br>
+			 * - 键：被收藏的文集id
+			 * - 值：收藏对象的id
+			 */
+			starMap: new Map()
 		};
 	},
 	actions: {
@@ -24,9 +30,13 @@ export const useUserStore = defineStore('user', {
 		 */
 		async checkLogin() {
 			let response = await userIsLogin();
-			// 若登录，则设定用户数据
+			// 若登录，则设定用户数据及其收藏列表
 			if (response.success) {
 				this.userData = response.data;
+				this.starMap.clear();
+				for (let star of this.userData.stars) {
+					this.starMap.set(star.anthologyId, star.id);
+				}
 			}
 			return response.success;
 		},
