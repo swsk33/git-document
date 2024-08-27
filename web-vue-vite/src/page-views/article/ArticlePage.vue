@@ -15,8 +15,8 @@ import MainBody from './components/MainBody.vue';
 const topBar = ref(null);
 
 // pinia
-import { useMetaDataStore } from '../../store/meta-data';
-import { useArticlePageThemeStore } from '../../store/article-page-theme';
+import { useMetaDataStore } from '../../store/meta-data.js';
+import { useArticlePageThemeStore } from '../../store/article-page-theme.js';
 
 const metaStore = useMetaDataStore();
 const themeStore = useArticlePageThemeStore();

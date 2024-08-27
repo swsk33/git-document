@@ -3,24 +3,24 @@
 		<div class="title">个人中心</div>
 		<!-- 用户信息 -->
 		<div class="content">
-			<UploadImage class="avatar" ref="imageUpload" :init-image="editUserData.avatar" :default-image="parseAvatarURL(null)" upload-name="image">
+			<UploadImage class="avatar" ref="imageUpload" :init-image="editDataObject.user.avatar" :default-image="parseAvatarURL(null)" upload-name="image">
 				<template v-slot:text>头像</template>
 			</UploadImage>
 			<div class="username">
 				<div class="text">用户名</div>
-				<el-input class="input" v-model="editUserData.username" placeholder="请输入用户名"/>
+				<el-input class="input" v-model="editDataObject.user.username" placeholder="请输入用户名"/>
 			</div>
 			<div class="password">
 				<div class="text">密码</div>
-				<el-input class="input" v-model="editUserData.password" show-password placeholder="不修改则留空"/>
+				<el-input class="input" v-model="editDataObject.user.password" show-password placeholder="不修改则留空"/>
 			</div>
 			<div class="nickname">
 				<div class="text">昵称</div>
-				<el-input class="input" v-model="editUserData.nickname" placeholder="请输入昵称"/>
+				<el-input class="input" v-model="editDataObject.user.nickname" placeholder="请输入昵称"/>
 			</div>
 			<div class="email">
 				<div class="text">邮箱</div>
-				<el-input class="input" v-model="editUserData.email" placeholder="请输入邮箱"/>
+				<el-input class="input" v-model="editDataObject.user.email" placeholder="请输入邮箱"/>
 			</div>
 			<!-- 偏好设置 -->
 			<div class="setting">
@@ -28,11 +28,11 @@
 				<div class="box">
 					<div class="item update-email-setting">
 						<div class="text">收藏的文集更新时邮件通知我</div>
-						<el-switch class="switch" v-model="editSetting.receiveUpdateEmail" inline-prompt :active-icon="Check" :inactive-icon="Close"/>
+						<el-switch class="switch" v-model="editDataObject.setting.receiveUpdateEmail" inline-prompt :active-icon="Check" :inactive-icon="Close"/>
 					</div>
 					<div class="item create-email-setting">
 						<div class="text">新文集发布时邮件通知我</div>
-						<el-switch class="switch" v-model="editSetting.receiveNewEmail" inline-prompt :active-icon="Check" :inactive-icon="Close"/>
+						<el-switch class="switch" v-model="editDataObject.setting.receiveNewEmail" inline-prompt :active-icon="Check" :inactive-icon="Close"/>
 					</div>
 				</div>
 			</div>
@@ -40,17 +40,19 @@
 			<div class="public-key" v-if="userStore.hasPermission('edit_anthology')">
 				<div class="header">
 					<div class="text">公钥</div>
+					<!-- 添加公钥弹窗 -->
 					<el-popover width="750" placement="left" title="添加SSH公钥" v-model:visible="popOverShow.publicKeyAdd">
 						<template #reference>
 							<el-button class="add" type="success" size="small" @click="popOverShow.publicKeyAdd = true">添加SSH公钥</el-button>
 						</template>
-						<el-input v-model="addPublicKey" type="textarea" cols="50" rows="5" resize="none" placeholder="请粘贴公钥内容至此"/>
+						<el-input v-model="editDataObject.addPublicKey" type="textarea" :cols="50" :rows="5" resize="none" placeholder="请粘贴公钥内容至此"/>
 						<div class="button-box" style="display: flex;margin-top: 12px">
 							<el-button type="success" size="small" @click="addPublicKeyRequest">确认</el-button>
 							<el-button type="warning" size="small" @click="popOverShow.publicKeyAdd = false">取消</el-button>
 						</div>
 					</el-popover>
 				</div>
+				<!-- 公钥显示表格 -->
 				<el-table class="data" :data="userStore.userData.keys" border empty-text="暂无公钥，添加公钥后才能推送文章！">
 					<el-table-column width="50" :resizable="false" label="id" prop="id" align="center"/>
 					<el-table-column width="600" show-overflow-tooltip label="公钥内容" prop="content"/>
@@ -161,6 +163,8 @@ async function deleteKey(id) {
 		return;
 	}
 	showNotification('成功', '删除成功！');
+	// 刷新视图
+	await userStore.refreshUserPublicKey();
 }
 
 /**
@@ -177,17 +181,19 @@ async function addPublicKeyRequest() {
 	showNotification('成功', response.message);
 	popOverShow.publicKeyAdd = false;
 	editDataObject.addPublicKey = undefined;
+	// 刷新视图
+	await userStore.refreshUserPublicKey();
 }
 
 /**
  * 发送修改用户信息请求
  */
 async function updateUserData() {
-	editUserData.avatar = await imageUpload.value.uploadAndGetUrl();
+	editDataObject.user.avatar = await imageUpload.value.uploadAndGetUrl();
 	// 修改用户信息
-	const updateUserResponse = await userUpdate(editUserData);
+	const updateUserResponse = await userUpdate(editDataObject.user);
 	// 修改用户设置
-	const updateSettingResponse = await settingUpdate(editSetting);
+	const updateSettingResponse = await settingUpdate(editDataObject.setting);
 	if (!updateUserResponse.success) {
 		showNotification('错误', updateUserResponse.message, MESSAGE_TYPE.error);
 		return;

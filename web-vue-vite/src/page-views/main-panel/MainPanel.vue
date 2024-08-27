@@ -18,7 +18,7 @@ const sideMenu = ref(null);
 const controlPanel = ref(null);
 
 // pinia
-import { useMetaDataStore } from '../../store/meta-data';
+import { useMetaDataStore } from '../../store/meta-data.js';
 
 const metaStore = useMetaDataStore();
 

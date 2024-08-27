@@ -1,6 +1,7 @@
 // 关于文集仓库的接口请求
 
 import { REQUEST_METHOD, sendRequest } from '../utils/request.js';
+import { joinPath } from '../utils/file-path.js';
 
 /**
  * @typedef Anthology 文集仓库对象
@@ -85,4 +86,14 @@ export async function anthologyGetNotInDB() {
  */
 export async function anthologyRestore(anthologyList) {
 	return sendRequest(`${apiPrefix}/restore-not-in-database`, REQUEST_METHOD.POST, anthologyList);
+}
+
+/**
+ * 解析文集仓库中以相对路径形式出现的图片URL
+ * @param anthologyId 文集仓库id
+ * @param articleFilePath 文章在仓库中的路径
+ * @param imagePath 图片在仓库中的路径
+ */
+export function anthologyGetImageURL(anthologyId, articleFilePath, imagePath) {
+	return `${apiPrefix}/get-image/id/${anthologyId}?path=${joinPath(imagePath, articleFilePath)}`;
 }

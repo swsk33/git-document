@@ -18,6 +18,7 @@ import { Avatar, Lock } from '@element-plus/icons-vue';
 import { reactive, shallowRef } from 'vue';
 import { useRouter } from 'vue-router';
 import { MESSAGE_TYPE, showNotification } from '../../../utils/message.js';
+import { userLogin } from '../../../api/user-api.js';
 
 const router = useRouter();
 
@@ -25,7 +26,6 @@ const router = useRouter();
 import { useUserStore } from '../../../store/user.js';
 import { useMetaDataStore } from '../../../store/meta-data.js';
 import { useUrlPathStore } from '../../../store/url-path.js';
-import { userLogin } from '../../../api/user-api.js';
 
 const userStore = useUserStore();
 const metaStore = useMetaDataStore();

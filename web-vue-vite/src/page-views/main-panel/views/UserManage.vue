@@ -81,11 +81,11 @@
 </template>
 
 <script setup>
-import { sendRequest, REQUEST_METHOD } from '../../../utils/request';
 import { ArrowDown } from '@element-plus/icons-vue';
 import { onBeforeMount, reactive, ref } from 'vue';
-import { parseAvatarURL, REQUEST_PREFIX } from '../../../param/request-prefix';
-import { MESSAGE_TYPE, showNotification } from '../../../utils/message';
+import { MESSAGE_TYPE, showNotification } from '../../../utils/message.js';
+import { userDelete, userGetAll, userRegister, userUpdate } from '../../../api/user-api.js';
+import { parseAvatarURL } from '../../../api/image-api.js';
 
 // 组件引入
 import InfoDialog from '../components/InfoDialog.vue';
@@ -95,7 +95,7 @@ const addUserDialog = ref(null);
 const addUserAvatar = ref(null);
 
 // pinia
-import { useUserStore } from '../../../store/user';
+import { useUserStore } from '../../../store/user.js';
 
 const userStore = useUserStore();
 
@@ -123,9 +123,7 @@ const addUserData = reactive({
 	nickname: undefined,
 	email: undefined,
 	avatar: undefined,
-	role: {
-		id: 2
-	}
+	roleId: 2
 });
 
 /**
@@ -133,7 +131,7 @@ const addUserData = reactive({
  */
 async function getUserList() {
 	loadingDone.value = false;
-	const response = await sendRequest(REQUEST_PREFIX.USER + 'get-all', REQUEST_METHOD.GET);
+	const response = await userGetAll();
 	loadingDone.value = true;
 	if (!response.success) {
 		showNotification('失败', response.message, MESSAGE_TYPE.error);
@@ -151,7 +149,7 @@ async function deleteUser(id) {
 		showNotification('失败', '不能删除自己！', MESSAGE_TYPE.warning);
 		return;
 	}
-	const response = await sendRequest(REQUEST_PREFIX.USER + 'delete/' + id, REQUEST_METHOD.DELETE);
+	const response = await userDelete(id);
 	if (!response.success) {
 		showNotification('失败', response.message, MESSAGE_TYPE.error);
 		return;
@@ -166,11 +164,9 @@ async function deleteUser(id) {
  * @param ids 传入用户id和角色id，ids中有两个属性userId和roleId分别表示用户id与权限id
  */
 async function changeUserRole(ids) {
-	const response = await sendRequest(REQUEST_PREFIX.USER + 'update', REQUEST_METHOD.PATCH, {
+	const response = await userUpdate({
 		id: ids.userId,
-		role: {
-			id: ids.roleId
-		}
+		roleId: ids.roleId
 	});
 	if (!response.success) {
 		showNotification('失败', response.message, MESSAGE_TYPE.error);
@@ -186,7 +182,7 @@ async function changeUserRole(ids) {
  */
 async function addUser() {
 	addUserData.avatar = await addUserAvatar.value.uploadAndGetUrl();
-	const response = await sendRequest(REQUEST_PREFIX.USER + 'register', REQUEST_METHOD.POST, addUserData);
+	const response = await userRegister(addUserData);
 	if (!response.success) {
 		showNotification('失败', response.message, MESSAGE_TYPE.error);
 		return;

@@ -16,8 +16,8 @@
 
 <script setup>
 import { reactive, shallowRef } from 'vue';
-import { Avatar, Lock, CollectionTag, Postcard } from '@element-plus/icons-vue';
 import { useRouter } from 'vue-router';
+import { Avatar, Lock, CollectionTag, Postcard } from '@element-plus/icons-vue';
 import { MESSAGE_TYPE, showNotification } from '../../../utils/message.js';
 import { userRegister } from '../../../api/user-api.js';
 
@@ -31,9 +31,7 @@ const userData = reactive({
 	password: undefined,
 	nickname: undefined,
 	email: undefined,
-	role: {
-		id: 3
-	}
+	roleId: 3
 });
 
 /**

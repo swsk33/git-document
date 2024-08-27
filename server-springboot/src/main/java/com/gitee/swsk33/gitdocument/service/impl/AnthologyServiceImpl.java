@@ -195,6 +195,7 @@ public class AnthologyServiceImpl implements AnthologyService {
 	@SaCheckPermission(PermissionName.BROWSE_ARTICLE)
 	@Override
 	public Result<Anthology> getById(long id) {
+		RelationManager.addQueryRelations("stars");
 		Anthology getAnthology = anthologyDAO.selectOneWithRelationsById(id);
 		if (getAnthology == null) {
 			return Result.resultFailed("该文集不存在！");

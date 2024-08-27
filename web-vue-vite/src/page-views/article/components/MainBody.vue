@@ -17,25 +17,27 @@
 </template>
 
 <script setup>
-import { marked } from 'marked';
-import { REQUEST_METHOD, sendRequest } from '../../../utils/request';
-import { joinPath } from '../../../utils/file-path';
-import { REQUEST_PREFIX } from '../../../param/request-prefix';
-import { MESSAGE_TYPE, showNotification } from '../../../utils/message';
-import ClipBoard from 'clipboard';
-import renderMathInElement from 'katex/dist/contrib/auto-render';
 import { onBeforeMount, onUpdated, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
+import { marked } from 'marked';
+import ClipBoard from 'clipboard';
+import renderMathInElement from 'katex/dist/contrib/auto-render';
 import { markedHighlight } from 'marked-highlight';
 import hljs from 'highlight.js';
+import { REQUEST_METHOD, sendRequest } from '../../../utils/request.js';
+import { joinPath } from '../../../utils/file-path.js';
+import { MESSAGE_TYPE, showNotification } from '../../../utils/message.js';
 
 const route = useRoute();
 
+// 文章内容
 const content = ref(null);
 
 // pinia
-import { useArticlePageThemeStore } from '../../../store/article-page-theme';
-import { useArticleTreeStore } from '../../../store/article-tree';
+import { useArticlePageThemeStore } from '../../../store/article-page-theme.js';
+import { useArticleTreeStore } from '../../../store/article-tree.js';
+import { anthologyGetImageURL } from '../../../api/anthology-api.js';
+import { articleGet } from '../../../api/article-api.js';
 
 const themeStore = useArticlePageThemeStore();
 const articleTreeStore = useArticleTreeStore();
@@ -62,6 +64,7 @@ let textDom;
 
 /**
  * 获取到的文章对象
+ * @type Article
  */
 let articleObject;
 
@@ -106,13 +109,13 @@ function getItemIndentation(indentationLevel) {
  * @param contentNode {HTMLBodyElement} 内容所在节点
  */
 function parseTitle(contentNode) {
-	const doms = contentNode.children;
+	const domList = contentNode.children;
 	// 用于记录最大节点的等级
 	let maxLevel = 6;
 	// 标题锚点索引
 	let index = 0;
 	// 逐个获取节点名nodeName属性，找出标题节点
-	for (let dom of doms) {
+	for (let dom of domList) {
 		if (dom.nodeName.startsWith('H')) {
 			// 解析当前标题的层级
 			let level = parseInt(dom.nodeName.substring(1, 2));
@@ -148,8 +151,8 @@ function parseTitle(contentNode) {
  */
 function setLink(contentNode) {
 	// 找出所有a标签
-	const doms = contentNode.querySelectorAll('a');
-	for (let dom of doms) {
+	const domList = contentNode.querySelectorAll('a');
+	for (let dom of domList) {
 		// 如果href属性为#开头，说明是锚点，设定为当前页
 		if (dom.getAttribute('href').startsWith('#')) {
 			dom.setAttribute('target', '_self');
@@ -166,12 +169,12 @@ function setLink(contentNode) {
  */
 function alterRelativePathImage(contentNode) {
 	// 找出所有img标签
-	const doms = contentNode.querySelectorAll('img');
-	for (let dom of doms) {
+	const domList = contentNode.querySelectorAll('img');
+	for (let dom of domList) {
 		let imagePath = dom.getAttribute('src');
 		// 对相对路径的图片进行路径替换
 		if (!imagePath.startsWith('http')) {
-			dom.setAttribute('src', REQUEST_PREFIX.ANTHOLOGY + 'get-image/id/' + articleObject.anthology.id + '?path=' + joinPath(imagePath, articleObject.filePath));
+			dom.setAttribute('src', anthologyGetImageURL(articleObject.anthologyId, articleObject.filePath, imagePath));
 		}
 	}
 }
@@ -232,8 +235,8 @@ function renderKatex(contentNode) {
  * @param isNight 是否改为夜晚样式
  */
 function changeCodeStyle(isNight) {
-	const preDoms = content.value.querySelectorAll('pre');
-	for (let item of preDoms) {
+	const codeDomList = content.value.querySelectorAll('pre');
+	for (let item of codeDomList) {
 		if (isNight) {
 			item.className = 'pre-night';
 		} else {
@@ -261,7 +264,7 @@ const parseWatcher = watch(() => themeStore.contentParsed, (newValue) => {
 
 onBeforeMount(async () => {
 	// 拉取文本内容
-	const getText = await sendRequest(REQUEST_PREFIX.ARTICLE + 'get/' + route.params.id, REQUEST_METHOD.GET);
+	const getText = await articleGet(route.params.id);
 	if (getText === undefined || !getText.success) {
 		isArticleNotFound.value = true;
 		loadingDone.value = true;
@@ -284,7 +287,7 @@ onBeforeMount(async () => {
 	// 设定渲染完成
 	themeStore.contentParsed = true;
 	// 最后，从缓存读取该文章所在文集的其它文章目录树，使得用户可以切换文章
-	articleTreeStore.getArticleTree(articleObject.anthology.id);
+	articleTreeStore.getArticleTree(articleObject.anthologyId);
 });
 
 onUpdated(() => {

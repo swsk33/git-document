@@ -8,7 +8,7 @@
 		<!-- 文集列表 -->
 		<ul class="anthology-list">
 			<!-- 每个文集 -->
-			<li v-for="item in list" :key="item.id" v-show="!showStarOnly || (showStarOnly && userStore.starMap.has(item.id))">
+			<li v-for="item in anthologyStore.anthologyMap.values()" :key="item.id" v-show="!showStarOnly || (showStarOnly && userStore.starMap.has(item.id))">
 				<!-- 文集封面 -->
 				<div class="image">
 					<img :src="parseCoverURL(item.cover)" alt="undefined"/>
@@ -39,7 +39,7 @@
 				</div>
 			</li>
 		</ul>
-		<div class="empty-text" v-if="list.length === 0">(=ﾟωﾟ)ﾉ没有文集！</div>
+		<div class="empty-text" v-if="anthologyStore.anthologyMap.size === 0">(=ﾟωﾟ)ﾉ没有文集！</div>
 		<!-- 信息弹窗 - 增加文集 -->
 		<InfoDialog class="add-anthology" ref="addAnthologyRef">
 			<template v-slot:title>增加文集</template>
@@ -97,6 +97,9 @@ import { Star, StarFilled } from '@element-plus/icons-vue';
 import { timestampToDateString } from '../../../utils/time-convert.js';
 import { MESSAGE_TYPE, showNotification } from '../../../utils/message.js';
 import { ANTHOLOGY_STATUS } from '../../../param/anthology-status.js';
+import { anthologyAdd } from '../../../api/anthology-api.js';
+import { parseCoverURL } from '../../../api/image-api.js';
+import { starAdd, starDelete } from '../../../api/star-api.js';
 
 const router = useRouter();
 
@@ -111,17 +114,11 @@ const uploadImage = ref(null);
 // pinia
 import { useUserStore } from '../../../store/user.js';
 import { useMetaDataStore } from '../../../store/meta-data.js';
-import { anthologyAdd, anthologyDelete, anthologyGetAll, anthologyUpdate } from '../../../api/anthology-api.js';
-import { parseCoverURL } from '../../../api/image-api.js';
-import { starAdd, starDelete } from '../../../api/star-api.js';
+import { useAnthologyStore } from '../../../store/anthology.js';
 
+const anthologyStore = useAnthologyStore();
 const userStore = useUserStore();
 const metaStore = useMetaDataStore();
-
-/**
- * 所有文集列表
- */
-const list = ref([]);
 
 /**
  * 是否加载完成
@@ -153,13 +150,11 @@ const getUpdateTime = computed(() => (timestamp) => {
  */
 async function getAnthologyList() {
 	loadingDone.value = false;
-	const response = await anthologyGetAll();
+	const response = await anthologyStore.getAll();
 	loadingDone.value = true;
 	if (!response.success) {
 		showNotification('错误', response.message, MESSAGE_TYPE.error);
-		return;
 	}
-	list.value = response.data;
 }
 
 /**
@@ -193,30 +188,26 @@ async function editAnthology() {
 	// 修改信息之前，先上传图片
 	editAnthologyObject.value.cover = await uploadImage.value.uploadAndGetUrl();
 	// 修改文集数据
-	const response = await anthologyUpdate(editAnthologyObject.value);
+	const response = await anthologyStore.updateOne(editAnthologyObject.value);
 	if (!response.success) {
 		showNotification('失败', response.message, MESSAGE_TYPE.error);
 		return;
 	}
 	showNotification('成功', response.message);
 	editAnthologyRef.value.frameShow = false;
-	// 刷新列表
-	await getAnthologyList();
 }
 
 /**
  * 删除当前编辑的文集
  */
 async function deleteAnthology() {
-	const response = await anthologyDelete(editAnthologyObject.value.id);
+	const response = await anthologyStore.removeOne(editAnthologyObject.value.id);
 	if (!response.success) {
 		showNotification('失败', response.message, MESSAGE_TYPE.error);
 		return;
 	}
 	showNotification('成功', response.message);
 	editAnthologyRef.value.frameShow = false;
-	// 刷新列表
-	await getAnthologyList();
 }
 
 /**
@@ -252,8 +243,9 @@ async function doStar(anthologyId) {
 		return;
 	}
 	showNotification('成功', response.message);
-	// 刷新用户信息
-	await userStore.checkLogin();
+	// 刷新视图
+	await userStore.refreshUserStar();
+	anthologyStore.starCountAdd(anthologyId);
 }
 
 /**
@@ -267,8 +259,9 @@ async function cancelStar(anthologyId) {
 		return;
 	}
 	showNotification('成功', response.message);
-	// 刷新用户信息
-	await userStore.checkLogin();
+	// 刷新视图
+	await userStore.refreshUserStar();
+	anthologyStore.starCountSubtract(anthologyId);
 }
 
 // 监听是否只显示收藏按钮，将结果存入本地缓存

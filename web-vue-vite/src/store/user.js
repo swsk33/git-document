@@ -2,6 +2,8 @@
 import { defineStore } from 'pinia';
 import { userIsLogin } from '../api/user-api.js';
 import { roleGetAll } from '../api/role-api.js';
+import { starGetByLoginUser } from '../api/star-api.js';
+import { publicKeyGetByLoginUser } from '../api/public-key-api.js';
 
 export const useUserStore = defineStore('user', {
 	state() {
@@ -29,7 +31,7 @@ export const useUserStore = defineStore('user', {
 		 * 检查用户是否登录并拉取用户信息，若已登录，则将用户数据保存到state，否则置为undefined
 		 */
 		async checkLogin() {
-			let response = await userIsLogin();
+			const response = await userIsLogin();
 			// 若登录，则设定用户数据及其收藏列表
 			if (response.success) {
 				this.userData = response.data;
@@ -37,6 +39,30 @@ export const useUserStore = defineStore('user', {
 				for (let star of this.userData.stars) {
 					this.starMap.set(star.anthologyId, star.id);
 				}
+			}
+			return response.success;
+		},
+		/**
+		 * 刷新当前登录用户的收藏列表
+		 */
+		async refreshUserStar() {
+			const response = await starGetByLoginUser();
+			if (response.success) {
+				this.userData.stars = response.data;
+				this.starMap.clear();
+				for (let star of this.userData.stars) {
+					this.starMap.set(star.anthologyId, star.id);
+				}
+			}
+			return response.success;
+		},
+		/**
+		 * 刷新当前用户的公钥列表
+		 */
+		async refreshUserPublicKey() {
+			const response = await publicKeyGetByLoginUser();
+			if (response.success) {
+				this.userData.keys = response.data;
 			}
 			return response.success;
 		},

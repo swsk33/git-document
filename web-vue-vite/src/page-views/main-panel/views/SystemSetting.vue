@@ -60,10 +60,9 @@
 
 <script setup>
 import { reactive, ref, watch } from 'vue';
-import { REQUEST_METHOD, sendRequest, uploadFile } from '../../../utils/request';
-import { REQUEST_PREFIX } from '../../../param/request-prefix';
-import { MESSAGE_TYPE, showNotification } from '../../../utils/message';
-import { useMetaDataStore } from '../../../store/meta-data';
+import { MESSAGE_TYPE, showNotification } from '../../../utils/message.js';
+import { systemResetLoginImage, systemResetMainImage, systemSetAllowPublic, systemSetLoginImage, systemSetMainImage, systemSetOrganizationName } from '../../../api/system-setting-api.js';
+import { anthologyGetNotInDB, anthologyRestore } from '../../../api/anthology-api.js';
 
 // 组件引入
 import InfoDialog from '../components/InfoDialog.vue';
@@ -73,12 +72,15 @@ const recoveryDialog = ref(null);
 const uploadLoginImage = ref(null);
 const uploadMainImage = ref(null);
 
+// pinia
+import { useMetaDataStore } from '../../../store/meta-data.js';
+
+const metaStore = useMetaDataStore();
+
 // 待恢复的文集列表
 const recoveryAnthology = ref([]);
 const loadingRecovery = ref(false);
 const loadingText = ref(undefined);
-
-const metaStore = useMetaDataStore();
 
 // 基本系统设置
 const basicSetting = reactive({
@@ -94,7 +96,7 @@ async function setOrganizationName() {
 		showNotification('失败', '组织名不能为空！', MESSAGE_TYPE.error);
 		return;
 	}
-	const response = await sendRequest(REQUEST_PREFIX.SYSTEM_SETTING + 'set-organization/' + basicSetting.organizationName, REQUEST_METHOD.PUT);
+	const response = await systemSetOrganizationName(basicSetting.organizationName);
 	if (!response.success) {
 		showNotification('失败', response.message, MESSAGE_TYPE.error);
 		return;
@@ -108,7 +110,7 @@ async function setOrganizationName() {
  * 监听允许公开设置是否更改，若更改则发送请求
  */
 watch(() => basicSetting.allowPublic, async () => {
-	const response = await sendRequest(REQUEST_PREFIX.SYSTEM_SETTING + 'set-allow-public/' + basicSetting.allowPublic, REQUEST_METHOD.PUT);
+	const response = await systemSetAllowPublic(basicSetting.allowPublic);
 	if (!response.success) {
 		showNotification('失败', response.message, MESSAGE_TYPE.error);
 		return;
@@ -129,18 +131,24 @@ async function uploadAndSetImage(e, name) {
 		return;
 	}
 	// 上传并设定图片
-	const formData = new FormData();
-	formData.append('image', uploadImage);
-	const response = await uploadFile(REQUEST_PREFIX.SYSTEM_SETTING + 'set-' + name + '-image', REQUEST_METHOD.POST, formData);
+	let response;
+	switch (name) {
+		case 'main':
+			response = await systemSetMainImage(uploadImage);
+			break;
+		case 'login':
+			response = await systemSetLoginImage(uploadImage);
+			break;
+	}
 	if (!response.success) {
 		showNotification('失败', response.message, MESSAGE_TYPE.error);
 		return;
 	}
-	showNotification('成功', '自定义背景图成功！2s后页面刷新...');
+	showNotification('成功', '自定义背景图成功！1.5s后页面刷新...');
 	// 刷新页面
 	setTimeout(() => {
 		location.reload();
-	}, 2000);
+	}, 1500);
 }
 
 /**
@@ -148,16 +156,24 @@ async function uploadAndSetImage(e, name) {
  * @param {String} name 表示登录还是主页背景，登录为login，主页为main
  */
 async function resetImage(name) {
-	const response = await sendRequest(REQUEST_PREFIX.SYSTEM_SETTING + 'reset-' + name + '-image', REQUEST_METHOD.GET);
+	let response;
+	switch (name) {
+		case 'main':
+			response = await systemResetMainImage();
+			break;
+		case 'login':
+			response = await systemResetLoginImage();
+			break;
+	}
 	if (!response.success) {
 		showNotification('错误', response.message, MESSAGE_TYPE.error);
 		return;
 	}
-	showNotification('成功', '重置背景图成功！2s后页面刷新...');
+	showNotification('成功', '重置背景图成功！1.5s后页面刷新...');
 	// 刷新页面
 	setTimeout(() => {
 		location.reload();
-	}, 2000);
+	}, 1500);
 }
 
 /**
@@ -167,7 +183,7 @@ async function showRecoveryDialog() {
 	loadingText.value = '正在获取可恢复的文集列表...';
 	loadingRecovery.value = true;
 	recoveryDialog.value.frameShow = true;
-	const response = await sendRequest(REQUEST_PREFIX.ANTHOLOGY + 'get-not-in-database', REQUEST_METHOD.GET);
+	const response = await anthologyGetNotInDB();
 	loadingRecovery.value = false;
 	if (!response.success) {
 		showNotification('错误', response.message, MESSAGE_TYPE.error);
@@ -189,7 +205,7 @@ async function showRecoveryDialog() {
 async function doAnthologyRecovery() {
 	loadingText.value = '正在执行恢复...';
 	loadingRecovery.value = true;
-	const response = await sendRequest(REQUEST_PREFIX.ANTHOLOGY + 'batch-add', REQUEST_METHOD.POST, recoveryAnthology.value);
+	const response = await anthologyRestore(recoveryAnthology.value);
 	loadingRecovery.value = false;
 	recoveryDialog.value.frameShow = false;
 	if (!response.success) {

@@ -46,13 +46,13 @@
 </template>
 
 <script setup>
-import { MESSAGE_TYPE, showNotification } from '../../../utils/message';
 import { reactive, shallowRef, watch } from 'vue';
 import { Check, Memo, Moon, Sunny, Document } from '@element-plus/icons-vue';
+import { MESSAGE_TYPE, showNotification } from '../../../utils/message.js';
 
 // pinia
-import { useArticlePageThemeStore } from '../../../store/article-page-theme';
-import { useArticleTreeStore } from '../../../store/article-tree';
+import { useArticlePageThemeStore } from '../../../store/article-page-theme.js';
+import { useArticleTreeStore } from '../../../store/article-tree.js';
 
 const themeStore = useArticlePageThemeStore();
 const articleTreeStore = useArticleTreeStore();
