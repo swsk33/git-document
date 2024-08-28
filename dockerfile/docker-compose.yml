@@ -8,7 +8,7 @@ services:
       - 443:443
     environment:
       - GITDOC_DB_HOST=postgre
-      - GITDOC_DB_HOST=redis
+      - GITDOC_REDIS_HOST=redis
       # 邮箱配置（需要自己填一下）
       - GITDOC_MAIL_SMTP_HOST=smtp.163.com
       - GITDOC_MAIL_USER=你的邮箱
