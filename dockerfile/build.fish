@@ -20,9 +20,9 @@ echo 前端构建完成！
 
 echo 构建Dockerfile...
 cd ../dockerfile
-docker build --network host --build-arg ALL_PROXY="http://127.0.0.1:7500" -f Dockerfile -t swsk33/git-document:$version .
+docker build --network host --build-arg ALL_PROXY="http://127.0.0.1:7500" -f Dockerfile -t swsk33/git-document:$app_version .
 echo 创建latest标签...
-docker tag swsk33/git-document:$version swsk33/git-document
+docker tag swsk33/git-document:$app_version swsk33/git-document
 
 echo 全部构建完成！
 echo 清理构建...
