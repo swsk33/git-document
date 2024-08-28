@@ -1,16 +1,14 @@
-package com.gitee.swsk33.gitdocument.git.impl;
+package com.gitee.swsk33.gitdocument.gitdao.impl;
 
 import cn.hutool.core.io.FileUtil;
-import cn.hutool.core.io.resource.ClassPathResource;
-import cn.hutool.core.util.RuntimeUtil;
 import cn.hutool.core.util.StrUtil;
 import com.gitee.swsk33.gitdocument.dao.SystemSettingDAO;
 import com.gitee.swsk33.gitdocument.dao.UserDAO;
 import com.gitee.swsk33.gitdocument.dataobject.Anthology;
 import com.gitee.swsk33.gitdocument.dataobject.User;
-import com.gitee.swsk33.gitdocument.git.GitCommitDAO;
-import com.gitee.swsk33.gitdocument.git.GitFileDAO;
-import com.gitee.swsk33.gitdocument.git.GitRepositoryDAO;
+import com.gitee.swsk33.gitdocument.gitdao.GitCommitDAO;
+import com.gitee.swsk33.gitdocument.gitdao.GitFileDAO;
+import com.gitee.swsk33.gitdocument.gitdao.GitRepositoryDAO;
 import com.gitee.swsk33.gitdocument.model.ArticleDifference;
 import com.gitee.swsk33.gitdocument.model.GitCreateTaskMessage;
 import com.gitee.swsk33.gitdocument.model.GitUpdateTaskMessage;
@@ -25,9 +23,6 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.List;
 
 import static com.gitee.swsk33.gitdocument.param.SystemSettingKey.ORGANIZATION_NAME;
@@ -62,25 +57,13 @@ public class GitRepositoryDAOImpl implements GitRepositoryDAO {
 	public boolean createGitBareRepository(String gitRepository) {
 		// 裸仓库文件夹
 		File repositoryFolder = FileUtil.file(gitRepository);
-		// 钩子脚本所在位置
-		File hookScript = FileUtil.file(gitRepository + File.separator + "hooks/post-receive");
 		// 创建仓库文件夹
 		FileUtil.mkdir(repositoryFolder);
-		// 创建钩子文件的输入输出流，完成把钩子脚本模板内容读取并写入到仓库文件夹指定位置
-		try (InputStream hookStream = new ClassPathResource("/script/git-message.sh").getStream()) {
+		try {
 			// 初始化裸仓库
 			Git.init().setDirectory(repositoryFolder).setBare(true).call().close();
-			// 创建钩子脚本文件并赋予脚本可执行权限
-			FileUtil.touch(hookScript);
-			RuntimeUtil.exec("chmod +x " + hookScript.getAbsolutePath());
-			// 读取模板文件内容
-			byte[] content = hookStream.readAllBytes();
-			// 输出流接收模板文件内容并写入
-			try (OutputStream scriptOutput = new FileOutputStream(hookScript)) {
-				// 写入至仓库中钩子文件
-				scriptOutput.write(content);
-			}
 		} catch (Exception e) {
+			log.error("创建裸仓库出错！");
 			log.error(e.getMessage());
 			return false;
 		}

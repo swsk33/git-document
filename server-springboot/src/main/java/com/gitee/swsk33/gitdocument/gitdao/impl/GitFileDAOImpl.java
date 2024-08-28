@@ -1,7 +1,7 @@
-package com.gitee.swsk33.gitdocument.git.impl;
+package com.gitee.swsk33.gitdocument.gitdao.impl;
 
 import cn.hutool.core.io.FileUtil;
-import com.gitee.swsk33.gitdocument.git.GitFileDAO;
+import com.gitee.swsk33.gitdocument.gitdao.GitFileDAO;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jgit.api.DiffCommand;
 import org.eclipse.jgit.api.Git;

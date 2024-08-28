@@ -5,7 +5,7 @@ import com.gitee.swsk33.gitdocument.cache.ArticleTreeCache;
 import com.gitee.swsk33.gitdocument.dao.AnthologyDAO;
 import com.gitee.swsk33.gitdocument.dao.ArticleDAO;
 import com.gitee.swsk33.gitdocument.dataobject.Article;
-import com.gitee.swsk33.gitdocument.git.GitFileDAO;
+import com.gitee.swsk33.gitdocument.gitdao.GitFileDAO;
 import com.gitee.swsk33.gitdocument.model.ArticleDirectory;
 import com.gitee.swsk33.gitdocument.model.Result;
 import com.gitee.swsk33.gitdocument.param.PermissionName;

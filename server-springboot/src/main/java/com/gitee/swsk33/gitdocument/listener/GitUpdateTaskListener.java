@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.reactivestreams.Subscription;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.BaseSubscriber;
 
@@ -20,6 +21,7 @@ import reactor.core.publisher.BaseSubscriber;
  */
 @Slf4j
 @Component
+@DependsOn("fileChangeStrategyContext")
 public class GitUpdateTaskListener extends BaseSubscriber<GitTaskMessage> {
 
 	@Autowired

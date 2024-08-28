@@ -1,7 +1,7 @@
-package com.gitee.swsk33.gitdocument.git.impl;
+package com.gitee.swsk33.gitdocument.gitdao.impl;
 
 import cn.hutool.core.io.FileUtil;
-import com.gitee.swsk33.gitdocument.git.GitCommitDAO;
+import com.gitee.swsk33.gitdocument.gitdao.GitCommitDAO;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;

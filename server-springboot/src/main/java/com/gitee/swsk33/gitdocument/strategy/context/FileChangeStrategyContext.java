@@ -12,14 +12,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import jakarta.annotation.PostConstruct;
+
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * 文件改变策略上下文
  */
-@Component
 @Slf4j
+@Component
 public class FileChangeStrategyContext {
 
 	/**

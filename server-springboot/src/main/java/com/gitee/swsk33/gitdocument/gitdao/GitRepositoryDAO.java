@@ -1,4 +1,4 @@
-package com.gitee.swsk33.gitdocument.git;
+package com.gitee.swsk33.gitdocument.gitdao;
 
 import com.gitee.swsk33.gitdocument.annotation.GitRepository;
 import com.gitee.swsk33.gitdocument.dataobject.Anthology;

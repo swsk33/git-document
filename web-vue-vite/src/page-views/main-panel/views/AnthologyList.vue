@@ -44,6 +44,9 @@
 		<InfoDialog class="add-anthology" ref="addAnthologyRef">
 			<template v-slot:title>增加文集</template>
 			<template v-slot:content>
+				<upload-image class="cover" :default-image="parseCoverURL(null)" :init-image="addAnthologyObject.cover" upload-name="image" ref="createUploadImage">
+					<template v-slot:text>上传封面：</template>
+				</upload-image>
 				<div class="name">
 					<div class="text">文集名：</div>
 					<el-input class="input" size="large" v-model="addAnthologyObject.name" placeholder="请输入文集名，由英文和数字组成"/>
@@ -62,7 +65,7 @@
 		<InfoDialog class="edit-anthology" ref="editAnthologyRef">
 			<template v-slot:title>修改文集</template>
 			<template v-slot:content>
-				<upload-image class="cover" :default-image="parseCoverURL(null)" :init-image="editAnthologyObject.cover" upload-name="image" ref="uploadImage">
+				<upload-image class="cover" :default-image="parseCoverURL(null)" :init-image="editAnthologyObject.cover" upload-name="image" ref="updateUploadImage">
 					<template v-slot:text>上传封面：</template>
 				</upload-image>
 				<div class="show-name">
@@ -109,7 +112,8 @@ import UploadImage from '../components/UploadImage.vue';
 
 const addAnthologyRef = ref(null);
 const editAnthologyRef = ref(null);
-const uploadImage = ref(null);
+const updateUploadImage = ref(null);
+const createUploadImage = ref(null);
 
 // pinia
 import { useUserStore } from '../../../store/user.js';
@@ -130,7 +134,8 @@ const loadingDone = ref(false);
  */
 const addAnthologyObject = reactive({
 	name: undefined,
-	showName: undefined
+	showName: undefined,
+	cover: undefined
 });
 
 /**
@@ -161,6 +166,9 @@ async function getAnthologyList() {
  * 添加文集
  */
 async function addAnthology() {
+	// 先上传图片
+	addAnthologyObject.cover = await createUploadImage.value.uploadAndGetUrl();
+	// 提交增加请求
 	const response = await anthologyAdd(addAnthologyObject);
 	if (!response.success) {
 		showNotification('错误', response.message, MESSAGE_TYPE.error);
@@ -186,7 +194,7 @@ function showEditDialog(anthology) {
  */
 async function editAnthology() {
 	// 修改信息之前，先上传图片
-	editAnthologyObject.value.cover = await uploadImage.value.uploadAndGetUrl();
+	editAnthologyObject.value.cover = await updateUploadImage.value.uploadAndGetUrl();
 	// 修改文集数据
 	const response = await anthologyStore.updateOne(editAnthologyObject.value);
 	if (!response.success) {
@@ -421,12 +429,13 @@ onBeforeMount(async () => {
 	// 弹窗-增加文集
 	.add-anthology {
 		:deep(.title) {
-			font-size: 32px;
-			top: 4%;
+			font-size: 28px;
 		}
 
-		.content {
-			.name, .show-name {
+		:deep(.content) {
+			height: 50%;
+
+			.cover, .name, .show-name {
 				position: relative;
 				display: flex;
 				align-items: center;
@@ -446,7 +455,9 @@ onBeforeMount(async () => {
 			}
 		}
 
-		.button-box {
+		:deep(.button-box) {
+			height: 20%;
+
 			.ok, .cancel {
 				font-size: 18px;
 			}
