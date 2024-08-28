@@ -44,7 +44,11 @@ const articleTreeStore = useArticleTreeStore();
 marked.use(markedHighlight({
 	langPrefix: 'hljs language-',
 	highlight(code, lang) {
-		const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+		let language = hljs.getLanguage(lang) ? lang : 'plaintext';
+		// 将Vue代码块使用html高亮方式渲染
+		if (lang.toLowerCase() === 'vue') {
+			language = 'html';
+		}
 		return hljs.highlight(code, { language }).value;
 	}
 }));
@@ -270,7 +274,7 @@ onBeforeMount(async () => {
 	}
 	// 赋值给文章对象
 	articleObject = getText.data;
-	// 预处理文本
+	// 预处理文本，渲染Markdown为HTML
 	loadingText.value = '渲染中...';
 	const htmlText = marked(articleObject.content);
 	// 解析为Dom节点

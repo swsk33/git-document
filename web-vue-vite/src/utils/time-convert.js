@@ -1,11 +1,12 @@
 /**
  * 时间戳转时间字符串
- * @param timestamp 时间戳
+ * @param {Number} timestamp 时间戳
+ * @param {string} defaultValue 当传入时间为空时，默认的返回内容
  * @return {string} 时间字符串
  */
-function timestampToDateString(timestamp) {
+function timestampToDateString(timestamp, defaultValue = '') {
 	if (timestamp == null) {
-		return '暂无提交';
+		return defaultValue;
 	}
 	return dateToString(new Date(timestamp * 1000));
 }
@@ -13,9 +14,13 @@ function timestampToDateString(timestamp) {
 /**
  * 将时间date对象转换成可读字符串
  * @param {Date | string} time 时间对象或者时间字符串
+ * @param {string} defaultValue 当传入时间为空时，默认的返回内容
  * @return {string} 时间字符串
  */
-function dateToString(time) {
+function dateToString(time, defaultValue = '') {
+	if (time == null || time === '') {
+		return defaultValue;
+	}
 	if (typeof time === 'string') {
 		time = new Date(time);
 	}

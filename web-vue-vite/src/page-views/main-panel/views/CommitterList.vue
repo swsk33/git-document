@@ -38,7 +38,7 @@ const commits = ref([]);
 
 // 计算属性
 const getUpdateTime = computed(() => (timestamp) => {
-	return timestampToDateString(timestamp);
+	return timestampToDateString(timestamp, '未知');
 });
 
 onBeforeMount(async () => {

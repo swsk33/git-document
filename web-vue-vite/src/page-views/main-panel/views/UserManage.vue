@@ -91,6 +91,7 @@ import { MESSAGE_TYPE, showNotification } from '../../../utils/message.js';
 import { userDelete, userGetAll, userRegister, userUpdate } from '../../../api/user-api.js';
 import { parseAvatarURL } from '../../../api/image-api.js';
 import { dateToString } from '../../../utils/time-convert.js';
+import { isEmpty } from '../../../utils/string.js';
 
 // 组件引入
 import InfoDialog from '../components/InfoDialog.vue';
@@ -142,9 +143,15 @@ async function getUserList() {
 		showNotification('失败', response.message, MESSAGE_TYPE.error);
 		return;
 	}
-	// 转换其中的登录时间属性
+	// 处理用户登录记录中的时间和空值
 	for (let user of response.data) {
-		user.loginRecord.gmtModified = dateToString(user.loginRecord.gmtModified);
+		if (isEmpty(user.loginRecord.ip)) {
+			user.loginRecord.ip = '未知IP';
+		}
+		if (isEmpty(user.loginRecord.location)) {
+			user.loginRecord.location = '未知地点';
+		}
+		user.loginRecord.gmtModified = dateToString(user.loginRecord.gmtModified, '从未登录');
 	}
 	userList.value = response.data;
 }

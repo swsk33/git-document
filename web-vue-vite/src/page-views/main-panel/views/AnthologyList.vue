@@ -142,7 +142,7 @@ const editAnthologyObject = ref(undefined);
  * 将时间戳转换为标准时间
  */
 const getUpdateTime = computed(() => (timestamp) => {
-	return timestampToDateString(timestamp);
+	return timestampToDateString(timestamp, '暂无提交');
 });
 
 /**
