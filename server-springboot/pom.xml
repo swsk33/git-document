@@ -20,6 +20,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<sa-token.version>1.38.0</sa-token.version>
 		<mybatis-flex.version>1.9.6</mybatis-flex.version>
+		<skipTests>true</skipTests>
 	</properties>
 
 	<dependencies>

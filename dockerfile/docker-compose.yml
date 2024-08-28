@@ -3,62 +3,47 @@ services:
   git-doc:
     image: swsk33/git-document
     ports:
-      # 容器内SSH 22端口映射至主机的23端口
-      - 23:22
+      - 2333:2333
       - 80:80
       - 443:443
     environment:
-      - POSTGRE_HOST=postgre
-      - REDIS_HOST=redis
-      - RABBIT_MQ_HOST=rabbitmq
+      - GITDOC_DB_HOST=postgre
+      - GITDOC_DB_HOST=redis
       # 邮箱配置（需要自己填一下）
-      - EMAIL_SMTP_HOST=smtp.163.com
-      - EMAIL_USER=你的邮箱
-      - EMAIL_PASSWORD=授权码
-      # 映射的宿主机SSH端口
-      - HOST_SSH_PORT=23
+      - GITDOC_MAIL_SMTP_HOST=smtp.163.com
+      - GITDOC_MAIL_USER=你的邮箱
+      - GITDOC_MAIL_PASSKEY=授权码
+      # SSH广播端口（映射的宿主机的SSH端口）
+      - GITDOC_ADVERTISED_SSH_PORT=2333
       # 设定延迟启动时长（秒）以等待数据库和消息队列启动完成后再启动
-      - DELAY_START=5
+      - DELAY_START=3
     volumes:
-      - git-doc-nginx-config:/etc/nginx
-      - git-doc-nginx-log:/var/log/nginx
-      - git-doc-repo:/git-doc
-      - git-doc-image:/app/images
+      - nginx-config:/etc/nginx
+      - git-repository:/git-doc
+      - image:/app/images
     links:
       - postgre
       - redis
-      - rabbitmq
     depends_on:
       - postgre
-      - rabbitmq
       - redis
-  # RabbitMQ
-  rabbitmq:
-    image: rabbitmq:management
-    volumes:
-      - git-doc-rabbitmq-data:/var/lib/rabbitmq
-    environment:
-      - RABBITMQ_DEFAULT_USER=root
-      - RABBITMQ_DEFAULT_PASS=123456
   # Redis
   redis:
-    image: redis
+    image: redis:alpine
     volumes:
-      - git-doc-redis-data:/data
+      - redis-data:/data
   # PostgreSQL
   postgre:
-    image: postgres
+    image: postgres:alpine
     volumes:
-      - git-doc-postgre-data:/var/lib/postgresql/data
+      - postgre-data:/var/lib/postgresql/data
     environment:
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=123456
 
 volumes:
-  git-doc-postgre-data:
-  git-doc-redis-data:
-  git-doc-rabbitmq-data:
-  git-doc-nginx-config:
-  git-doc-nginx-log:
-  git-doc-repo:
-  git-doc-image:
+  postgre-data:
+  redis-data:
+  nginx-config:
+  git-repository:
+  image:

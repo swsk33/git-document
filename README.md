@@ -16,6 +16,7 @@ GitDocument是一个轻量的团队文档管理和查看工具，部署之后，
 ![image-20230722233254043](https://swsk33-note.oss-cn-shanghai.aliyuncs.com/undefinedimage-20230722233254043.png)
 
 **主界面**
+
 ![image-20230722233320954](https://swsk33-note.oss-cn-shanghai.aliyuncs.com/undefinedimage-20230722233320954.png)
 
 **在线文档目录**
@@ -54,7 +55,7 @@ GitDocument是一个轻量的团队文档管理和查看工具，部署之后，
 
 - [axios](https://axios-http.com/) 网络请求
 - [clipboard.js](https://clipboardjs.com/) 复制内容
-- [element-plus](https://element-plus.gitee.io/zh-CN/) 组件库及其图标库
+- [element-plus](https://element-plus.org/zh-CN/) 组件库及其图标库
 - [marked.js](https://marked.js.org/) Markdown转HTML
 - [highlight.js](https://highlightjs.org/) 实现代码高亮
 - [katex](https://katex.org/) 对LaTeX公式支持
@@ -65,11 +66,11 @@ GitDocument是一个轻量的团队文档管理和查看工具，部署之后，
 后端是使用Spring Boot进行搭建，使用PostgreSQL作为数据库，可以理解为是SSM架构，除了Spring Boot的一些Starter之外，还用到了以下开源外部库或者是中间件：
 
 - [Sa-Token](https://sa-token.dev33.cn/) 认证和鉴权框架
-- [ReadAndWriteJ](https://gitee.com/swsk33/ReadAndWriteJ) 读写实用类
 - [JGit](https://www.eclipse.org/jgit/) 用于使用Java来操作Git仓库
+- [MINA SSHD](https://mina.apache.org/sshd-project/) 内嵌SSH服务端实现
 - [Hutool](https://hutool.cn/) 实用工具集
+- [Reactor](https://projectreactor.io/) 实现异步发布订阅机制
 - 集成[Redis](https://redis.io/)作为缓存功能
-- 集成[RabbitMQ](https://www.rabbitmq.com/)作为任务和邮件通知消息队列
 
 ### (4) 说在前面
 
@@ -83,5 +84,6 @@ GitDocument是一个轻量的团队文档管理和查看工具，部署之后，
 
 该平台的部署和使用文档可以通过下列链接查看：
 
-- 部署手册：[传送门](./doc/部署手册.md)
-- 使用手册：[传送门](./doc/使用手册.md)
+- 部署手册：[传送门](./docs/部署手册.md)
+- 使用手册：[传送门](./docs/使用手册.md)
+- 配置环境变量参考：[传送门](./docs/配置环境变量参考.md)
