@@ -70,6 +70,7 @@ GitDocument是一个轻量的团队文档管理和查看工具，部署之后，
 - [MINA SSHD](https://mina.apache.org/sshd-project/) 内嵌SSH服务端实现
 - [Hutool](https://hutool.cn/) 实用工具集
 - [Reactor](https://projectreactor.io/) 实现异步发布订阅机制
+- [MyBatis-Flex](https://mybatis-flex.com/) 增强的ORM框架
 - 集成[Redis](https://redis.io/)作为缓存功能
 
 ### (4) 说在前面

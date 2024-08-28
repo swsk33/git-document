@@ -59,7 +59,7 @@ create table "login_record"
 (
 	"user_id"      int primary key,
 	"ip"           varchar(16),
-	"location"     varchar(16),
+	"location"     varchar(128),
 	"gmt_created"  timestamp,
 	"gmt_modified" timestamp
 );
