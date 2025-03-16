@@ -4,12 +4,12 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.3.2</version>
+		<version>3.4.3</version>
 		<relativePath/>
 	</parent>
 	<groupId>com.gitee.swsk33</groupId>
 	<artifactId>git-document</artifactId>
-	<version>3.1.1</version>
+	<version>3.3.0</version>
 	<name>git-document</name>
 	<description>基于Git版本管理工具的轻便的文档管理系统，使用Git管理Markdown文档</description>
 
@@ -18,8 +18,8 @@
 		<maven.compiler.source>${java.version}</maven.compiler.source>
 		<maven.compiler.targer>${java.version}</maven.compiler.targer>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<sa-token.version>1.38.0</sa-token.version>
-		<mybatis-flex.version>1.9.6</mybatis-flex.version>
+		<sa-token.version>1.40.0</sa-token.version>
+		<mybatis-flex.version>1.10.8</mybatis-flex.version>
 		<skipTests>true</skipTests>
 	</properties>
 
@@ -115,21 +115,21 @@
 		<dependency>
 			<groupId>org.apache.sshd</groupId>
 			<artifactId>sshd-core</artifactId>
-			<version>2.13.2</version>
+			<version>2.15.0</version>
 		</dependency>
 
 		<!-- Hutool实用工具 -->
 		<dependency>
 			<groupId>cn.hutool</groupId>
 			<artifactId>hutool-all</artifactId>
-			<version>5.8.31</version>
+			<version>5.8.36</version>
 		</dependency>
 
 		<!-- JGit操作Git仓库 -->
 		<dependency>
 			<groupId>org.eclipse.jgit</groupId>
 			<artifactId>org.eclipse.jgit</artifactId>
-			<version>6.10.0.202406032230-r</version>
+			<version>7.1.0.202411261347-r</version>
 		</dependency>
 
 		<!-- Reactor核心库 -->
@@ -180,7 +180,7 @@
 			<dependency>
 				<groupId>io.projectreactor</groupId>
 				<artifactId>reactor-bom</artifactId>
-				<version>2023.0.8</version>
+				<version>2024.0.4</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
