@@ -20,6 +20,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<sa-token.version>1.40.0</sa-token.version>
 		<mybatis-flex.version>1.10.8</mybatis-flex.version>
+		<lucene.version>10.1.0</lucene.version>
 		<skipTests>true</skipTests>
 	</properties>
 
@@ -143,6 +144,55 @@
 			<groupId>org.lionsoul</groupId>
 			<artifactId>ip2region</artifactId>
 			<version>2.7.0</version>
+		</dependency>
+
+		<!-- Lucene检索引擎-核心 -->
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-core</artifactId>
+			<version>${lucene.version}</version>
+		</dependency>
+
+		<!-- Lucene检索引擎-分析器 -->
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-analysis-common</artifactId>
+			<version>${lucene.version}</version>
+		</dependency>
+
+		<!-- Lucene检索引擎-查询器 -->
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-queryparser</artifactId>
+			<version>${lucene.version}</version>
+		</dependency>
+
+		<!-- Lucene检索引擎-检索高亮 -->
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-highlighter</artifactId>
+			<version>${lucene.version}</version>
+		</dependency>
+
+		<!-- Markdown解析 -->
+		<dependency>
+			<groupId>org.commonmark</groupId>
+			<artifactId>commonmark</artifactId>
+			<version>0.24.0</version>
+		</dependency>
+
+		<!-- HTML解析 -->
+		<dependency>
+			<groupId>org.jsoup</groupId>
+			<artifactId>jsoup</artifactId>
+			<version>1.19.1</version>
+		</dependency>
+
+		<!-- jcseg中文分词 -->
+		<dependency>
+			<groupId>org.lionsoul</groupId>
+			<artifactId>jcseg-analyzer</artifactId>
+			<version>2.6.3</version>
 		</dependency>
 
 		<!-- Lombok代码简化 -->

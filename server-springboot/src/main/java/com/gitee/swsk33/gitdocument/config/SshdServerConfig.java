@@ -2,6 +2,7 @@ package com.gitee.swsk33.gitdocument.config;
 
 import com.gitee.swsk33.gitdocument.dao.PublicKeyDAO;
 import com.gitee.swsk33.gitdocument.factory.GitCommandFactory;
+import com.gitee.swsk33.gitdocument.factory.TestShellFactory;
 import com.gitee.swsk33.gitdocument.property.SshServerProperties;
 import com.gitee.swsk33.gitdocument.util.PublicKeyUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +42,8 @@ public class SshdServerConfig {
 		sshd.setKeyPairProvider(new SimpleGeneratorHostKeyProvider(Paths.get("host-key")));
 		// 设定为自定义的Git命令工厂实现
 		sshd.setCommandFactory(new GitCommandFactory());
+		// 设置自定义交互式命令处理工厂实现，仅返回消息
+		sshd.setShellFactory(new TestShellFactory());
 		// 设置认证方式，这里使用自定义实现的公钥认证
 		sshd.setPublickeyAuthenticator((username, key, session) -> {
 			// 获取用户连接的公钥内容
@@ -48,7 +51,7 @@ public class SshdServerConfig {
 			// 判断用户连接的公钥是否存在于数据库
 			if (!publicKeyDAO.existsByContent(clientKeyPEM)) {
 				log.warn("数据库内没有公钥：{}", clientKeyPEM);
-				log.warn("拒绝连接！");
+				log.error("拒绝连接！用户名：{}，远程地址：{}", username, session.getClientAddress());
 				return false;
 			}
 			log.info("允许SSH连接！用户名：{}，远程地址：{}", username, session.getClientAddress());

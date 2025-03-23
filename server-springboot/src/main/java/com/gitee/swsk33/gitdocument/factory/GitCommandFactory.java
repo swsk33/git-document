@@ -32,6 +32,7 @@ public class GitCommandFactory implements CommandFactory {
 			}
 			default -> {
 				log.error("错误！不允许执行命令：{}", command);
+				log.error("已拒绝用户：{}，IP地址：{}", channel.getSession().getUsername(), channel.getSession().getClientAddress());
 				channel.getSession().disconnect(82, String.format("The command is not allowed: '%s'", command));
 				yield null;
 			}

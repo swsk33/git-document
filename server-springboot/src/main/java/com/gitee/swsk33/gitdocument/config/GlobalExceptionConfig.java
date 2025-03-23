@@ -20,21 +20,27 @@ public class GlobalExceptionConfig {
 	@ExceptionHandler
 	public Result<Void> handlerException(Exception e, HttpServletResponse response) {
 		// 打印堆栈，以供调试
-		log.error("发生全局异常！" + e.getClass().getName() + ":" + e.getMessage());
+		log.error("发生全局异常！{}:{}", e.getClass().getName(), e.getMessage());
 		// 如果是未登录异常
-		if (e instanceof NotLoginException) {
-			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-			return Result.resultFailed("用户未登录！");
-		}
-		// 如果是角色异常
-		if (e instanceof NotRoleException) {
-			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-			return Result.resultFailed("用户角色权限不足！");
-		}
-		// 如果是权限异常
-		if (e instanceof NotPermissionException) {
-			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-			return Result.resultFailed("用户没有权限！");
+		switch (e) {
+			case NotLoginException notLoginException -> {
+				response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+				return Result.resultFailed("用户未登录！");
+			}
+
+			// 如果是角色异常
+			case NotRoleException notRoleException -> {
+				response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+				return Result.resultFailed("用户角色权限不足！");
+			}
+
+			// 如果是权限异常
+			case NotPermissionException notPermissionException -> {
+				response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+				return Result.resultFailed("用户没有权限！");
+			}
+			default -> {
+			}
 		}
 		// 其余为服务器错误
 		e.printStackTrace();

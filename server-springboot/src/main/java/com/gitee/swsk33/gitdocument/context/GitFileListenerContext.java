@@ -46,7 +46,7 @@ public class GitFileListenerContext {
 		monitor.setWatcher(new DelayWatcher(watcher, 1000));
 		monitor.start();
 		MONITOR_MAP.put(id, monitor);
-		log.info("加入监听文集仓库路径：" + gitRepository);
+		log.info("加入监听文集仓库路径：{}", gitRepository);
 	}
 
 	/**
@@ -56,7 +56,7 @@ public class GitFileListenerContext {
 	 */
 	public void removeMonitor(long id) {
 		MONITOR_MAP.remove(id).close();
-		log.info("移除监听文集仓库id：" + id);
+		log.info("移除监听文集仓库id：{}", id);
 	}
 
 }
