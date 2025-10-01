@@ -4,12 +4,12 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.4.3</version>
+		<version>3.5.6</version>
 		<relativePath/>
 	</parent>
 	<groupId>com.gitee.swsk33</groupId>
 	<artifactId>git-document</artifactId>
-	<version>3.3.0</version>
+	<version>4.0.0</version>
 	<name>git-document</name>
 	<description>基于Git版本管理工具的轻便的文档管理系统，使用Git管理Markdown文档</description>
 
@@ -18,9 +18,9 @@
 		<maven.compiler.source>${java.version}</maven.compiler.source>
 		<maven.compiler.targer>${java.version}</maven.compiler.targer>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<sa-token.version>1.40.0</sa-token.version>
-		<mybatis-flex.version>1.10.8</mybatis-flex.version>
-		<lucene.version>10.1.0</lucene.version>
+		<sa-token.version>1.44.0</sa-token.version>
+		<mybatis-flex.version>1.11.3</mybatis-flex.version>
+		<lucene.version>10.3.0</lucene.version>
 		<skipTests>true</skipTests>
 	</properties>
 
@@ -116,21 +116,20 @@
 		<dependency>
 			<groupId>org.apache.sshd</groupId>
 			<artifactId>sshd-core</artifactId>
-			<version>2.15.0</version>
+			<version>2.16.0</version>
 		</dependency>
 
 		<!-- Hutool实用工具 -->
 		<dependency>
 			<groupId>cn.hutool</groupId>
-			<artifactId>hutool-all</artifactId>
-			<version>5.8.36</version>
+			<artifactId>hutool-core</artifactId>
 		</dependency>
 
 		<!-- JGit操作Git仓库 -->
 		<dependency>
 			<groupId>org.eclipse.jgit</groupId>
 			<artifactId>org.eclipse.jgit</artifactId>
-			<version>7.1.0.202411261347-r</version>
+			<version>7.3.0.202506031305-r</version>
 		</dependency>
 
 		<!-- Reactor核心库 -->
@@ -143,7 +142,7 @@
 		<dependency>
 			<groupId>org.lionsoul</groupId>
 			<artifactId>ip2region</artifactId>
-			<version>2.7.0</version>
+			<version>3.1.0</version>
 		</dependency>
 
 		<!-- Lucene检索引擎-核心 -->
@@ -178,14 +177,14 @@
 		<dependency>
 			<groupId>org.commonmark</groupId>
 			<artifactId>commonmark</artifactId>
-			<version>0.24.0</version>
+			<version>0.26.0</version>
 		</dependency>
 
 		<!-- HTML解析 -->
 		<dependency>
 			<groupId>org.jsoup</groupId>
 			<artifactId>jsoup</artifactId>
-			<version>1.19.1</version>
+			<version>1.21.2</version>
 		</dependency>
 
 		<!-- jcseg中文分词 -->
@@ -230,7 +229,16 @@
 			<dependency>
 				<groupId>io.projectreactor</groupId>
 				<artifactId>reactor-bom</artifactId>
-				<version>2024.0.4</version>
+				<version>2024.0.10</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+
+			<!-- Hutool实用工具 -->
+			<dependency>
+				<groupId>cn.hutool</groupId>
+				<artifactId>hutool-bom</artifactId>
+				<version>5.8.40</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -239,6 +247,28 @@
 
 	<build>
 		<plugins>
+			<!-- Maven编译插件 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.14.0</version>
+				<configuration>
+					<annotationProcessorPaths>
+						<path>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+							<version>${lombok.version}</version>
+						</path>
+						<path>
+							<groupId>com.mybatis-flex</groupId>
+							<artifactId>mybatis-flex-processor</artifactId>
+							<version>${mybatis-flex.version}</version>
+						</path>
+					</annotationProcessorPaths>
+				</configuration>
+			</plugin>
+
+			<!-- Spring Boot打包插件 -->
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
@@ -247,6 +277,10 @@
 						<exclude>
 							<groupId>org.projectlombok</groupId>
 							<artifactId>lombok</artifactId>
+						</exclude>
+						<exclude>
+							<groupId>com.mybatis-flex</groupId>
+							<artifactId>mybatis-flex-processor</artifactId>
 						</exclude>
 					</excludes>
 				</configuration>
