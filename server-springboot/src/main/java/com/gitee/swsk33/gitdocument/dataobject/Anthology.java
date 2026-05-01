@@ -1,10 +1,8 @@
 package com.gitee.swsk33.gitdocument.dataobject;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.gitee.swsk33.gitdocument.param.AnthologyStatus;
 import com.gitee.swsk33.gitdocument.param.ValidationRules;
-import com.gitee.swsk33.gitdocument.serializer.LongToStringSerializer;
 import com.mybatisflex.annotation.*;
 import com.mybatisflex.core.keygen.KeyGenerators;
 import jakarta.validation.constraints.*;
@@ -25,7 +23,6 @@ public class Anthology {
 	 * 主键id
 	 */
 	@Id(keyType = KeyType.Generator, value = KeyGenerators.snowFlakeId)
-	@JsonSerialize(using = LongToStringSerializer.class)
 	@Null(groups = ValidationRules.DataAdd.class, message = "新增数据时不能手动设定主键id！")
 	@NotNull(groups = ValidationRules.DataUpdate.class, message = "文集id不能为空！")
 	private Long id;

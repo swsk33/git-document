@@ -1,7 +1,5 @@
 package com.gitee.swsk33.gitdocument.dataobject;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.gitee.swsk33.gitdocument.serializer.LongToStringSerializer;
 import com.mybatisflex.annotation.Column;
 import com.mybatisflex.annotation.Id;
 import com.mybatisflex.annotation.KeyType;
@@ -22,7 +20,6 @@ public class Article {
 	 * 主键id
 	 */
 	@Id(keyType = KeyType.Generator, value = KeyGenerators.snowFlakeId)
-	@JsonSerialize(using = LongToStringSerializer.class)
 	private Long id;
 
 	/**
@@ -39,7 +36,6 @@ public class Article {
 	/**
 	 * 所属文集id（外键）
 	 */
-	@JsonSerialize(using = LongToStringSerializer.class)
 	private Long anthologyId;
 
 	/**

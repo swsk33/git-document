@@ -4,31 +4,32 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.5.6</version>
+		<version>4.0.6</version>
 		<relativePath/>
 	</parent>
 	<groupId>com.gitee.swsk33</groupId>
 	<artifactId>git-document</artifactId>
 	<version>4.0.0</version>
-	<name>git-document</name>
+	<name>Git Document</name>
 	<description>基于Git版本管理工具的轻便的文档管理系统，使用Git管理Markdown文档</description>
 
 	<properties>
+		<!-- 基本属性 -->
 		<java.version>21</java.version>
-		<maven.compiler.source>${java.version}</maven.compiler.source>
-		<maven.compiler.targer>${java.version}</maven.compiler.targer>
+		<maven.compiler.release>${java.version}</maven.compiler.release>
+		<maven.compiler.parameters>true</maven.compiler.parameters>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<sa-token.version>1.44.0</sa-token.version>
-		<mybatis-flex.version>1.11.3</mybatis-flex.version>
-		<lucene.version>10.3.0</lucene.version>
 		<skipTests>true</skipTests>
+		<!-- 版本配置 -->
+		<sa-token.version>1.45.0</sa-token.version>
+		<mybatis-flex.version>1.11.6</mybatis-flex.version>
 	</properties>
 
 	<dependencies>
 		<!-- Spring Boot Web模块 -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
+			<artifactId>spring-boot-starter-webmvc</artifactId>
 		</dependency>
 
 		<!-- Spring Boot校验 -->
@@ -40,7 +41,7 @@
 		<!-- Spring Boot AOP -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-aop</artifactId>
+			<artifactId>spring-boot-starter-aspectj</artifactId>
 		</dependency>
 
 		<!-- Spring Boot配置生成器 -->
@@ -60,7 +61,7 @@
 		<!-- MyBatis-Flex -->
 		<dependency>
 			<groupId>com.mybatis-flex</groupId>
-			<artifactId>mybatis-flex-spring-boot3-starter</artifactId>
+			<artifactId>mybatis-flex-spring-boot4-starter</artifactId>
 			<version>${mybatis-flex.version}</version>
 		</dependency>
 
@@ -72,7 +73,7 @@
 			<scope>provided</scope>
 		</dependency>
 
-		<!-- PostgreSQL驱动 -->
+		<!-- PostgreSQL 驱动 -->
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
@@ -94,11 +95,11 @@
 		<!-- Sa-Token安全框架 -->
 		<dependency>
 			<groupId>cn.dev33</groupId>
-			<artifactId>sa-token-spring-boot3-starter</artifactId>
+			<artifactId>sa-token-spring-boot4-starter</artifactId>
 			<version>${sa-token.version}</version>
 		</dependency>
 
-		<!-- Sa-Token整合SpringAOP实现注解鉴权 -->
+		<!-- Sa-Token整合 Spring AOP 实现注解鉴权 -->
 		<dependency>
 			<groupId>cn.dev33</groupId>
 			<artifactId>sa-token-spring-aop</artifactId>
@@ -116,129 +117,80 @@
 		<dependency>
 			<groupId>org.apache.sshd</groupId>
 			<artifactId>sshd-core</artifactId>
-			<version>2.16.0</version>
+			<version>2.17.1</version>
 		</dependency>
 
-		<!-- Hutool实用工具 -->
+		<!-- Hutool 实用工具 -->
 		<dependency>
 			<groupId>cn.hutool</groupId>
 			<artifactId>hutool-core</artifactId>
 		</dependency>
 
-		<!-- JGit操作Git仓库 -->
+		<!-- JGit 操作 Git 仓库 -->
 		<dependency>
 			<groupId>org.eclipse.jgit</groupId>
 			<artifactId>org.eclipse.jgit</artifactId>
-			<version>7.3.0.202506031305-r</version>
+			<version>7.6.0.202603022253-r</version>
 		</dependency>
 
-		<!-- Reactor核心库 -->
+		<!-- Reactor 核心库 -->
 		<dependency>
 			<groupId>io.projectreactor</groupId>
 			<artifactId>reactor-core</artifactId>
 		</dependency>
 
-		<!-- ip地址归属地查询 -->
+		<!-- ip 地址归属地查询 -->
 		<dependency>
 			<groupId>org.lionsoul</groupId>
 			<artifactId>ip2region</artifactId>
-			<version>3.1.0</version>
+			<version>3.3.7</version>
 		</dependency>
 
-		<!-- Lucene检索引擎-核心 -->
-		<dependency>
-			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-core</artifactId>
-			<version>${lucene.version}</version>
-		</dependency>
-
-		<!-- Lucene检索引擎-分析器 -->
-		<dependency>
-			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-analysis-common</artifactId>
-			<version>${lucene.version}</version>
-		</dependency>
-
-		<!-- Lucene检索引擎-查询器 -->
-		<dependency>
-			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-queryparser</artifactId>
-			<version>${lucene.version}</version>
-		</dependency>
-
-		<!-- Lucene检索引擎-检索高亮 -->
-		<dependency>
-			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-highlighter</artifactId>
-			<version>${lucene.version}</version>
-		</dependency>
-
-		<!-- Markdown解析 -->
-		<dependency>
-			<groupId>org.commonmark</groupId>
-			<artifactId>commonmark</artifactId>
-			<version>0.26.0</version>
-		</dependency>
-
-		<!-- HTML解析 -->
-		<dependency>
-			<groupId>org.jsoup</groupId>
-			<artifactId>jsoup</artifactId>
-			<version>1.21.2</version>
-		</dependency>
-
-		<!-- jcseg中文分词 -->
-		<dependency>
-			<groupId>org.lionsoul</groupId>
-			<artifactId>jcseg-analyzer</artifactId>
-			<version>2.6.3</version>
-		</dependency>
-
-		<!-- Lombok代码简化 -->
+		<!-- Lombok 注解 -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
 		</dependency>
 
-		<!-- SQL自动初始化 -->
+		<!-- SQL 自动初始化 -->
 		<dependency>
 			<groupId>io.github.swsk33</groupId>
 			<artifactId>sql-initialize-spring-boot-starter</artifactId>
-			<version>2.2.0</version>
+			<version>3.0.0</version>
 		</dependency>
 
 		<!-- 邮件验证码框架 -->
 		<dependency>
 			<groupId>io.github.swsk33</groupId>
 			<artifactId>code-post-spring-boot-starter</artifactId>
-			<version>1.2.0</version>
+			<version>2.0.0</version>
 		</dependency>
 
 		<!-- 小文件上传框架 -->
 		<dependency>
 			<groupId>io.github.swsk33</groupId>
 			<artifactId>file-lift-spring-boot-starter</artifactId>
-			<version>1.2.1</version>
+			<version>2.0.1</version>
 		</dependency>
 	</dependencies>
 
 	<dependencyManagement>
 		<dependencies>
-			<!-- Reactor依赖管理 -->
+			<!-- Reactor 依赖管理 -->
 			<dependency>
 				<groupId>io.projectreactor</groupId>
 				<artifactId>reactor-bom</artifactId>
-				<version>2024.0.10</version>
+				<version>2025.0.5</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
 
-			<!-- Hutool实用工具 -->
+			<!-- Hutool 实用工具 -->
 			<dependency>
 				<groupId>cn.hutool</groupId>
 				<artifactId>hutool-bom</artifactId>
-				<version>5.8.40</version>
+				<version>5.8.44</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -247,11 +199,11 @@
 
 	<build>
 		<plugins>
-			<!-- Maven编译插件 -->
+			<!-- Maven 编译插件 -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.14.0</version>
+				<version>3.15.0</version>
 				<configuration>
 					<annotationProcessorPaths>
 						<path>

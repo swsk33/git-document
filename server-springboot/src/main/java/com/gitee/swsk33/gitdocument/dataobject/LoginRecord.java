@@ -16,13 +16,13 @@ import java.time.LocalDateTime;
 public class LoginRecord {
 
 	/**
-	 * 关联的用户id
+	 * 关联的用户 id
 	 */
 	@Id(keyType = KeyType.None)
 	private Integer userId;
 
 	/**
-	 * 上一次登录的IP地址
+	 * 上一次登录的 IP 地址
 	 */
 	private String ip;
 

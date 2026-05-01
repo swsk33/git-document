@@ -17,7 +17,7 @@ public class UpdateEmailMessage extends EmailMessage {
 	private String name;
 
 	/**
-	 * commit信息
+	 * commit 信息
 	 */
 	private String commitMessage;
 

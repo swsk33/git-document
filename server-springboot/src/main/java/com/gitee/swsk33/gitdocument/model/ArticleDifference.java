@@ -8,8 +8,8 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * 自定义文章Git差异信息<br>
- * 用于表示文集仓库中两次commit的中的一条差异变化
+ * 自定义文章 Git 差异信息<br>
+ * 用于表示文集仓库中两次 commit 的中的一条差异变化
  */
 @Data
 @NoArgsConstructor
@@ -31,9 +31,9 @@ public class ArticleDifference implements Serializable {
 	private String oldPath;
 
 	/**
-	 * 以JGit差异对象构建该文章差异对象
+	 * 以 JGit 差异对象构建该文章差异对象
 	 *
-	 * @param entry JGit的差异对象
+	 * @param entry JGit 的差异对象
 	 */
 	public ArticleDifference(DiffEntry entry) {
 		this.changeType = entry.getChangeType();
@@ -42,9 +42,9 @@ public class ArticleDifference implements Serializable {
 	}
 
 	/**
-	 * 从JGit的差异对象列表批量转换为文章差异对象
+	 * 从 JGit 的差异对象列表批量转换为文章差异对象
 	 *
-	 * @param diffEntries JGit差异对象列表
+	 * @param diffEntries JGit 差异对象列表
 	 * @return 文章差异对象
 	 */
 	public static List<ArticleDifference> toArticleDiff(List<DiffEntry> diffEntries) {

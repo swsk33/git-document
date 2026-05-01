@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 public class Setting {
 
 	/**
-	 * 设置对应的用户id
+	 * 设置对应的用户 id
 	 */
 	@Id(keyType = KeyType.None)
 	@NotNull(message = "设置的用户id不能为空！")

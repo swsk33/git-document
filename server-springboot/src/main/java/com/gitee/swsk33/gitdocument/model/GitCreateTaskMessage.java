@@ -6,7 +6,7 @@ import lombok.Data;
 import java.util.List;
 
 /**
- * Git仓库创建任务消息
+ * Git 仓库创建任务消息
  */
 @Data
 public class GitCreateTaskMessage extends GitTaskMessage {

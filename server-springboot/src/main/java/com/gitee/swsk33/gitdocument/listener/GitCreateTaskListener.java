@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 订阅接收Git仓库创建消息的订阅者
+ * 订阅接收 Git 仓库创建消息的订阅者
  */
 @Slf4j
 @Component

@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 import reactor.core.publisher.BaseSubscriber;
 
 /**
- * 订阅接收Git仓库更新消息的订阅者
+ * 订阅接收 Git 仓库更新消息的订阅者
  */
 @Slf4j
 @Component

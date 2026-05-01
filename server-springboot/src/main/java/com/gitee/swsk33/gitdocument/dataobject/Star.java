@@ -1,9 +1,7 @@
 package com.gitee.swsk33.gitdocument.dataobject;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.gitee.swsk33.gitdocument.param.ValidationRules;
-import com.gitee.swsk33.gitdocument.serializer.LongToStringSerializer;
 import com.mybatisflex.annotation.*;
 import com.mybatisflex.core.keygen.KeyGenerators;
 import jakarta.validation.constraints.NotNull;
@@ -24,7 +22,6 @@ public class Star {
 	 * 主键id
 	 */
 	@Id(keyType = KeyType.Generator, value = KeyGenerators.snowFlakeId)
-	@JsonSerialize(using = LongToStringSerializer.class)
 	@Null(groups = ValidationRules.DataAdd.class, message = "新增数据时不能手动设定主键id！")
 	@NotNull(groups = ValidationRules.DataUpdate.class, message = "星星id不能为空！")
 	private Long id;
@@ -38,7 +35,6 @@ public class Star {
 	 * 被收藏的文集id（外键）
 	 */
 	@NotNull(groups = ValidationRules.DataAdd.class, message = "收藏的文集id不能为空！")
-	@JsonSerialize(using = LongToStringSerializer.class)
 	private Long anthologyId;
 
 	/**
