@@ -4,12 +4,12 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>4.0.6</version>
+		<version>4.1.0</version>
 		<relativePath/>
 	</parent>
 	<groupId>com.gitee.swsk33</groupId>
 	<artifactId>git-document</artifactId>
-	<version>4.0.0</version>
+	<version>3.2.0</version>
 	<name>Git Document</name>
 	<description>基于Git版本管理工具的轻便的文档管理系统，使用Git管理Markdown文档</description>
 
@@ -22,7 +22,7 @@
 		<skipTests>true</skipTests>
 		<!-- 版本配置 -->
 		<sa-token.version>1.45.0</sa-token.version>
-		<mybatis-flex.version>1.11.6</mybatis-flex.version>
+		<mybatis-flex.version>1.11.7</mybatis-flex.version>
 	</properties>
 
 	<dependencies>
@@ -73,6 +73,12 @@
 			<scope>provided</scope>
 		</dependency>
 
+		<!-- Spring Boot JDBC -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-jdbc</artifactId>
+		</dependency>
+
 		<!-- PostgreSQL 驱动 -->
 		<dependency>
 			<groupId>org.postgresql</groupId>
@@ -80,16 +86,11 @@
 			<scope>runtime</scope>
 		</dependency>
 
-		<!-- 连接池 -->
+		<!-- Redisson客户端 -->
 		<dependency>
-			<groupId>com.zaxxer</groupId>
-			<artifactId>HikariCP</artifactId>
-		</dependency>
-
-		<!-- Redis -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-redis</artifactId>
+			<groupId>org.redisson</groupId>
+			<artifactId>redisson-spring-boot-starter</artifactId>
+			<version>4.5.0</version>
 		</dependency>
 
 		<!-- Sa-Token安全框架 -->
@@ -117,7 +118,7 @@
 		<dependency>
 			<groupId>org.apache.sshd</groupId>
 			<artifactId>sshd-core</artifactId>
-			<version>2.17.1</version>
+			<version>2.18.0</version>
 		</dependency>
 
 		<!-- Hutool 实用工具 -->
@@ -130,7 +131,7 @@
 		<dependency>
 			<groupId>org.eclipse.jgit</groupId>
 			<artifactId>org.eclipse.jgit</artifactId>
-			<version>7.6.0.202603022253-r</version>
+			<version>7.7.0.202606012155-r</version>
 		</dependency>
 
 		<!-- Reactor 核心库 -->
@@ -167,6 +168,13 @@
 			<version>2.0.0</version>
 		</dependency>
 
+		<!-- Lettuce Redis客户端（用于邮件验证码框架） -->
+		<dependency>
+			<groupId>io.lettuce</groupId>
+			<artifactId>lettuce-core</artifactId>
+			<version>7.6.0.RELEASE</version>
+		</dependency>
+
 		<!-- 小文件上传框架 -->
 		<dependency>
 			<groupId>io.github.swsk33</groupId>
@@ -181,7 +189,7 @@
 			<dependency>
 				<groupId>io.projectreactor</groupId>
 				<artifactId>reactor-bom</artifactId>
-				<version>2025.0.5</version>
+				<version>2025.0.6</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -190,7 +198,7 @@
 			<dependency>
 				<groupId>cn.hutool</groupId>
 				<artifactId>hutool-bom</artifactId>
-				<version>5.8.44</version>
+				<version>5.8.46</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>

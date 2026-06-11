@@ -40,11 +40,10 @@ io:
     swsk33:
       # sql-initialize配置
       sql-init:
-        sql-paths:
-          - "classpath:/sql-init/init-table.sql"
-          - "classpath:/sql-init/init-constraint.sql"
-          - "classpath:/sql-init/init-index.sql"
-          - "classpath:/sql-init/init-data.sql"
+        database-check:
+          check-database: true
+        table-check:
+          check-table: false
       # code-post邮件配置
       code-post:
         core:
