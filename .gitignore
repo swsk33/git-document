@@ -5,6 +5,15 @@ target/
 .idea/
 *.iml
 
+# VSCode
+.vscode/
+
+# Eclipse
+.settings/
+.classpath
+.project
+.factorypath
+
 # Vite
 node_modules/
 dist/
