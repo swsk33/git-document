@@ -1,17 +1,13 @@
 package com.gitee.swsk33.gitdocument.service.impl;
 
 import cn.hutool.core.util.ArrayUtil;
-import com.gitee.swsk33.gitdocument.dao.UserDAO;
 import com.gitee.swsk33.gitdocument.dataobject.User;
+import com.gitee.swsk33.gitdocument.model.ArticleDifference;
 import com.gitee.swsk33.gitdocument.model.CreateEmailMessage;
 import com.gitee.swsk33.gitdocument.model.UpdateEmailMessage;
-import com.gitee.swsk33.gitdocument.model.ArticleDifference;
-import com.gitee.swsk33.gitdocument.param.EmailServiceName;
 import com.gitee.swsk33.gitdocument.service.EmailService;
-import io.github.swsk33.codepostcore.context.ServiceNameContext;
 import io.github.swsk33.codepostcore.service.EmailNotifyService;
 import io.github.swsk33.codepostcore.service.EmailVerifyCodeService;
-import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +16,6 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Component
@@ -31,18 +26,6 @@ public class EmailServiceImpl implements EmailService {
 
 	@Autowired
 	private EmailNotifyService notifyService;
-
-	@Autowired
-	private UserDAO userDAO;
-
-	/**
-	 * 验证码服务名注册
-	 */
-	@PostConstruct
-	private void initServiceName() {
-		ServiceNameContext.register(EmailServiceName.PASSWORD_RESET, "密码重置");
-		log.info("全部验证码服务名注册完成！");
-	}
 
 	@Override
 	public void sendRoleChangeEmail(User changedUser, User operator) {
@@ -84,18 +67,6 @@ public class EmailServiceImpl implements EmailService {
 		notifyService.sendTemplateNotifyAsync(message.getTitle(), "anthology-create.txt", models, ArrayUtil.toArray(message.getEmailList(), String.class));
 	}
 
-	@Override
-	public void sendPasswordResetCode(String email) {
-		User resetUser = userDAO.getByUsernameOrEmail(email);
-		if (resetUser == null) {
-			return;
-		}
-		verifyCodeService.sendCodeAsync(EmailServiceName.PASSWORD_RESET, resetUser.getId(), resetUser.getEmail(), 5, TimeUnit.MINUTES);
-	}
 
-	@Override
-	public boolean verifyPasswordResetCode(int userId, String code) {
-		return verifyCodeService.verifyCode(EmailServiceName.PASSWORD_RESET, userId, code);
-	}
 
 }

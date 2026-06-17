@@ -14,8 +14,8 @@ import com.gitee.swsk33.gitdocument.dataobject.User;
 import com.gitee.swsk33.gitdocument.model.Result;
 import com.gitee.swsk33.gitdocument.param.PermissionName;
 import com.gitee.swsk33.gitdocument.param.RoleIdName;
-import com.gitee.swsk33.gitdocument.service.EmailService;
 import com.gitee.swsk33.gitdocument.service.ImageService;
+import com.gitee.swsk33.gitdocument.service.UserEmailCodeService;
 import com.gitee.swsk33.gitdocument.service.UserService;
 import com.gitee.swsk33.gitdocument.session.UserSession;
 import com.gitee.swsk33.gitdocument.util.BCryptEncoder;
@@ -47,7 +47,7 @@ public class UserServiceImpl implements UserService {
 	private ImageService imageService;
 
 	@Autowired
-	private EmailService emailService;
+	private UserEmailCodeService userEmailCodeService;
 
 	@Autowired
 	private UserSession userSession;
@@ -194,7 +194,7 @@ public class UserServiceImpl implements UserService {
 			return Result.resultFailed("该邮箱未注册！");
 		}
 		// 检查验证码是否正确
-		if (!emailService.verifyPasswordResetCode(getUser.getId(), code)) {
+		if (!userEmailCodeService.verifyPasswordResetCode(getUser.getId(), code)) {
 			return Result.resultFailed("验证码错误！");
 		}
 		// 修改密码加密保存

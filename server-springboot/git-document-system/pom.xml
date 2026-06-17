@@ -8,7 +8,7 @@
 	</parent>
 	<artifactId>git-document-system</artifactId>
 	<name>GitDocument System</name>
-	<description>GitDocument - 系统管理与操作模块</description>
+	<description>GitDocument - 系统管理与操作模块，包含邮件验证码与通知、图片上传、系统配置方面业务</description>
 
 	<dependencies>
 		<!-- 内部模块 -->
@@ -39,6 +39,16 @@
 		<dependency>
 			<groupId>io.github.swsk33</groupId>
 			<artifactId>file-lift-spring-boot-starter</artifactId>
+		</dependency>
+
+		<!-- 邮件框架 -->
+		<dependency>
+			<groupId>io.github.swsk33</groupId>
+			<artifactId>code-post-spring-boot-starter</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.lettuce</groupId>
+			<artifactId>lettuce-core</artifactId>
 		</dependency>
 	</dependencies>
 </project>

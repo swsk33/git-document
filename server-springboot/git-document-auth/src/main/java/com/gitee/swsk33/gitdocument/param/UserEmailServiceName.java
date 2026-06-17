@@ -1,9 +1,9 @@
 package com.gitee.swsk33.gitdocument.param;
 
 /**
- * 邮件验证码服务枚举
+ * 用户邮件验证码服务枚举
  */
-public enum EmailServiceName {
+public enum UserEmailServiceName {
 	/**
 	 * 密码重置
 	 */

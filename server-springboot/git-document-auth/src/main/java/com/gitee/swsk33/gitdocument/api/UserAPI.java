@@ -5,6 +5,7 @@ import com.gitee.swsk33.gitdocument.dataobject.User;
 import com.gitee.swsk33.gitdocument.model.Result;
 import com.gitee.swsk33.gitdocument.param.ValidationRules;
 import com.gitee.swsk33.gitdocument.service.LoginRecordService;
+import com.gitee.swsk33.gitdocument.service.UserEmailCodeService;
 import com.gitee.swsk33.gitdocument.service.UserService;
 import com.gitee.swsk33.gitdocument.session.UserSession;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,6 +28,9 @@ public class UserAPI {
 
 	@Autowired
 	private UserSession userSession;
+
+	@Autowired
+	private UserEmailCodeService emailCodeService;
 
 	@PostMapping("/register")
 	public Result<Void> register(@RequestBody @Validated(ValidationRules.DataAdd.class) User user, BindingResult errors) {
@@ -79,7 +83,13 @@ public class UserAPI {
 		return Result.resultSuccess("用户已登录！", userSession.getCurrentLoginSessionUser());
 	}
 
-	@PostMapping("/reset-password/{code}")
+	@GetMapping("/reset-password/send/{email}")
+	public Result<Void> sendPasswordResetCode(@PathVariable String email) {
+		emailCodeService.sendPasswordResetCode(email);
+		return Result.resultSuccess("已发送密码重置验证码！");
+	}
+
+	@PostMapping("/reset-password/verify/{code}")
 	public Result<Void> resetPassword(@RequestBody @Validated(ValidationRules.UserPasswordReset.class) User user, @PathVariable String code, BindingResult errors) {
 		if (errors.hasErrors()) {
 			return Result.resultFailed(errors.getFieldError().getDefaultMessage());
