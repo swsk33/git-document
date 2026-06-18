@@ -2,19 +2,14 @@ package com.gitee.swsk33.gitdocument.gitdao.impl;
 
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
-import com.gitee.swsk33.gitdocument.dao.SystemSettingDAO;
-import com.gitee.swsk33.gitdocument.dao.UserDAO;
 import com.gitee.swsk33.gitdocument.dataobject.Anthology;
-import com.gitee.swsk33.gitdocument.dataobject.User;
 import com.gitee.swsk33.gitdocument.gitdao.GitCommitDAO;
 import com.gitee.swsk33.gitdocument.gitdao.GitFileDAO;
 import com.gitee.swsk33.gitdocument.gitdao.GitRepositoryDAO;
 import com.gitee.swsk33.gitdocument.model.ArticleDifference;
 import com.gitee.swsk33.gitdocument.model.GitCreateTaskMessage;
 import com.gitee.swsk33.gitdocument.model.GitUpdateTaskMessage;
-import com.gitee.swsk33.gitdocument.model.UpdateEmailMessage;
 import com.gitee.swsk33.gitdocument.publisher.GitMessagePublisher;
-import com.gitee.swsk33.gitdocument.service.EmailService;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.diff.DiffEntry;
@@ -25,18 +20,16 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.util.List;
 
-import static com.gitee.swsk33.gitdocument.param.SystemSettingKey.ORGANIZATION_NAME;
-
 @Slf4j
 @Component
 @DependsOn({"gitCreateTaskFlux", "gitUpdateTaskFlux"})
 public class GitRepositoryDAOImpl implements GitRepositoryDAO {
 
-	@Autowired
-	private UserDAO userDAO;
-
-	@Autowired
-	private SystemSettingDAO systemSettingDAO;
+//	@Autowired
+//	private UserDAO userDAO;
+//
+//	@Autowired
+//	private SystemSettingDAO systemSettingDAO;
 
 	@Autowired
 	private GitCommitDAO gitCommitDAO;
@@ -50,8 +43,8 @@ public class GitRepositoryDAOImpl implements GitRepositoryDAO {
 	@Autowired
 	private GitMessagePublisher gitUpdateTaskPublisher;
 
-	@Autowired
-	private EmailService emailService;
+//	@Autowired
+//	private EmailService emailService;
 
 	@Override
 	public boolean createGitBareRepository(String gitRepository) {
@@ -102,27 +95,27 @@ public class GitRepositoryDAOImpl implements GitRepositoryDAO {
 		gitUpdateTaskPublisher.publishMessage(updateTaskMessage);
 		log.info("已发布Git仓库更新任务消息至Flux对象！");
 		// 准备进行邮件通知
-		if (sendEmail) {
-			// 获取收藏这个文集的用户
-			List<User> starUsers = userDAO.getByStarAnthology(id);
-			List<String> emailList = starUsers.stream()
-					// 过滤得到订阅更新邮件的用户
-					.filter(user -> user.getSetting().getReceiveUpdateEmail())
-					.map(User::getEmail).toList();
-			// 无人订阅通知则不发送消息
-			if (emailList.isEmpty()) {
-				return;
-			}
-			// 准备邮件任务消息
-			UpdateEmailMessage message = new UpdateEmailMessage();
-			message.setTitle("GitDocument · " + systemSettingDAO.get(ORGANIZATION_NAME) + " - 文集更新通知");
-			message.setName(showName);
-			message.setCommitMessage(gitCommitDAO.getHeadCommit(gitRepository).getFullMessage());
-			message.setDiffEntries(ArticleDifference.toArticleDiff(diffs));
-			message.setEmailList(emailList);
-			// 异步发送
-			emailService.sendAnthologyUpdateNotify(message);
-		}
+//		if (sendEmail) {
+//			// 获取收藏这个文集的用户
+//			List<User> starUsers = userDAO.getByStarAnthology(id);
+//			List<String> emailList = starUsers.stream()
+//					// 过滤得到订阅更新邮件的用户
+//					.filter(user -> user.getSetting().getReceiveUpdateEmail())
+//					.map(User::getEmail).toList();
+//			// 无人订阅通知则不发送消息
+//			if (emailList.isEmpty()) {
+//				return;
+//			}
+//			// 准备邮件任务消息
+//			UpdateEmailMessage message = new UpdateEmailMessage();
+//			message.setTitle("GitDocument · " + systemSettingDAO.get(ORGANIZATION_NAME) + " - 文集更新通知");
+//			message.setName(showName);
+//			message.setCommitMessage(gitCommitDAO.getHeadCommit(gitRepository).getFullMessage());
+//			message.setDiffEntries(ArticleDifference.toArticleDiff(diffs));
+//			message.setEmailList(emailList);
+//			// 异步发送
+//			emailService.sendAnthologyUpdateNotify(message);
+//		}
 	}
 
 	@Override

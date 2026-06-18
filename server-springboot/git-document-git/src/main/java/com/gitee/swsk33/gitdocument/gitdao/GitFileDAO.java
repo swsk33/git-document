@@ -15,7 +15,7 @@ public interface GitFileDAO {
 	 * 获取指定的commit中的文件列表
 	 *
 	 * @param gitDirectory 仓库位置（绝对路径）
-	 * @param commitId     指定的commit的id，传入HEAD可以指定获取最新的文件列表
+	 * @param commitId     指定的commit的id，传入HEAD可以指定获取头指针最新的文件列表
 	 * @return 文件列表
 	 */
 	List<String> getFileList(String gitDirectory, String commitId);

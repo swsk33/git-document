@@ -19,6 +19,7 @@ import static cn.hutool.core.io.watch.WatchMonitor.ENTRY_MODIFY;
  */
 @Slf4j
 @Component
+@Deprecated
 public class GitFileListenerContext {
 
 	@Autowired

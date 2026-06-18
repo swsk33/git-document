@@ -20,7 +20,7 @@ import java.nio.file.WatchEvent;
  * Git 仓库头指针文件监听器<br>
  * Git裸仓库中，头指针记录文件位于：仓库目录/refs/heads中<br>
  * 当新建仓库但是未推送时，该目录为空<br>
- * 进行第一次推送时，会创建一个文件记录头指针<br>
+ * 进行第一次推送时，会创建一个文件（文件名为分支名）记录头指针<br>
  * 当后续进行推送时，其中的头指针文件会先被删除再重新创建<br>
  * 因此，该监听器的主要原理就是监听上述头指针所在目录变化判断仓库状态，只监听文件修改事件，具体如下：<br>
  * <ul>
@@ -32,6 +32,7 @@ import java.nio.file.WatchEvent;
 @Slf4j
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 @Component
+@Deprecated
 public class GitRepositoryFileListener implements Watcher {
 
 	/**

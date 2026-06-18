@@ -1,6 +1,7 @@
 package com.gitee.swsk33.gitdocument.githook;
 
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.transport.PostReceiveHook;
 import org.eclipse.jgit.transport.ReceiveCommand;
 import org.eclipse.jgit.transport.ReceivePack;
@@ -16,6 +17,9 @@ public class MessagePostReceiveHook implements PostReceiveHook {
 
 	@Override
 	public void onPostReceive(ReceivePack receivePack, Collection<ReceiveCommand> commands) {
+		commands.forEach(command -> {
+			boolean b = command.getOldId() == ObjectId.zeroId();
+		});
 		try {
 			receivePack.getMessageOutputStream().write("\033[1;36m 推送完成！感谢使用GitDocument！ \033[0m".getBytes());
 			receivePack.getMessageOutputStream().flush();
