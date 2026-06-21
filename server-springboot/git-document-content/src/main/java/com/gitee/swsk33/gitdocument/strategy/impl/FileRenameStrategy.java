@@ -32,7 +32,7 @@ public class FileRenameStrategy implements GitFileChangeStrategy {
 		// 否则，修改至数据库
 		oldArticle.setFilePath(diff.getNewPath());
 		articleDAO.update(oldArticle);
-		log.info("文章重命名：" + diff.getOldPath() + " -> " + diff.getNewPath());
+		log.info("文章重命名：{} -> {}", diff.getOldPath(), diff.getNewPath());
 	}
 
 }

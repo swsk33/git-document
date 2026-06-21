@@ -1,6 +1,5 @@
 package com.gitee.swsk33.gitdocument.gitdao;
 
-import com.gitee.swsk33.gitdocument.annotation.GitRepository;
 import org.eclipse.jgit.revwalk.RevCommit;
 
 import java.util.List;
@@ -8,7 +7,6 @@ import java.util.List;
 /**
  * 读取Git裸仓库提交的接口层
  */
-@GitRepository
 public interface GitCommitDAO {
 
 	/**

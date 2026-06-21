@@ -21,7 +21,7 @@ public class FileDeleteStrategy implements GitFileChangeStrategy {
 	public void doUpdate(long repositoryId, ArticleDifference diff) {
 		// 从数据库删除
 		articleDAO.deleteByPath(diff.getOldPath());
-		log.info("删除文件：" + diff.getOldPath());
+		log.info("删除文件：{}", diff.getOldPath());
 	}
 
 }

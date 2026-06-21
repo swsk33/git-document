@@ -23,7 +23,7 @@ public class FileAddStrategy implements GitFileChangeStrategy {
 	public void doUpdate(long repositoryId, ArticleDifference diff) {
 		// 排除掉增加的非md文件
 		if (!diff.getNewPath().endsWith(".md")) {
-			log.info(diff.getNewPath() + "不是一个md文件，不录入数据库！");
+			log.info("{}不是一个md文件，不录入数据库！", diff.getNewPath());
 			return;
 		}
 		// 把文件信息录入数据库
@@ -32,7 +32,7 @@ public class FileAddStrategy implements GitFileChangeStrategy {
 		article.setFilePath(diff.getNewPath());
 		article.setAnthologyId(repositoryId);
 		articleDAO.insert(article);
-		log.info("增加文件：" + diff.getNewPath());
+		log.info("增加文件：{}", diff.getNewPath());
 	}
 
 }

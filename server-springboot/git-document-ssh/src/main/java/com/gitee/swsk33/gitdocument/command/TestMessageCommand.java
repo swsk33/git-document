@@ -2,7 +2,7 @@ package com.gitee.swsk33.gitdocument.command;
 
 import cn.hutool.core.util.ArrayUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.sshd.server.command.AbstractCommandSupport;
+import org.apache.sshd.server.command.AbstractCommandSupport;import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -11,6 +11,7 @@ import java.nio.charset.StandardCharsets;
  * 用户使用ssh -T命令测试连接时，返回的命令操作，仅返回消息，不进行交互式操作
  */
 @Slf4j
+@Component
 public class TestMessageCommand extends AbstractCommandSupport {
 
 	public TestMessageCommand() {

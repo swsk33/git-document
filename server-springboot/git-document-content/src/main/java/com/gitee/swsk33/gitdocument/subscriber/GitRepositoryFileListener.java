@@ -1,4 +1,4 @@
-package com.gitee.swsk33.gitdocument.listener;
+package com.gitee.swsk33.gitdocument.subscriber;
 
 import cn.hutool.core.io.watch.Watcher;
 import cn.hutool.core.util.StrUtil;
@@ -27,6 +27,7 @@ import java.nio.file.WatchEvent;
  *     <li>如果数据库中记录的commit为空，而读取仓库的commit不为空，则进行创建操作，读取所有文集存入数据库</li>
  *     <li>如果数据库中记录的commit和读取仓库的都不为空且不相同，则视为仓库被改变，进行修改操作</li>
  * </ul>
+ * 将改用Git Hook触发
  */
 @Data
 @Slf4j
@@ -72,12 +73,12 @@ public class GitRepositoryFileListener implements Watcher {
 		Anthology getAnthology = anthologyDAO.selectOneWithRelationsById(id);
 		String oldId = getAnthology.getLatestCommit();
 		// 若数据库中记录的commitId为空，说明这是第一次推送，执行仓库的创建操作
-		if (StrUtil.isEmpty(oldId)) {
-			gitRepositoryDAO.doCreateTask(id, gitRepository, newId);
-		} else {
-			// 否则，进行更新操作
-			gitRepositoryDAO.doUpdateTask(id, getAnthology.getShowName(), gitRepository, true, oldId, newId);
-		}
+//		if (StrUtil.isEmpty(oldId)) {
+//			gitRepositoryDAO.doCreateTask(id, gitRepository, newId);
+//		} else {
+//			// 否则，进行更新操作
+//			gitRepositoryDAO.doUpdateTask(id, getAnthology.getShowName(), gitRepository, true, oldId, newId);
+//		}
 	}
 
 	@Override

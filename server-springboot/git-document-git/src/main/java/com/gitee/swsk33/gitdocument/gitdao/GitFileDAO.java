@@ -1,6 +1,5 @@
 package com.gitee.swsk33.gitdocument.gitdao;
 
-import com.gitee.swsk33.gitdocument.annotation.GitRepository;
 import org.eclipse.jgit.diff.DiffEntry;
 
 import java.util.List;
@@ -8,7 +7,6 @@ import java.util.List;
 /**
  * 用于读取Git裸仓库中文件信息(blob)的接口层
  */
-@GitRepository
 public interface GitFileDAO {
 
 	/**

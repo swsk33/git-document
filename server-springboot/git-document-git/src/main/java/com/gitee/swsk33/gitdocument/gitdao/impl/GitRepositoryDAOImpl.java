@@ -2,6 +2,8 @@ package com.gitee.swsk33.gitdocument.gitdao.impl;
 
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
+import com.gitee.swsk33.gitdocument.annotation.GitRepository;
+import com.gitee.swsk33.gitdocument.broker.GitMessageBroker;
 import com.gitee.swsk33.gitdocument.dataobject.Anthology;
 import com.gitee.swsk33.gitdocument.gitdao.GitCommitDAO;
 import com.gitee.swsk33.gitdocument.gitdao.GitFileDAO;
@@ -9,20 +11,18 @@ import com.gitee.swsk33.gitdocument.gitdao.GitRepositoryDAO;
 import com.gitee.swsk33.gitdocument.model.ArticleDifference;
 import com.gitee.swsk33.gitdocument.model.GitCreateTaskMessage;
 import com.gitee.swsk33.gitdocument.model.GitUpdateTaskMessage;
-import com.gitee.swsk33.gitdocument.publisher.GitMessagePublisher;
+import com.gitee.swsk33.gitdocument.model.prototype.GitTaskMessage;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.DependsOn;
-import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.util.List;
 
 @Slf4j
-@Component
-@DependsOn({"gitCreateTaskFlux", "gitUpdateTaskFlux"})
+@GitRepository
 public class GitRepositoryDAOImpl implements GitRepositoryDAO {
 
 //	@Autowired
@@ -37,11 +37,8 @@ public class GitRepositoryDAOImpl implements GitRepositoryDAO {
 	@Autowired
 	private GitFileDAO gitFileDAO;
 
-	@Autowired
-	private GitMessagePublisher gitCreateTaskPublisher;
-
-	@Autowired
-	private GitMessagePublisher gitUpdateTaskPublisher;
+	@Resource
+	private GitMessageBroker<GitTaskMessage> gitMessageBroker;
 
 //	@Autowired
 //	private EmailService emailService;
@@ -64,35 +61,35 @@ public class GitRepositoryDAOImpl implements GitRepositoryDAO {
 	}
 
 	@Override
-	public void doCreateTask(long id, String gitRepository, String newId) {
+	public void doCreateTask(String repoPath, String newId) {
 		log.info("Git HEAD被创建！");
 		GitCreateTaskMessage createTaskMessage = new GitCreateTaskMessage();
-		createTaskMessage.setRepositoryId(id);
+		createTaskMessage.setRepoPath(repoPath);
 		createTaskMessage.setCommitId(newId);
-		createTaskMessage.setFileList(gitFileDAO.getLatestFileList(gitRepository));
-		gitCreateTaskPublisher.publishMessage(createTaskMessage);
+		createTaskMessage.setFileList(gitFileDAO.getLatestFileList(repoPath));
+		gitMessageBroker.publish(createTaskMessage);
 		log.info("已发布Git仓库创建任务消息至Flux对象！");
 	}
 
 	@Override
-	public void doUpdateTask(long id, String showName, String gitRepository, boolean sendEmail, String oldId, String newId) {
+	public void doUpdateTask(String repoPath, String oldId, String newId) {
 		log.info("Git HEAD被修改！");
 		if (StrUtil.isEmpty(newId) || newId.equals(oldId)) {
 			log.info("实际没有变化，无需修改！");
 			return;
 		}
 		// 获取差异
-		List<DiffEntry> diffs = gitFileDAO.compareDiffBetweenTwoCommits(gitRepository, oldId, newId);
+		List<DiffEntry> diffs = gitFileDAO.compareDiffBetweenTwoCommits(repoPath, oldId, newId);
 		if (diffs.isEmpty()) {
 			log.info("没有需要更新的差异！");
 			return;
 		}
 		// 组装任务消息对象
 		GitUpdateTaskMessage updateTaskMessage = new GitUpdateTaskMessage();
-		updateTaskMessage.setRepositoryId(id);
+		updateTaskMessage.setRepoPath(repoPath);
 		updateTaskMessage.setCommitId(newId);
 		updateTaskMessage.setDiffs(ArticleDifference.toArticleDiff(diffs));
-		gitUpdateTaskPublisher.publishMessage(updateTaskMessage);
+		gitMessageBroker.publish(updateTaskMessage);
 		log.info("已发布Git仓库更新任务消息至Flux对象！");
 		// 准备进行邮件通知
 //		if (sendEmail) {
@@ -130,13 +127,13 @@ public class GitRepositoryDAOImpl implements GitRepositoryDAO {
 		// 如果数据库中commit为空，说明需要执行创建任务
 		if (StrUtil.isEmpty(anthology.getLatestCommit())) {
 			log.warn("发现本地仓库：{}在数据库中的commitId为空，进行创建操作...", anthology.getName());
-			doCreateTask(anthology.getId(), anthology.getRepoPath(), localCommitId);
+			doCreateTask(anthology.getRepoPath(), localCommitId);
 			return;
 		}
 		// 如果只是单纯的两者不同，说明需要进行更新同步操作
 		if (!anthology.getLatestCommit().equals(localCommitId)) {
 			log.warn("发现本地仓库：{}与数据库的commit不同，进行更新操作...", anthology.getName());
-			doUpdateTask(anthology.getId(), anthology.getShowName(), anthology.getRepoPath(), false, anthology.getLatestCommit(), localCommitId);
+			doUpdateTask(anthology.getRepoPath(), anthology.getLatestCommit(), localCommitId);
 		}
 	}
 

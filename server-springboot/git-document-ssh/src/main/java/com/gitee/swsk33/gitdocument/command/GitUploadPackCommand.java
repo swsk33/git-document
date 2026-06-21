@@ -5,12 +5,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.sshd.server.command.AbstractCommandSupport;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.transport.UploadPack;
+import org.springframework.stereotype.Component;
 
 /**
  * Git的上传命令（客户端的拉取操作，从服务端传给客户端）的实现<br>
  * 当客户端执行git clone和git pull时，服务端执行此命令对象
  */
 @Slf4j
+@Component
 public class GitUploadPackCommand extends AbstractCommandSupport {
 
 	/**

@@ -1,6 +1,7 @@
 package com.gitee.swsk33.gitdocument.gitdao.impl;
 
 import cn.hutool.core.io.FileUtil;
+import com.gitee.swsk33.gitdocument.annotation.GitRepository;
 import com.gitee.swsk33.gitdocument.gitdao.GitCommitDAO;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jgit.lib.ObjectId;
@@ -8,7 +9,6 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
-import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.List;
 import static com.gitee.swsk33.gitdocument.param.CommonValue.GIT_HEAD_POINTER;
 
 @Slf4j
-@Component
+@GitRepository
 public class GitCommitDAOImpl implements GitCommitDAO {
 
 	@Override

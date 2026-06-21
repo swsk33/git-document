@@ -3,7 +3,6 @@ package com.gitee.swsk33.gitdocument.service.impl;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
-import com.gitee.swsk33.gitdocument.context.GitFileListenerContext;
 import com.gitee.swsk33.gitdocument.dao.AnthologyDAO;
 import com.gitee.swsk33.gitdocument.dao.SystemSettingDAO;
 import com.gitee.swsk33.gitdocument.dao.UserDAO;
@@ -67,9 +66,6 @@ public class AnthologyServiceImpl implements AnthologyService {
 	private EmailService emailService;
 
 	@Autowired
-	private GitFileListenerContext listenerContext;
-
-	@Autowired
 	private GitRepositoryProperties gitRepositoryProperties;
 
 	@Autowired
@@ -89,32 +85,32 @@ public class AnthologyServiceImpl implements AnthologyService {
 			log.warn("文集仓库根路径{}不存在！即将创建...", gitRepositoryProperties.getRepositoryPath());
 			FileUtil.mkdir(gitRepositoryProperties.getRepositoryPath());
 		}
-		// 从数据库获取文集仓库信息
-		List<Anthology> anthologies;
-		try {
-			anthologies = anthologyDAO.selectAll();
-		} catch (Exception e) {
-			log.error("连接数据库失败！请检查配置！终止！");
-			log.error(e.getMessage());
-			return;
-		}
-		log.info("共获取到：{}个文集仓库！", anthologies.size());
-		// 对比本地仓库和数据库中的仓库，若有不同则进行更新
-		log.info("开始对比本地仓库和数据库仓库信息...");
-		anthologies.forEach(anthology -> {
-			try {
-				// 检查每个文集仓库本地和数据库的差异，并进行同步
-				gitRepositoryDAO.checkGitRepositoryUpdate(anthology);
-			} catch (Exception e) {
-				log.error("发生错误！本地仓库{}可能不存在！继续！", anthology.getName());
-				log.error(e.getMessage());
-			} finally {
-				// 检查更新完成后，对其加入监听
-				listenerContext.addMonitor(anthology.getId(), anthology.getRepoPath());
-			}
-		});
-		log.info("已开启全部文集仓库监听！");
-		log.info("所有仓库位于：{}", gitRepositoryProperties.getRepositoryPath());
+//		// 从数据库获取文集仓库信息
+//		List<Anthology> anthologies;
+//		try {
+//			anthologies = anthologyDAO.selectAll();
+//		} catch (Exception e) {
+//			log.error("连接数据库失败！请检查配置！终止！");
+//			log.error(e.getMessage());
+//			return;
+//		}
+//		log.info("共获取到：{}个文集仓库！", anthologies.size());
+//		// 对比本地仓库和数据库中的仓库，若有不同则进行更新
+//		log.info("开始对比本地仓库和数据库仓库信息...");
+//		anthologies.forEach(anthology -> {
+//			try {
+//				// 检查每个文集仓库本地和数据库的差异，并进行同步
+//				gitRepositoryDAO.checkGitRepositoryUpdate(anthology);
+//			} catch (Exception e) {
+//				log.error("发生错误！本地仓库{}可能不存在！继续！", anthology.getName());
+//				log.error(e.getMessage());
+//			} finally {
+//				// 检查更新完成后，对其加入监听
+//				listenerContext.addMonitor(anthology.getId(), anthology.getRepoPath());
+//			}
+//		});
+//		log.info("已开启全部文集仓库监听！");
+//		log.info("所有仓库位于：{}", gitRepositoryProperties.getRepositoryPath());
 	}
 
 	@SaCheckPermission(PermissionName.EDIT_ANTHOLOGY)
@@ -135,8 +131,6 @@ public class AnthologyServiceImpl implements AnthologyService {
 		anthology.setStatus(AnthologyStatus.UPDATING);
 		// 存入数据库
 		anthologyDAO.insert(anthology);
-		// 加入监听
-		listenerContext.addMonitor(anthology.getId(), repoPath);
 		// 发送通知
 		// 获取订阅新文集创建通知的用户
 		List<User> receivers = userDAO.getByReceiveCreate();
@@ -162,8 +156,6 @@ public class AnthologyServiceImpl implements AnthologyService {
 		if (getAnthology == null) {
 			return Result.resultFailed("待删除文集不存在！");
 		}
-		// 停止文件监听
-		listenerContext.removeMonitor(id);
 		// 删除仓库文件夹
 		if (!FileUtil.del(getAnthology.getRepoPath())) {
 			return Result.resultFailed("删除文集仓库失败！请联系开发者！");
@@ -309,8 +301,6 @@ public class AnthologyServiceImpl implements AnthologyService {
 			anthologyDAO.insert(anthology);
 			// 比对差异
 			gitRepositoryDAO.checkGitRepositoryUpdate(anthology);
-			// 加入监听
-			listenerContext.addMonitor(anthology.getId(), repoPath);
 		}
 		return Result.resultSuccess("已恢复对应的文集仓库！");
 	}

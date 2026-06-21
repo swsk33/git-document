@@ -1,6 +1,7 @@
 package com.gitee.swsk33.gitdocument.gitdao.impl;
 
 import cn.hutool.core.io.FileUtil;
+import com.gitee.swsk33.gitdocument.annotation.GitRepository;
 import com.gitee.swsk33.gitdocument.gitdao.GitFileDAO;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jgit.api.DiffCommand;
@@ -14,7 +15,6 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.TreeWalk;
-import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ import java.util.List;
 import static com.gitee.swsk33.gitdocument.param.CommonValue.GIT_HEAD_POINTER;
 
 @Slf4j
-@Component
+@GitRepository
 public class GitFileDAOImpl implements GitFileDAO {
 
 	@Override
@@ -34,7 +34,7 @@ public class GitFileDAOImpl implements GitFileDAO {
 			// 根据传入commitId字符串解析commit的ObjectId对象
 			ObjectId commitObjectId = repository.resolve(commitId);
 			if (commitObjectId == null) {
-				log.warn("传入的commitId或者ref：{}有误！可能不存在于仓库{}中！", commitId, gitDirectory);
+				log.warn("无法读取文件列表：传入的commitId或者ref：{}有误！可能不存在于仓库{}中！", commitId, gitDirectory);
 				return filePaths;
 			}
 			// 得到commit对象
@@ -72,7 +72,7 @@ public class GitFileDAOImpl implements GitFileDAO {
 			// 根据传入commitId字符串解析commit的ObjectId对象
 			ObjectId commitObjectId = repository.resolve(commitId);
 			if (commitObjectId == null) {
-				log.warn("传入的commitId或者ref：{}有误！可能不存在于仓库{}中！", commitId, gitDirectory);
+				log.warn("无法读取文件内容：传入的commitId或者ref：{}有误！可能不存在于仓库{}中！", commitId, gitDirectory);
 				return null;
 			}
 			// 得到commit对象

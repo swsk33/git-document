@@ -16,6 +16,10 @@
 			<groupId>com.gitee.swsk33</groupId>
 			<artifactId>git-document-common</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.gitee.swsk33</groupId>
+			<artifactId>git-document-ssh</artifactId>
+		</dependency>
 
 		<!-- Spring Boot Web -->
 		<dependency>

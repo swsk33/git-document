@@ -11,6 +11,11 @@ import static com.mybatisflex.core.query.QueryMethods.number;
 @Mapper
 public interface AnthologyDAO extends BaseMapper<Anthology> {
 
+	default Anthology getAnthologyByPath(String repoPath) {
+		QueryWrapper wrapper = QueryWrapper.create().select(ANTHOLOGY.ALL_COLUMNS).where(ANTHOLOGY.REPO_PATH.eq(repoPath));
+		return selectOneByQuery(wrapper);
+	}
+
 	/**
 	 * 根据文集名判断文集是否存在
 	 *

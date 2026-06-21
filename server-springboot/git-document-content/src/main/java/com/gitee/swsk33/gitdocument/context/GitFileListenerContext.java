@@ -3,7 +3,7 @@ package com.gitee.swsk33.gitdocument.context;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.watch.WatchMonitor;
 import cn.hutool.core.io.watch.watchers.DelayWatcher;
-import com.gitee.swsk33.gitdocument.listener.GitRepositoryFileListener;
+import com.gitee.swsk33.gitdocument.subscriber.GitRepositoryFileListener;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
