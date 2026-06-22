@@ -11,12 +11,12 @@ import com.gitee.swsk33.gitdocument.service.PublicKeyService;
 import com.gitee.swsk33.gitdocument.util.PublicKeyUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Slf4j
-@Component
+@Service
 public class PublicKeyServiceImpl implements PublicKeyService {
 
 	@Autowired

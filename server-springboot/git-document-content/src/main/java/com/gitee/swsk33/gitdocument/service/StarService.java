@@ -9,7 +9,6 @@ import java.util.List;
 /**
  * 收藏服务
  */
-@Service
 public interface StarService {
 
 	/**

@@ -6,10 +6,10 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * 邮件任务消息抽象类
+ * 文章和文集通知业务邮件消息抽象类
  */
 @Data
-public abstract class EmailMessage implements Serializable {
+public abstract class ArticleNotifyEmailMessage implements Serializable {
 
 	/**
 	 * 标题

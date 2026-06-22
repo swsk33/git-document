@@ -8,12 +8,12 @@ import com.gitee.swsk33.gitdocument.param.PermissionName;
 import com.gitee.swsk33.gitdocument.service.ImageService;
 import com.gitee.swsk33.gitdocument.service.SystemSettingService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import static com.gitee.swsk33.gitdocument.param.SystemSettingKey.*;
 
-@Component
+@Service
 public class SystemSettingServiceImpl implements SystemSettingService {
 
 	@Autowired

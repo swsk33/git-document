@@ -1,13 +1,13 @@
 package com.gitee.swsk33.gitdocument.session.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
+import com.gitee.swsk33.gitdocument.annotation.SaTokenSession;
 import com.gitee.swsk33.gitdocument.dao.UserDAO;
 import com.gitee.swsk33.gitdocument.dataobject.User;
 import com.gitee.swsk33.gitdocument.session.UserSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
-@Component
+@SaTokenSession
 public class UserSessionImpl implements UserSession {
 
 	/**
@@ -50,7 +50,9 @@ public class UserSessionImpl implements UserSession {
 			return;
 		}
 		User getUser = userDAO.selectOneWithRelationsById(id);
-		saveUserSession(getUser);
+		if (getUser != null) {
+			saveUserSession(getUser);
+		}
 	}
 
 }

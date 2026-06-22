@@ -29,11 +29,12 @@ public interface GitRepositoryDAO {
 	 * 当仓库收到提交且不是第一次提交时，调用此方法对比提交差异信息作为消息对象传递 Git 任务消息队列{@link GitMessageBroker}
 	 * 有 content 模块订阅者将信息录入数据库完成仓库数据库元数据更新操作
 	 *
-	 * @param repoPath 仓库文件夹位置（绝对路径）
-	 * @param oldId    仓库更新前的commitId（从数据库中获取的commitId）
-	 * @param newId    仓库提交后新的commitId（从本地仓库读取的commitId）
+	 * @param repoPath  仓库文件夹位置（绝对路径）
+	 * @param oldId     仓库更新前的commitId（从数据库中获取的commitId）
+	 * @param newId     仓库提交后新的commitId（从本地仓库读取的commitId）
+	 * @param sendEmail 是否发送邮件通知
 	 */
-	void doUpdateTask(String repoPath, String oldId, String newId);
+	void doUpdateTask(String repoPath, String oldId, String newId, boolean sendEmail);
 
 	/**
 	 * 检查数据库的仓库对象和其对应的本地仓库的差异，若有差异则发布更新信息

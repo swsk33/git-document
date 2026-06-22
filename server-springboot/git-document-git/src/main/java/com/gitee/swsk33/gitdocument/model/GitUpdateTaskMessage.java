@@ -18,4 +18,9 @@ public class GitUpdateTaskMessage extends GitTaskMessage {
 	 */
 	private List<ArticleDifference> diffs;
 
+	/**
+	 * 是否发送更新邮件通知
+	 */
+	private boolean sendEmail;
+
 }

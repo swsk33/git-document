@@ -47,6 +47,16 @@
 			<artifactId>mybatis-flex-spring-boot4-starter</artifactId>
 		</dependency>
 
+		<!-- 邮件验证码框架 -->
+		<dependency>
+			<groupId>io.github.swsk33</groupId>
+			<artifactId>code-post-spring-boot-starter</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.lettuce</groupId>
+			<artifactId>lettuce-core</artifactId>
+		</dependency>
+
 		<!-- Hutool 实用工具 -->
 		<dependency>
 			<groupId>cn.hutool</groupId>

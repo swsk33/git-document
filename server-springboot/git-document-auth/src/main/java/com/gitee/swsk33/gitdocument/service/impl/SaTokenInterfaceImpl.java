@@ -5,7 +5,7 @@ import com.gitee.swsk33.gitdocument.dataobject.Permission;
 import com.gitee.swsk33.gitdocument.dataobject.User;
 import com.gitee.swsk33.gitdocument.session.UserSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * 自定义Sa-Token框架用户权限获取
  */
-@Component
+@Service
 public class SaTokenInterfaceImpl implements StpInterface {
 
 	@Autowired

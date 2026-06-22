@@ -12,22 +12,21 @@ import com.gitee.swsk33.gitdocument.gitdao.GitCommitDAO;
 import com.gitee.swsk33.gitdocument.gitdao.GitFileDAO;
 import com.gitee.swsk33.gitdocument.gitdao.GitRepositoryDAO;
 import com.gitee.swsk33.gitdocument.model.CommitRecord;
-import com.gitee.swsk33.gitdocument.model.CreateEmailMessage;
+import com.gitee.swsk33.gitdocument.model.CreateArticleNotifyEmailMessage;
 import com.gitee.swsk33.gitdocument.model.Result;
 import com.gitee.swsk33.gitdocument.param.AnthologyStatus;
 import com.gitee.swsk33.gitdocument.param.PermissionName;
 import com.gitee.swsk33.gitdocument.property.GitRepositoryProperties;
 import com.gitee.swsk33.gitdocument.service.AnthologyService;
-import com.gitee.swsk33.gitdocument.service.EmailService;
 import com.gitee.swsk33.gitdocument.service.ImageService;
 import com.gitee.swsk33.gitdocument.session.UserSession;
 import com.mybatisflex.core.relation.RelationManager;
-import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -37,9 +36,9 @@ import java.util.stream.Stream;
 import static com.gitee.swsk33.gitdocument.param.SystemSettingKey.ORGANIZATION_NAME;
 
 @Slf4j
-@Component
+@Service
 @DependsOn("SQLInitializeAutoConfigure")
-public class AnthologyServiceImpl implements AnthologyService {
+public class AnthologyServiceImpl implements AnthologyService, InitializingBean {
 
 	@Autowired
 	private AnthologyDAO anthologyDAO;
@@ -63,7 +62,7 @@ public class AnthologyServiceImpl implements AnthologyService {
 	private ImageService imageService;
 
 	@Autowired
-	private EmailService emailService;
+	private ArticleEmailServiceImpl emailService;
 
 	@Autowired
 	private GitRepositoryProperties gitRepositoryProperties;
@@ -72,10 +71,10 @@ public class AnthologyServiceImpl implements AnthologyService {
 	private UserSession userSession;
 
 	/**
-	 * 启动时，开始监听现有的每个仓库，并开启文件更新任务队列
+	 * 启动时初始化操作
 	 */
-	@PostConstruct
-	public void checkRepository() {
+	@Override
+	public void afterPropertiesSet() {
 		// 文集仓库根目录不存在则创建
 		if (gitRepositoryProperties.getRepositoryPath().equals("null")) {
 			log.warn("文集仓库根路径未配置！重置为默认值！");
@@ -85,32 +84,6 @@ public class AnthologyServiceImpl implements AnthologyService {
 			log.warn("文集仓库根路径{}不存在！即将创建...", gitRepositoryProperties.getRepositoryPath());
 			FileUtil.mkdir(gitRepositoryProperties.getRepositoryPath());
 		}
-//		// 从数据库获取文集仓库信息
-//		List<Anthology> anthologies;
-//		try {
-//			anthologies = anthologyDAO.selectAll();
-//		} catch (Exception e) {
-//			log.error("连接数据库失败！请检查配置！终止！");
-//			log.error(e.getMessage());
-//			return;
-//		}
-//		log.info("共获取到：{}个文集仓库！", anthologies.size());
-//		// 对比本地仓库和数据库中的仓库，若有不同则进行更新
-//		log.info("开始对比本地仓库和数据库仓库信息...");
-//		anthologies.forEach(anthology -> {
-//			try {
-//				// 检查每个文集仓库本地和数据库的差异，并进行同步
-//				gitRepositoryDAO.checkGitRepositoryUpdate(anthology);
-//			} catch (Exception e) {
-//				log.error("发生错误！本地仓库{}可能不存在！继续！", anthology.getName());
-//				log.error(e.getMessage());
-//			} finally {
-//				// 检查更新完成后，对其加入监听
-//				listenerContext.addMonitor(anthology.getId(), anthology.getRepoPath());
-//			}
-//		});
-//		log.info("已开启全部文集仓库监听！");
-//		log.info("所有仓库位于：{}", gitRepositoryProperties.getRepositoryPath());
 	}
 
 	@SaCheckPermission(PermissionName.EDIT_ANTHOLOGY)
@@ -137,7 +110,7 @@ public class AnthologyServiceImpl implements AnthologyService {
 		if (!receivers.isEmpty()) {
 			List<String> emails = receivers.stream().map(User::getEmail).toList();
 			// 准备任务消息
-			CreateEmailMessage message = new CreateEmailMessage();
+			CreateArticleNotifyEmailMessage message = new CreateArticleNotifyEmailMessage();
 			message.setTitle("GitDocument · " + systemSettingDAO.get(ORGANIZATION_NAME) + " - 新文集发布通知");
 			message.setName(anthology.getShowName());
 			message.setEmailList(emails);
@@ -249,7 +222,7 @@ public class AnthologyServiceImpl implements AnthologyService {
 		try {
 			data = gitFileDAO.getFileBytesInLatestCommit(getAnthology.getRepoPath(), imageFilePath);
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error(e.getMessage());
 			return Result.resultFailed("图片文件获取失败！");
 		}
 		return Result.resultSuccess("获取成功！", data);

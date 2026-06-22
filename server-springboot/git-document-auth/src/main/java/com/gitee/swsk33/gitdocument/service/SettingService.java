@@ -4,7 +4,6 @@ import com.gitee.swsk33.gitdocument.dataobject.Setting;
 import com.gitee.swsk33.gitdocument.model.Result;
 import org.springframework.stereotype.Service;
 
-@Service
 public interface SettingService {
 
 	/**

@@ -10,7 +10,6 @@ import java.util.List;
 /**
  * 文章集（Git仓库）服务
  */
-@Service
 public interface AnthologyService {
 
 	/**

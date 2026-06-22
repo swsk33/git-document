@@ -1,13 +1,15 @@
 package com.gitee.swsk33.gitdocument.model;
 
-import com.gitee.swsk33.gitdocument.model.prototype.EmailMessage;
+import com.gitee.swsk33.gitdocument.model.prototype.ArticleNotifyEmailMessage;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * 用于发送创建新文集的通知邮件的任务消息
  */
 @Data
-public class CreateEmailMessage extends EmailMessage {
+@EqualsAndHashCode(callSuper = true)
+public class CreateArticleNotifyEmailMessage extends ArticleNotifyEmailMessage {
 
 	/**
 	 * 文集创建者昵称

@@ -5,7 +5,7 @@ import com.gitee.swsk33.gitdocument.dataobject.User;
 import com.gitee.swsk33.gitdocument.model.Result;
 import com.gitee.swsk33.gitdocument.param.ValidationRules;
 import com.gitee.swsk33.gitdocument.service.LoginRecordService;
-import com.gitee.swsk33.gitdocument.service.UserEmailCodeService;
+import com.gitee.swsk33.gitdocument.service.UserEmailService;
 import com.gitee.swsk33.gitdocument.service.UserService;
 import com.gitee.swsk33.gitdocument.session.UserSession;
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,7 +30,7 @@ public class UserAPI {
 	private UserSession userSession;
 
 	@Autowired
-	private UserEmailCodeService emailCodeService;
+	private UserEmailService userEmailService;
 
 	@PostMapping("/register")
 	public Result<Void> register(@RequestBody @Validated(ValidationRules.DataAdd.class) User user, BindingResult errors) {
@@ -41,7 +41,7 @@ public class UserAPI {
 	}
 
 	@DeleteMapping("/delete/{id}")
-	public Result<Void> delete(@PathVariable("id") int id) {
+	public Result<Void> delete(@PathVariable int id) {
 		return userService.delete(id);
 	}
 
@@ -85,7 +85,7 @@ public class UserAPI {
 
 	@GetMapping("/reset-password/send/{email}")
 	public Result<Void> sendPasswordResetCode(@PathVariable String email) {
-		emailCodeService.sendPasswordResetCode(email);
+		userEmailService.sendPasswordResetCode(email);
 		return Result.resultSuccess("已发送密码重置验证码！");
 	}
 

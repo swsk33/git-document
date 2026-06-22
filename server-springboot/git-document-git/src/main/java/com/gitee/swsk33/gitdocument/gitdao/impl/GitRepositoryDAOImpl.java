@@ -25,12 +25,6 @@ import java.util.List;
 @GitRepository
 public class GitRepositoryDAOImpl implements GitRepositoryDAO {
 
-//	@Autowired
-//	private UserDAO userDAO;
-//
-//	@Autowired
-//	private SystemSettingDAO systemSettingDAO;
-
 	@Autowired
 	private GitCommitDAO gitCommitDAO;
 
@@ -39,9 +33,6 @@ public class GitRepositoryDAOImpl implements GitRepositoryDAO {
 
 	@Resource
 	private GitMessageBroker<GitTaskMessage> gitMessageBroker;
-
-//	@Autowired
-//	private EmailService emailService;
 
 	@Override
 	public boolean createGitBareRepository(String gitRepository) {
@@ -72,7 +63,7 @@ public class GitRepositoryDAOImpl implements GitRepositoryDAO {
 	}
 
 	@Override
-	public void doUpdateTask(String repoPath, String oldId, String newId) {
+	public void doUpdateTask(String repoPath, String oldId, String newId, boolean sendEmail) {
 		log.info("Git HEAD被修改！");
 		if (StrUtil.isEmpty(newId) || newId.equals(oldId)) {
 			log.info("实际没有变化，无需修改！");
@@ -89,30 +80,9 @@ public class GitRepositoryDAOImpl implements GitRepositoryDAO {
 		updateTaskMessage.setRepoPath(repoPath);
 		updateTaskMessage.setCommitId(newId);
 		updateTaskMessage.setDiffs(ArticleDifference.toArticleDiff(diffs));
+		updateTaskMessage.setSendEmail(sendEmail);
 		gitMessageBroker.publish(updateTaskMessage);
 		log.info("已发布Git仓库更新任务消息至Flux对象！");
-		// 准备进行邮件通知
-//		if (sendEmail) {
-//			// 获取收藏这个文集的用户
-//			List<User> starUsers = userDAO.getByStarAnthology(id);
-//			List<String> emailList = starUsers.stream()
-//					// 过滤得到订阅更新邮件的用户
-//					.filter(user -> user.getSetting().getReceiveUpdateEmail())
-//					.map(User::getEmail).toList();
-//			// 无人订阅通知则不发送消息
-//			if (emailList.isEmpty()) {
-//				return;
-//			}
-//			// 准备邮件任务消息
-//			UpdateEmailMessage message = new UpdateEmailMessage();
-//			message.setTitle("GitDocument · " + systemSettingDAO.get(ORGANIZATION_NAME) + " - 文集更新通知");
-//			message.setName(showName);
-//			message.setCommitMessage(gitCommitDAO.getHeadCommit(gitRepository).getFullMessage());
-//			message.setDiffEntries(ArticleDifference.toArticleDiff(diffs));
-//			message.setEmailList(emailList);
-//			// 异步发送
-//			emailService.sendAnthologyUpdateNotify(message);
-//		}
 	}
 
 	@Override
@@ -133,7 +103,7 @@ public class GitRepositoryDAOImpl implements GitRepositoryDAO {
 		// 如果只是单纯的两者不同，说明需要进行更新同步操作
 		if (!anthology.getLatestCommit().equals(localCommitId)) {
 			log.warn("发现本地仓库：{}与数据库的commit不同，进行更新操作...", anthology.getName());
-			doUpdateTask(anthology.getRepoPath(), anthology.getLatestCommit(), localCommitId);
+			doUpdateTask(anthology.getRepoPath(), anthology.getLatestCommit(), localCommitId, false);
 		}
 	}
 

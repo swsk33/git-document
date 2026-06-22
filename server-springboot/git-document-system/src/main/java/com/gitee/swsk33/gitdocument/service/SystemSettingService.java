@@ -1,13 +1,11 @@
 package com.gitee.swsk33.gitdocument.service;
 
 import com.gitee.swsk33.gitdocument.model.Result;
-import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 用于全局系统设置的服务
  */
-@Service
 public interface SystemSettingService {
 
 	/**

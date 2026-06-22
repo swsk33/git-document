@@ -2,13 +2,11 @@ package com.gitee.swsk33.gitdocument.service;
 
 import com.gitee.swsk33.gitdocument.model.Result;
 import io.github.swsk33.fileliftcore.model.BinaryContent;
-import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 图像服务
  */
-@Service
 public interface ImageService {
 
 	/**

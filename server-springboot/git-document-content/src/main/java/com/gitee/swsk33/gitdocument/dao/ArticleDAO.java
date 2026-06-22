@@ -16,10 +16,9 @@ public interface ArticleDAO extends BaseMapper<Article> {
 	 * 根据文章文件路径删除文章
 	 *
 	 * @param path 文章文件路径
-	 * @return 删除记录条数
 	 */
-	default int deleteByPath(String path) {
-		return deleteByQuery(QueryWrapper.create().where(ARTICLE.FILE_PATH.eq(path)));
+	default void deleteByPath(String path) {
+		deleteByQuery(QueryWrapper.create().where(ARTICLE.FILE_PATH.eq(path)));
 	}
 
 	/**

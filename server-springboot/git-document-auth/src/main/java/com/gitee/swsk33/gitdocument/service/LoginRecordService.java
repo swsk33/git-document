@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 /**
  * 关于登录记录的服务
  */
-@Service
 public interface LoginRecordService {
 
 	/**

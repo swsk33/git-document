@@ -49,7 +49,7 @@ public class GitRepositoryChangeHook implements PostReceiveHook {
 		} else {
 			// 否则，就是已创建仓库进行更新推送
 			log.info("仓库 {} 为更新推送，执行 Git 仓库元数据更新任务", repositoryPath);
-			gitRepositoryDAO.doUpdateTask(repositoryPath, oldId.getName(), newId.getName());
+			gitRepositoryDAO.doUpdateTask(repositoryPath, oldId.getName(), newId.getName(), true);
 		}
 		// 最后，打印推送成功消息
 		try {

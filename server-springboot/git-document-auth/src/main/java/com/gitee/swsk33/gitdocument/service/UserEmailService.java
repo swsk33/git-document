@@ -1,6 +1,11 @@
 package com.gitee.swsk33.gitdocument.service;
 
-public interface UserEmailCodeService {
+import com.gitee.swsk33.gitdocument.dataobject.User;
+
+/**
+ * 用于用户业务相关的邮件验证码服务
+ */
+public interface UserEmailService {
 
 	/**
 	 * 发送密码重置验证码
@@ -17,5 +22,13 @@ public interface UserEmailCodeService {
 	 * @return 是否验证成功
 	 */
 	boolean verifyPasswordResetCode(int userId, String code);
+
+	/**
+	 * 发送角色更改邮件通知
+	 *
+	 * @param changedUser 被修改权限的角色
+	 * @param operator    操作者
+	 */
+	void sendRoleChangeEmail(User changedUser, User operator);
 
 }

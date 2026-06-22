@@ -5,7 +5,6 @@ import com.gitee.swsk33.gitdocument.model.ArticleDirectory;
 import com.gitee.swsk33.gitdocument.model.Result;
 import org.springframework.stereotype.Service;
 
-@Service
 public interface ArticleService {
 
 	/**

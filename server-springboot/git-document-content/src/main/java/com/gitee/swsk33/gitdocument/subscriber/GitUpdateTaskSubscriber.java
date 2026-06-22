@@ -3,10 +3,16 @@ package com.gitee.swsk33.gitdocument.subscriber;
 import com.gitee.swsk33.gitdocument.cache.ArticleTreeCache;
 import com.gitee.swsk33.gitdocument.dao.AnthologyDAO;
 import com.gitee.swsk33.gitdocument.dao.ArticleDAO;
+import com.gitee.swsk33.gitdocument.dao.SystemSettingDAO;
+import com.gitee.swsk33.gitdocument.dao.UserDAO;
 import com.gitee.swsk33.gitdocument.dataobject.Anthology;
+import com.gitee.swsk33.gitdocument.dataobject.User;
+import com.gitee.swsk33.gitdocument.gitdao.GitCommitDAO;
 import com.gitee.swsk33.gitdocument.model.ArticleDirectory;
 import com.gitee.swsk33.gitdocument.model.GitUpdateTaskMessage;
+import com.gitee.swsk33.gitdocument.model.UpdateArticleNotifyEmailMessage;
 import com.gitee.swsk33.gitdocument.model.prototype.GitTaskMessage;
+import com.gitee.swsk33.gitdocument.service.ArticleEmailService;
 import com.gitee.swsk33.gitdocument.strategy.context.FileChangeStrategyContext;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jgit.diff.DiffEntry;
@@ -14,6 +20,10 @@ import org.reactivestreams.Subscription;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.BaseSubscriber;
+
+import java.util.List;
+
+import static com.gitee.swsk33.gitdocument.param.SystemSettingKey.ORGANIZATION_NAME;
 
 /**
  * 订阅接收并处理 Git 仓库更新消息的订阅者
@@ -29,10 +39,22 @@ public class GitUpdateTaskSubscriber extends BaseSubscriber<GitTaskMessage> {
 	private ArticleDAO articleDAO;
 
 	@Autowired
+	private UserDAO userDAO;
+
+	@Autowired
 	private ArticleTreeCache articleTreeCache;
 
 	@Autowired
 	private FileChangeStrategyContext fileChangeStrategyContext;
+
+	@Autowired
+	private ArticleEmailService emailService;
+
+	@Autowired
+	private SystemSettingDAO systemSettingDAO;
+
+	@Autowired
+	private GitCommitDAO gitCommitDAO;
 
 	/**
 	 * 开始订阅时会执行的方法
@@ -71,6 +93,27 @@ public class GitUpdateTaskSubscriber extends BaseSubscriber<GitTaskMessage> {
 			ArticleDirectory directory = new ArticleDirectory(articleDAO.getByAnthologyId(anthology.getId()));
 			articleTreeCache.setOrAdd(anthology.getId(), directory);
 			log.info("已完成对文集仓库：{}的文章目录树缓存刷新！", anthology.getName());
+			// 对收藏了该文集且开启了更新通知的用户，发送邮件通知
+			if (message.isSendEmail()) {
+				// 获取收藏了该文集的用户
+				List<User> starUsers = userDAO.getByStarAnthology(anthology.getId());
+				List<String> emailList = starUsers.stream()
+						// 过滤得到开启了邮件通知的用户
+						.filter(user -> user.getSetting().getReceiveUpdateEmail())
+						.map(User::getEmail).toList();
+				// 邮件列表非空才发消息
+				if (!emailList.isEmpty()) {
+					// 创建消息
+					UpdateArticleNotifyEmailMessage notifyMessage = new UpdateArticleNotifyEmailMessage();
+					notifyMessage.setTitle(String.format("GitDocument · %s - 文集更新通知", systemSettingDAO.get(ORGANIZATION_NAME)));
+					notifyMessage.setName(anthology.getShowName());
+					notifyMessage.setCommitMessage(gitCommitDAO.getHeadCommit(anthology.getRepoPath()).getFullMessage());
+					notifyMessage.setDiffEntries(message.getDiffs());
+					notifyMessage.setEmailList(emailList);
+					// 异步发送
+					emailService.sendAnthologyUpdateNotify(notifyMessage);
+				}
+			}
 		} else {
 			log.warn("消息类型错误，本次不进行任何更新任务！");
 		}

@@ -1,43 +1,29 @@
 package com.gitee.swsk33.gitdocument.service.impl;
 
 import cn.hutool.core.util.ArrayUtil;
-import com.gitee.swsk33.gitdocument.dataobject.User;
 import com.gitee.swsk33.gitdocument.model.ArticleDifference;
-import com.gitee.swsk33.gitdocument.model.CreateEmailMessage;
-import com.gitee.swsk33.gitdocument.model.UpdateEmailMessage;
-import com.gitee.swsk33.gitdocument.service.EmailService;
+import com.gitee.swsk33.gitdocument.model.CreateArticleNotifyEmailMessage;
+import com.gitee.swsk33.gitdocument.model.UpdateArticleNotifyEmailMessage;
+import com.gitee.swsk33.gitdocument.service.ArticleEmailService;
 import io.github.swsk33.codepostcore.service.EmailNotifyService;
-import io.github.swsk33.codepostcore.service.EmailVerifyCodeService;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Slf4j
-@Component
-public class EmailServiceImpl implements EmailService {
-
-	@Autowired
-	private EmailVerifyCodeService verifyCodeService;
+@Service
+public class ArticleEmailServiceImpl implements ArticleEmailService {
 
 	@Autowired
 	private EmailNotifyService notifyService;
 
 	@Override
-	public void sendRoleChangeEmail(User changedUser, User operator) {
-		// 设定模板变量
-		Map<String, Object> models = new HashMap<>();
-		models.put("operator", operator.getNickname());
-		models.put("newRole", changedUser.getRole().getShowName());
-		notifyService.sendTemplateNotifyAsync("GitDocument - 用户权限变化", "role-changed.txt", models, changedUser.getEmail());
-	}
-
-	@Override
-	public void sendAnthologyUpdateNotify(UpdateEmailMessage message) {
+	public void sendAnthologyUpdateNotify(UpdateArticleNotifyEmailMessage message) {
 		// 获取差异信息
 		List<String> diffsMessage = message.getDiffEntries().stream()
 				// 过滤掉非md文件的变动
@@ -58,7 +44,7 @@ public class EmailServiceImpl implements EmailService {
 	}
 
 	@Override
-	public void sendAnthologyCreateNotify(CreateEmailMessage message) {
+	public void sendAnthologyCreateNotify(CreateArticleNotifyEmailMessage message) {
 		// 设定模板变量
 		Map<String, Object> models = new HashMap<>();
 		models.put("publisher", message.getPublisher());
@@ -66,7 +52,5 @@ public class EmailServiceImpl implements EmailService {
 		// 群发通知邮件
 		notifyService.sendTemplateNotifyAsync(message.getTitle(), "anthology-create.txt", models, ArrayUtil.toArray(message.getEmailList(), String.class));
 	}
-
-
 
 }

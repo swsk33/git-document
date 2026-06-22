@@ -24,7 +24,7 @@ public class IPAddressSearchConfig {
 	@Bean(destroyMethod = "close")
 	public Searcher ipSearcher() {
 		// 读取 IP 数据库文件
-		ClassPathResource resource = new ClassPathResource("ip2region.xdb");
+		ClassPathResource resource = new ClassPathResource("ip2region_v4.xdb");
 		try (InputStream stream = resource.getStream()) {
 			searcher = Searcher.newWithBuffer(Version.IPv4, Searcher.loadContentFromInputStream(stream));
 		} catch (Exception e) {

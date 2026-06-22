@@ -1,12 +1,10 @@
 package com.gitee.swsk33.gitdocument.session;
 
-import com.gitee.swsk33.gitdocument.annotation.SaTokenSession;
 import com.gitee.swsk33.gitdocument.dataobject.User;
 
 /**
  * 操作用户Sa-Token Session操作的封装
  */
-@SaTokenSession
 public interface UserSession {
 
 	/**

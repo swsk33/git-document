@@ -42,6 +42,10 @@
 			<groupId>cn.dev33</groupId>
 			<artifactId>sa-token-spring-aop</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>cn.dev33</groupId>
+			<artifactId>sa-token-redis-jackson</artifactId>
+		</dependency>
 
 		<!-- BCrypt 加密 -->
 		<dependency>
@@ -55,7 +59,7 @@
 			<artifactId>mybatis-flex-spring-boot4-starter</artifactId>
 		</dependency>
 
-		<!-- 验证码框架 -->
+		<!-- 邮件验证码框架 -->
 		<dependency>
 			<groupId>io.github.swsk33</groupId>
 			<artifactId>code-post-spring-boot-starter</artifactId>
