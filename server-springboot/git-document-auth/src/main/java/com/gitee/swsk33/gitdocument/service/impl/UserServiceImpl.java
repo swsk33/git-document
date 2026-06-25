@@ -119,7 +119,7 @@ public class UserServiceImpl implements UserService {
 		if (getUser == null) {
 			return Result.resultFailed("找不到该用户！");
 		}
-		// 权限判断
+		// 修改的是其它用户信息时，进行权限判断
 		if (StpUtil.getLoginIdAsInt() != user.getId() && !StpUtil.hasPermission(PermissionName.EDIT_USER)) {
 			return Result.resultFailed("您没有修改其他用户信息的权限！");
 		}
@@ -137,6 +137,8 @@ public class UserServiceImpl implements UserService {
 			if (user.getRoleId() == RoleIdName.PRESERVE_ADMIN_ID) {
 				return Result.resultFailed("不能把用户修改成预留管理员！");
 			}
+			// 能修改时，发送通知邮件
+			userEmailService.sendRoleChangeEmail(user, userSession.getCurrentLoginSessionUser());
 		}
 		// 检查头像是否修改
 		if (!StrUtil.isEmpty(user.getAvatar()) && !user.getAvatar().equals(getUser.getAvatar())) {

@@ -1,6 +1,7 @@
 package com.gitee.swsk33.gitdocument.subscriber;
 
 import cn.hutool.core.util.IdUtil;
+import com.gitee.swsk33.gitdocument.broker.GitMessageBroker;
 import com.gitee.swsk33.gitdocument.cache.ArticleTreeCache;
 import com.gitee.swsk33.gitdocument.dao.AnthologyDAO;
 import com.gitee.swsk33.gitdocument.dao.ArticleDAO;
@@ -11,6 +12,7 @@ import com.gitee.swsk33.gitdocument.model.GitCreateTaskMessage;
 import com.gitee.swsk33.gitdocument.model.prototype.GitTaskMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Subscription;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.BaseSubscriber;
@@ -23,7 +25,7 @@ import java.util.List;
  */
 @Slf4j
 @Component
-public class GitCreateTaskSubscriber extends BaseSubscriber<GitTaskMessage> {
+public class GitCreateTaskSubscriber extends BaseSubscriber<GitTaskMessage> implements InitializingBean {
 
 	@Autowired
 	private AnthologyDAO anthologyDAO;
@@ -33,6 +35,16 @@ public class GitCreateTaskSubscriber extends BaseSubscriber<GitTaskMessage> {
 
 	@Autowired
 	private ArticleTreeCache articleTreeCache;
+
+	@Autowired
+	private GitMessageBroker messageBroker;
+
+	@Override
+	public void afterPropertiesSet() {
+		// 订阅创建消息
+		messageBroker.subscribe(this, GitCreateTaskMessage.class);
+		log.info("已订阅并准备接收Git创建消息");
+	}
 
 	/**
 	 * 开始订阅时会执行的方法

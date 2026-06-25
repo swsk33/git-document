@@ -11,7 +11,6 @@ import com.gitee.swsk33.gitdocument.gitdao.GitRepositoryDAO;
 import com.gitee.swsk33.gitdocument.model.ArticleDifference;
 import com.gitee.swsk33.gitdocument.model.GitCreateTaskMessage;
 import com.gitee.swsk33.gitdocument.model.GitUpdateTaskMessage;
-import com.gitee.swsk33.gitdocument.model.prototype.GitTaskMessage;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jgit.api.Git;
@@ -32,7 +31,7 @@ public class GitRepositoryDAOImpl implements GitRepositoryDAO {
 	private GitFileDAO gitFileDAO;
 
 	@Resource
-	private GitMessageBroker<GitTaskMessage> gitMessageBroker;
+	private GitMessageBroker messageBroker;
 
 	@Override
 	public boolean createGitBareRepository(String gitRepository) {
@@ -58,7 +57,7 @@ public class GitRepositoryDAOImpl implements GitRepositoryDAO {
 		createTaskMessage.setRepoPath(repoPath);
 		createTaskMessage.setCommitId(newId);
 		createTaskMessage.setFileList(gitFileDAO.getLatestFileList(repoPath));
-		gitMessageBroker.publish(createTaskMessage);
+		messageBroker.publish(createTaskMessage);
 		log.info("已发布Git仓库创建任务消息至Flux对象！");
 	}
 
@@ -81,7 +80,7 @@ public class GitRepositoryDAOImpl implements GitRepositoryDAO {
 		updateTaskMessage.setCommitId(newId);
 		updateTaskMessage.setDiffs(ArticleDifference.toArticleDiff(diffs));
 		updateTaskMessage.setSendEmail(sendEmail);
-		gitMessageBroker.publish(updateTaskMessage);
+		messageBroker.publish(updateTaskMessage);
 		log.info("已发布Git仓库更新任务消息至Flux对象！");
 	}
 
