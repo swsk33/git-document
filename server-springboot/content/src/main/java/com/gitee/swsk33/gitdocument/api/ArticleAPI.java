@@ -18,7 +18,7 @@ public class ArticleAPI {
 	private ArticleService articleService;
 
 	@GetMapping("/get/{id}")
-	public Result<Article> get(@PathVariable long id) throws Exception {
+	public Result<Article> get(@PathVariable long id) {
 		return articleService.getById(id);
 	}
 

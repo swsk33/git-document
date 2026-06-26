@@ -5,7 +5,6 @@ import com.gitee.swsk33.gitdocument.util.FileNameSortUtil;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +14,7 @@ import java.util.List;
  */
 @Data
 @NoArgsConstructor
-public class ArticleDirectory implements Serializable {
+public class ArticleDirectory {
 
 	/**
 	 * 目录名
@@ -35,13 +34,13 @@ public class ArticleDirectory implements Serializable {
 	/**
 	 * 用文章列表来创建该目录结构（将文章对象中路径取出，并将其扁平路径转为树状）
 	 *
-	 * @param articles 文章列表
+	 * @param originArticleList 文章列表
 	 */
-	public ArticleDirectory(List<Article> articles) {
+	public ArticleDirectory(List<Article> originArticleList) {
 		// 首先对文章列表按照文件名进行排序
-		FileNameSortUtil.sortArticlePath(articles);
+		FileNameSortUtil.sortArticlePath(originArticleList);
 		// 然后解析为树状形式
-		for (Article article : articles) {
+		for (Article article : originArticleList) {
 			// 将路径按照分隔符分为数组形式
 			String[] paths = article.getFilePath().split("/");
 			// 目录指针，用于标识当前遍历的时候进入到了哪个目录中

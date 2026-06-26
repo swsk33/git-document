@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/ssh-server")
-public class SystemInfoAPI {
+public class SshServerMetadataAPI {
 
 	/**
 	 * 运行程序的用户名

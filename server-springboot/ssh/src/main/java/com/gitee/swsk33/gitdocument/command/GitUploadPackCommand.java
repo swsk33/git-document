@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.sshd.server.command.AbstractCommandSupport;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.transport.UploadPack;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 /**
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Component;
  */
 @Slf4j
 @Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class GitUploadPackCommand extends AbstractCommandSupport {
 
 	/**

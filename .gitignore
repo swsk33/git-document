@@ -30,4 +30,3 @@ dist/
 # 临时文件
 /server-springboot/images/
 /server-springboot/host-key
-/server-springboot/indexes/

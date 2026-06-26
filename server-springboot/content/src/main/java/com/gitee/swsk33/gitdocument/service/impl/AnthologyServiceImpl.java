@@ -202,10 +202,12 @@ public class AnthologyServiceImpl implements AnthologyService, InitializingBean 
 		RelationManager.addQueryRelations("stars");
 		List<Anthology> anthologies = anthologyDAO.selectAllWithRelations();
 		// 填充时间信息
-		anthologies.forEach(item -> {
-			RevCommit commit = gitCommitDAO.getHeadCommit(item.getRepoPath());
-			item.setUpdateTime(commit != null ? commit.getCommitTime() : null);
-		});
+		if (anthologies != null) {
+			anthologies.forEach(item -> {
+				RevCommit commit = gitCommitDAO.getHeadCommit(item.getRepoPath());
+				item.setUpdateTime(commit != null ? commit.getCommitTime() : null);
+			});
+		}
 		return Result.resultSuccess("查询成功！", anthologies);
 	}
 
@@ -229,19 +231,27 @@ public class AnthologyServiceImpl implements AnthologyService, InitializingBean 
 	@SaCheckPermission(PermissionName.EDIT_ANTHOLOGY)
 	@Override
 	public Result<List<Anthology>> getAnthologyNotInDatabase() {
+		// 先获取所有数据库中文集
 		List<Anthology> anthologyListInDB = anthologyDAO.selectAll();
+		// 列出本地所有仓库
+		File[] gitRepoPaths = FileUtil.file(gitRepositoryProperties.getRepositoryPath()).listFiles();
+		if (gitRepoPaths == null || gitRepoPaths.length == 0) {
+			return Result.resultSuccess("本地没有任何文集Git仓库，无需恢复");
+		}
+		// 计算在本地但不在数据库中仓库
 		List<Anthology> notInDB = new ArrayList<>();
-		Stream<File> files = Stream.of(FileUtil.file(gitRepositoryProperties.getRepositoryPath()).listFiles());
-		files.filter(file -> {
+		Stream.of(gitRepoPaths).filter(file -> {
 			if (file.isFile()) {
 				return false;
 			}
 			if (!file.getAbsolutePath().endsWith(".git")) {
 				return false;
 			}
-			for (Anthology anthology : anthologyListInDB) {
-				if (anthology.getRepoPath().equals(file.getAbsolutePath())) {
-					return false;
+			if (anthologyListInDB != null && !anthologyListInDB.isEmpty()) {
+				for (Anthology anthology : anthologyListInDB) {
+					if (anthology.getRepoPath().equals(file.getAbsolutePath())) {
+						return false;
+					}
 				}
 			}
 			return true;
