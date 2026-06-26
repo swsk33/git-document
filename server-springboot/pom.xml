@@ -15,13 +15,13 @@
 	<description>基于Git版本管理工具的轻便的文档管理系统，使用Git管理Markdown文档，该模块为顶层父模块</description>
 
 	<modules>
-		<module>git-document-common</module>
-		<module>git-document-system</module>
-		<module>git-document-git</module>
-		<module>git-document-auth</module>
-		<module>git-document-content</module>
-		<module>git-document-app</module>
-		<module>git-document-ssh</module>
+		<module>common</module>
+		<module>system</module>
+		<module>git</module>
+		<module>auth</module>
+		<module>content</module>
+		<module>app</module>
+		<module>ssh</module>
 	</modules>
 
 	<properties>
@@ -113,6 +113,11 @@
 			<dependency>
 				<groupId>com.mybatis-flex</groupId>
 				<artifactId>mybatis-flex-processor</artifactId>
+				<version>${mybatis-flex.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.mybatis-flex</groupId>
+				<artifactId>mybatis-flex-core</artifactId>
 				<version>${mybatis-flex.version}</version>
 			</dependency>
 

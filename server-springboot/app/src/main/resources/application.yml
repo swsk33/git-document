@@ -1,0 +1,87 @@
+# 服务端配置
+server:
+  port: ${GITDOC_PORT:5354}
+  tomcat:
+    max-http-form-post-size: 20MB
+
+spring:
+  # JSON配置
+  jackson:
+    default-property-inclusion: non_null
+    deserialization:
+      fail-on-unknown-properties: false
+  # 请求大小
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
+  # PostgreSQL数据库
+  datasource:
+    url: "jdbc:postgresql://${GITDOC_DB_HOST:127.0.0.1}:${GITDOC_DB_PORT:5432}/${GITDOC_DB_NAME:git_doc}?TimeZone=Asia/Shanghai"
+    username: "${GITDOC_DB_USER:postgres}"
+    password: "${GITDOC_DB_PASSWORD:123456}"
+  data:
+    # Redis
+    redis:
+      host: "${GITDOC_REDIS_HOST:127.0.0.1}"
+      port: ${GITDOC_REDIS_PORT:6379}
+      password: "${GITDOC_REDIS_PASSWORD:123456}"
+
+# Sa-Token配置
+sa-token:
+  is-concurrent: true
+  is-share: false
+  timeout: -1
+  token-name: gitdoc-satoken
+  token-style: simple-uuid
+
+io:
+  github:
+    swsk33:
+      # sql-initialize配置
+      sql-init:
+        database-check:
+          check-database: true
+          sql-paths:
+            - "classpath:sql-init/init-table.sql"
+            - "classpath:sql-init/init-constraint.sql"
+            - "classpath:sql-init/init-index.sql"
+            - "classpath:sql-init/init-data.sql"
+      # code-post邮件配置
+      code-post:
+        core:
+          smtp-host: "${GITDOC_MAIL_SMTP_HOST:smtp.163.com}"
+          email: "${GITDOC_MAIL_USER}"
+          password: "${GITDOC_MAIL_PASSKEY}"
+          code-storage: "redis"
+          site-name: "GitDocument"
+          template-path: "classpath:/templates"
+          code-template-name: "code-template.txt"
+      # file-list文件上传配置
+      file-lift:
+        core:
+          storage-method: "filesystem"
+          size-limit: 10240
+          auto-rename-format: "snow_flake"
+          allowed-formats:
+            - "jpg"
+            - "jpeg"
+            - "png"
+            - "gif"
+            - "bmp"
+        filesystem:
+          save-folder: "images"
+
+# GitDocument-自定义配置
+com:
+  gitee:
+    swsk33:
+      git-doc:
+        ssh:
+          # 内嵌sshd服务端端口
+          embed-ssh-server-port: ${GITDOC_SSH_PORT:2333}
+          # 广播sshd服务端端口
+          advertised-ssh-server-port: ${GITDOC_ADVERTISED_SSH_PORT:2333}
+        git:
+          # 存放所有文集仓库的目录，尽量不要修改
+          repository-path: "${GITDOC_REPO_PATH:null}"

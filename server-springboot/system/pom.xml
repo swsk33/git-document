@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.gitee.swsk33</groupId>
+		<artifactId>git-document-parent</artifactId>
+		<version>3.2.0</version>
+	</parent>
+	<artifactId>git-document-system</artifactId>
+	<name>GitDocument System</name>
+	<description>GitDocument - 系统管理与操作模块，包含图片上传、系统配置方面业务</description>
+
+	<dependencies>
+		<!-- 内部模块 -->
+		<dependency>
+			<groupId>com.gitee.swsk33</groupId>
+			<artifactId>git-document-common</artifactId>
+		</dependency>
+
+		<!-- Spring Boot Web -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webmvc</artifactId>
+		</dependency>
+
+		<!-- MyBatis-Flex 增强框架 -->
+		<dependency>
+			<groupId>com.mybatis-flex</groupId>
+			<artifactId>mybatis-flex-spring-boot4-starter</artifactId>
+		</dependency>
+
+		<!-- Sa-Token 安全框架 -->
+		<dependency>
+			<groupId>cn.dev33</groupId>
+			<artifactId>sa-token-spring-boot4-starter</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>cn.dev33</groupId>
+			<artifactId>sa-token-spring-aop</artifactId>
+		</dependency>
+
+		<!-- 文件上传框架 -->
+		<dependency>
+			<groupId>io.github.swsk33</groupId>
+			<artifactId>file-lift-spring-boot-starter</artifactId>
+		</dependency>
+	</dependencies>
+</project>

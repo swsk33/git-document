@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.gitee.swsk33</groupId>
+		<artifactId>git-document-parent</artifactId>
+		<version>3.2.0</version>
+	</parent>
+	<artifactId>git-document-app</artifactId>
+	<name>GitDocument App</name>
+	<description>GitDocument - 入口启动模块，仅用于整合所有子模块和部分通用依赖，作为启动入口，同时包含所有配置</description>
+
+	<dependencies>
+		<!-- 所有子模块 -->
+		<dependency>
+			<groupId>com.gitee.swsk33</groupId>
+			<artifactId>git-document-common</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.gitee.swsk33</groupId>
+			<artifactId>git-document-system</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.gitee.swsk33</groupId>
+			<artifactId>git-document-git</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.gitee.swsk33</groupId>
+			<artifactId>git-document-auth</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.gitee.swsk33</groupId>
+			<artifactId>git-document-content</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.gitee.swsk33</groupId>
+			<artifactId>git-document-ssh</artifactId>
+		</dependency>
+
+		<!-- PostgreSQL 驱动 -->
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+		</dependency>
+
+		<!-- Spring Boot JDBC -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-jdbc</artifactId>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<!-- Spring Boot 打包插件 -->
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<excludes>
+						<exclude>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+						</exclude>
+						<exclude>
+							<groupId>com.mybatis-flex</groupId>
+							<artifactId>mybatis-flex-processor</artifactId>
+						</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>

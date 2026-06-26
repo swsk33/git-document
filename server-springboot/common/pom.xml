@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.gitee.swsk33</groupId>
+		<artifactId>git-document-parent</artifactId>
+		<version>3.2.0</version>
+	</parent>
+	<artifactId>git-document-common</artifactId>
+	<name>GitDocument Common</name>
+	<description>GitDocument - 通用实体类与工具，包含所有数据实体类，通用模型实体类以及通用常量</description>
+
+	<dependencies>
+		<!-- Spring Boot JSON 支持 -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-jackson</artifactId>
+		</dependency>
+
+		<!-- Spring Boot 校验 -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-validation</artifactId>
+		</dependency>
+
+		<!-- MyBatis-Flex 核心（用于实体类注解） -->
+		<dependency>
+			<groupId>com.mybatis-flex</groupId>
+			<artifactId>mybatis-flex-core</artifactId>
+		</dependency>
+
+		<!-- MyBatis-Flex 注解处理器（实体类注解代码自动生成） -->
+		<dependency>
+			<groupId>com.mybatis-flex</groupId>
+			<artifactId>mybatis-flex-processor</artifactId>
+		</dependency>
+
+		<!-- SQL数据库自动初始化 -->
+		<dependency>
+			<groupId>io.github.swsk33</groupId>
+			<artifactId>sql-initialize-spring-boot-starter</artifactId>
+		</dependency>
+	</dependencies>
+</project>

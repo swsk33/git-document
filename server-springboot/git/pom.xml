@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.gitee.swsk33</groupId>
+		<artifactId>git-document-parent</artifactId>
+		<version>3.2.0</version>
+	</parent>
+	<artifactId>git-document-git</artifactId>
+	<name>GitDocument Git</name>
+	<description>GitDocument - Git操作工具封装模块，主要包括Git文件、提交和仓库操作封装、变更触发Hook实现以及Git仓库变更消息发布和事件总线实现</description>
+
+	<dependencies>
+		<!-- 内部模块 -->
+		<dependency>
+			<groupId>com.gitee.swsk33</groupId>
+			<artifactId>git-document-common</artifactId>
+		</dependency>
+
+		<!-- Spring Boot 基本模块 -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter</artifactId>
+		</dependency>
+
+		<!-- Hutool 实用工具 -->
+		<dependency>
+			<groupId>cn.hutool</groupId>
+			<artifactId>hutool-core</artifactId>
+		</dependency>
+
+		<!-- JGit 客户端 -->
+		<dependency>
+			<groupId>org.eclipse.jgit</groupId>
+			<artifactId>org.eclipse.jgit</artifactId>
+		</dependency>
+
+		<!-- Reactor 反应式对象 -->
+		<dependency>
+			<groupId>io.projectreactor</groupId>
+			<artifactId>reactor-core</artifactId>
+		</dependency>
+	</dependencies>
+</project>
