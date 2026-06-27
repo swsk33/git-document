@@ -4,10 +4,7 @@ import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.StrUtil;
-import com.gitee.swsk33.gitdocument.dao.LoginRecordDAO;
-import com.gitee.swsk33.gitdocument.dao.SettingDAO;
-import com.gitee.swsk33.gitdocument.dao.SystemSettingDAO;
-import com.gitee.swsk33.gitdocument.dao.UserDAO;
+import com.gitee.swsk33.gitdocument.dao.*;
 import com.gitee.swsk33.gitdocument.dataobject.LoginRecord;
 import com.gitee.swsk33.gitdocument.dataobject.Setting;
 import com.gitee.swsk33.gitdocument.dataobject.User;
@@ -42,6 +39,9 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private SystemSettingDAO systemSettingDAO;
+
+	@Autowired
+	private RoleDAO roleDAO;
 
 	@Autowired
 	private ImageService imageService;
@@ -138,7 +138,8 @@ public class UserServiceImpl implements UserService {
 				return Result.resultFailed("不能把用户修改成预留管理员！");
 			}
 			// 能修改时，发送通知邮件
-			userEmailService.sendRoleChangeEmail(user, userSession.getCurrentLoginSessionUser());
+			getUser.getRole().setShowName(roleDAO.getRoleShowNameById(user.getRoleId()));
+			userEmailService.sendRoleChangeEmail(getUser, userSession.getCurrentLoginSessionUser());
 		}
 		// 检查头像是否修改
 		if (!StrUtil.isEmpty(user.getAvatar()) && !user.getAvatar().equals(getUser.getAvatar())) {

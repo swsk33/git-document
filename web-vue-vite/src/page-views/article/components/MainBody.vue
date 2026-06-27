@@ -21,9 +21,9 @@ import { onBeforeMount, onUpdated, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { marked } from 'marked';
 import ClipBoard from 'clipboard';
-import renderMathInElement from 'katex/dist/contrib/auto-render';
+import renderMathInElement from 'katex/contrib/auto-render';
 import { markedHighlight } from 'marked-highlight';
-import hljs from 'highlight.js';
+import highlightJs from 'highlight.js';
 import { MESSAGE_TYPE, showNotification } from '../../../utils/message.js';
 import { anthologyGetImageURL } from '../../../api/anthology-api.js';
 import { articleGet } from '../../../api/article-api.js';
@@ -35,21 +35,19 @@ const content = ref(null);
 
 // pinia
 import { useArticlePageThemeStore } from '../../../store/article-page-theme.js';
-import { useArticleTreeStore } from '../../../store/article-tree.js';
 
 const themeStore = useArticlePageThemeStore();
-const articleTreeStore = useArticleTreeStore();
 
 // marked.js配置高亮
 marked.use(markedHighlight({
 	langPrefix: 'hljs language-',
 	highlight(code, lang) {
-		let language = hljs.getLanguage(lang) ? lang : 'plaintext';
+		let language = highlightJs.getLanguage(lang) ? lang : 'plaintext';
 		// 将Vue代码块使用html高亮方式渲染
 		if (lang.toLowerCase() === 'vue') {
 			language = 'html';
 		}
-		return hljs.highlight(code, { language }).value;
+		return highlightJs.highlight(code, {language}).value;
 	}
 }));
 
@@ -95,7 +93,6 @@ const isArticleNotFound = ref(false);
  */
 function closeExpandMenu() {
 	themeStore.setMenuShow(false);
-	themeStore.articleSwitchShow = false;
 }
 
 /**
@@ -224,8 +221,8 @@ function showCodeTypeAndCopy(contentNode) {
 function renderKatex(contentNode) {
 	renderMathInElement(contentNode, {
 		delimiters: [
-			{ left: '$$', right: '$$', display: true },
-			{ left: '$', right: '$', display: false }
+			{left: '$$', right: '$$', display: true},
+			{left: '$', right: '$', display: false}
 		],
 		strict: false,
 		throwOnError: false
@@ -288,8 +285,6 @@ onBeforeMount(async () => {
 	renderKatex(textDom);
 	// 设定渲染完成
 	themeStore.contentParsed = true;
-	// 最后，从缓存读取该文章所在文集的其它文章目录树，使得用户可以切换文章
-	articleTreeStore.getArticleTree(articleObject.anthologyId);
 });
 
 onUpdated(() => {
@@ -412,6 +407,7 @@ onUpdated(() => {
 			box-sizing: content-box;
 			padding: 15px 9px 5px;
 			overflow-x: scroll;
+			tab-size: 4;
 
 			code {
 				background-color: #FFFFFF00;

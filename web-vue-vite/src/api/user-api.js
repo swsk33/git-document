@@ -46,13 +46,22 @@ export async function userLogin(user) {
 }
 
 /**
+ * 用户发送重置密码邮件验证码
+ * @param {String} email 邮箱
+ * @returns {Promise<Result<void>>} 响应体
+ */
+export async function userResetPasswordSendCode(email) {
+	return sendRequest(`${apiPrefix}/reset-password/send/${email}`, REQUEST_METHOD.GET);
+}
+
+/**
  * 用户重置密码
  * @param {User} user 重置密码后的用户对象
  * @param {Number | String} code 验证码
  * @returns {Promise<Result<void>>} 响应体
  */
-export async function userResetPassword(user, code) {
-	return sendRequest(`${apiPrefix}/reset-password/${code}`, REQUEST_METHOD.POST, user);
+export async function userResetPasswordVerify(user, code) {
+	return sendRequest(`${apiPrefix}/reset-password/verify/${code}`, REQUEST_METHOD.POST, user);
 }
 
 /**

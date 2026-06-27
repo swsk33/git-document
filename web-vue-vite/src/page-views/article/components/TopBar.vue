@@ -3,14 +3,6 @@
 	<div class="top-bar">
 		<!-- 手机模式显示菜单 -->
 		<el-button class="show-menu-button" @click="themeStore.setMenuShow(true)" :icon="Memo" type="primary" plain circle/>
-		<!-- 切换文章按钮及其树形组件 -->
-		<div class="switch-article">
-			<el-button class="button" :icon="Document" type="success" plain @click="themeStore.articleSwitchShow = true"/>
-			<div class="tree-container" v-show="themeStore.articleSwitchShow">
-				<div class="text">点击目录树以切换文章</div>
-				<el-tree class="tree" v-if="articleTreeStore.currentArticleTree != null" :data="articleTreeStore.currentArticleTree.children" :props="treeProperties" accordion @node-click="switchArticle"/>
-			</div>
-		</div>
 		<!-- 更改颜色主题按钮盒子 -->
 		<div class="color-box">
 			<div class="text">主题</div>
@@ -52,10 +44,8 @@ import { MESSAGE_TYPE, showNotification } from '../../../utils/message.js';
 
 // pinia
 import { useArticlePageThemeStore } from '../../../store/article-page-theme.js';
-import { useArticleTreeStore } from '../../../store/article-tree.js';
 
 const themeStore = useArticlePageThemeStore();
-const articleTreeStore = useArticleTreeStore();
 
 /**
  * 图标
@@ -66,25 +56,6 @@ const elementIcon = reactive({
 });
 
 /**
- * 树形组件的对象属性
- */
-const treeProperties = {
-	children: 'children',
-	label: 'label',
-	class: 'tree-node'
-};
-
-/**
- * 点击树形组件时切换文章
- * @param nodeData 树节点所绑定的节点数据对象
- */
-function switchArticle(nodeData) {
-	if (nodeData.id != null) {
-		location.pathname = '/article/' + nodeData.id;
-	}
-}
-
-/**
  * 改变页面颜色主题
  */
 function changePageColor(color) {
@@ -92,7 +63,7 @@ function changePageColor(color) {
 	showNotification('成功', '更换主题成功！', MESSAGE_TYPE.success, 750);
 }
 
-// 监听器
+// 监听器保存白天/黑夜模式到缓存
 watch(() => themeStore.isNight, () => {
 	localStorage.setItem('night', JSON.stringify(themeStore.isNight));
 });
@@ -115,69 +86,6 @@ watch(() => themeStore.isNight, () => {
 		left: 1.5vh;
 		width: 4vh;
 		height: 4vh;
-	}
-
-	.switch-article {
-		position: absolute;
-		width: 3.5vh;
-		height: 3.5vh;
-		left: 17vw;
-		top: 1.5vh;
-
-		.tree-container {
-			position: absolute;
-			width: 50vw;
-			height: 35vh;
-			z-index: 9;
-			overflow: scroll;
-			background-color: white;
-			user-select: none;
-
-			// 设定滚动条整体
-			&::-webkit-scrollbar {
-				width: 5px;
-				height: 5px;
-			}
-
-			// 设定滚动条滑块
-			&::-webkit-scrollbar-thumb {
-				border-radius: 10px;
-				background: rgba(0, 0, 0, 0.2);
-			}
-
-			// 设定外层轨道滚动槽
-			&::-webkit-scrollbar-track {
-				border-radius: 0;
-				background: rgba(0, 0, 0, 0.1);
-			}
-
-			.text {
-				position: relative;
-				font-size: 18px;
-				padding: 4px 20px;
-				height: 24px;
-				line-height: 24px;
-				border-bottom-width: 1px;
-				border-bottom-style: solid;
-				margin-bottom: 2px;
-			}
-
-			.tree {
-				position: relative;
-
-				.tree-node > .el-tree-node__content {
-					font-size: 16px;
-					height: 36px;
-					line-height: 36px;
-					background-color: #00000000;
-				}
-			}
-		}
-
-		.button {
-			width: 4vh;
-			height: 4vh;
-		}
 	}
 
 	.color-box {

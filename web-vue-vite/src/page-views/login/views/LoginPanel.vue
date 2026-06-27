@@ -122,7 +122,7 @@ function enterKeyLogin(e) {
 		align-items: center;
 
 		.button {
-			font-size: 19px;
+			font-size: 21px;
 			width: 16%;
 			height: 42%;
 		}
@@ -130,8 +130,8 @@ function enterKeyLogin(e) {
 
 	.forget-password {
 		position: absolute;
-		bottom: 8px;
-		right: 8px;
+		bottom: 20px;
+		right: 20px;
 		font-size: 16px;
 	}
 }

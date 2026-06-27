@@ -57,6 +57,7 @@ onBeforeMount(async () => {
 	width: 100%;
 	height: 100vh;
 
+	// 欢迎文本
 	.welcome-text {
 		position: relative;
 		top: 8%;
@@ -69,6 +70,7 @@ onBeforeMount(async () => {
 		border-radius: 8px;
 	}
 
+	// 主面板
 	.panel {
 		position: relative;
 		display: flex;

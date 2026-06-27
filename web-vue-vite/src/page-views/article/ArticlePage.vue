@@ -49,6 +49,16 @@ onMounted(() => {
 </script>
 
 <style lang="scss">
+// 引入代码样式
+@use "../../assets/scss/code/github.scss" as *;
+@use "../../assets/scss/code/github-dark.scss" as *;
+// 引入颜色主题
+@use "../../assets/scss/color/pink.scss" as *;
+@use "../../assets/scss/color/blue.scss" as *;
+@use "../../assets/scss/color/orange.scss" as *;
+@use "../../assets/scss/color/green.scss" as *;
+@use "../../assets/scss/color/gray.scss" as *;
+
 // 页面平常样式
 .page {
 	.top-bar, .main-body {
@@ -108,15 +118,6 @@ onMounted(() => {
 				display: flex;
 			}
 
-			.switch-article {
-				left: 8vh;
-
-				.tree-container {
-					width: 75vw;
-					height: 45vh;
-				}
-			}
-
 			.color-box {
 				width: 42%;
 				margin-right: 6px;
@@ -165,14 +166,4 @@ onMounted(() => {
 		}
 	}
 }
-
-// 引入代码样式
-@import "../../assets/scss/code/github.scss";
-@import "../../assets/scss/code/github-dark.scss";
-// 引入颜色主题
-@import "../../assets/scss/color/pink.scss";
-@import "../../assets/scss/color/blue.scss";
-@import "../../assets/scss/color/orange.scss";
-@import "../../assets/scss/color/green.scss";
-@import "../../assets/scss/color/gray.scss";
 </style>

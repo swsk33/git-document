@@ -1,15 +1,15 @@
-// 获取系统运行参数接口请求
+// 获取SSH服务端运行参数接口请求
 
-import { REQUEST_METHOD, sendRequest } from '../utils/request.js';
+import {REQUEST_METHOD, sendRequest} from '../utils/request.js';
 
-const apiPrefix = '/api/system-info';
+const apiPrefix = '/api/ssh-server';
 
 /**
  * 获取后端系统运行的用户名
  * @returns {Promise<Result<String>>} 包含用户名的结果
  */
 export async function systemInfoGetUser() {
-	return sendRequest(`${apiPrefix}/system-user`, REQUEST_METHOD.GET);
+	return sendRequest(`${apiPrefix}/user`, REQUEST_METHOD.GET);
 }
 
 /**
@@ -17,5 +17,5 @@ export async function systemInfoGetUser() {
  * @returns {Promise<Result<Number>>} 包含SSH端口号的结果
  */
 export async function systemInfoGetSSHPort() {
-	return sendRequest(`${apiPrefix}/ssh-port`, REQUEST_METHOD.GET);
+	return sendRequest(`${apiPrefix}/port`, REQUEST_METHOD.GET);
 }

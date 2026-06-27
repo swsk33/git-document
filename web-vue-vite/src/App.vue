@@ -29,3 +29,14 @@ onBeforeMount(async () => {
 	}
 });
 </script>
+
+<style lang="scss" scoped>
+// 最外层容器设定占满全屏
+.root-page {
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+}
+</style>

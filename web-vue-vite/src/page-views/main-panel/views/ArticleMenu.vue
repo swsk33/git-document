@@ -33,10 +33,7 @@ import { Folder, Document } from '@element-plus/icons-vue';
 import { computed, onBeforeMount, reactive, ref, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { MESSAGE_TYPE, showNotification } from '../../../utils/message.js';
-import { useArticleTreeStore } from '../../../store/article-tree.js';
 import { articleGetList } from '../../../api/article-api.js';
-
-const articleTreeStore = useArticleTreeStore();
 
 const router = useRouter();
 const route = useRoute();
@@ -188,8 +185,6 @@ onBeforeMount(async () => {
 	}
 	total.directories = response.data.directories;
 	total.articles = response.data.articles;
-	// 获取完成后，解析文集列表目录树为组件树结构并存入缓存
-	articleTreeStore.saveArticleTree(route.params.id, articleTreeStore.parseArticleTree(total));
 });
 </script>
 

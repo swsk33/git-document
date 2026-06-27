@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { systemGetAllowPublic, systemGetLoginImage, systemGetMainImage, systemGetOrganizationName } from '../api/system-setting-api.js';
-import { systemInfoGetSSHPort, systemInfoGetUser } from '../api/system-info-api.js';
+import { systemInfoGetSSHPort, systemInfoGetUser } from '../api/ssh-server-metadata-api.js';
 import { parseImageURL } from '../api/image-api.js';
 
 export const useMetaDataStore = defineStore('meta-data', {

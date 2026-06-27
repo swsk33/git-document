@@ -22,8 +22,7 @@ import { ref, reactive, shallowRef } from 'vue';
 import { Lock, Message, Coin } from '@element-plus/icons-vue';
 import { MESSAGE_TYPE, showNotification } from '../../../utils/message.js';
 import { isEmpty } from '../../../utils/string.js';
-import { emailPasswordResetCode } from '../../../api/email-api.js';
-import { userResetPassword } from '../../../api/user-api.js';
+import { userResetPasswordVerify, userResetPasswordSendCode } from '../../../api/user-api.js';
 
 const router = useRouter();
 
@@ -68,7 +67,7 @@ async function sendCode() {
 		showNotification('错误', '邮箱不能为空！', MESSAGE_TYPE.error);
 		return;
 	}
-	const response = await emailPasswordResetCode(resetUser.email);
+	const response = await userResetPasswordSendCode(resetUser.email);
 	if (!response.success) {
 		showNotification('错误', response.message, MESSAGE_TYPE.error);
 		return;
@@ -98,7 +97,7 @@ async function resetPassword() {
 		showNotification('错误', '新密码或者验证码不能为空！', MESSAGE_TYPE.error);
 		return;
 	}
-	const response = await userResetPassword(resetUser, code.value);
+	const response = await userResetPasswordVerify(resetUser, code.value);
 	if (!response.success) {
 		showNotification('错误', response.message, MESSAGE_TYPE.error);
 		return;
