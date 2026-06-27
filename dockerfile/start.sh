@@ -4,4 +4,4 @@ if [ $DELAY_START -ne 0 ]; then
 	echo 延迟${DELAY_START}秒以等待其它服务启动...
 	sleep $DELAY_START
 fi
-exec sudo -u git -E java -jar git-document.jar
+exec sudo -E -u git /usr/lib/jvm/jre/bin/java -jar git-document.jar

@@ -1,4 +1,4 @@
-FROM bellsoft/liberica-openjre-alpine:21
+FROM bellsoft/liberica-openjre-alpine:25
 # 添加必要文件
 ADD git-document.jar /app/
 ADD start.sh /
@@ -10,11 +10,13 @@ RUN mkdir -p /git-doc /app/images \
 	&& chown -R git:git /app /git-doc \
 	# 配置相关软件
 	&& apk update \
-	&& apk add --no-cache sudo ca-certificates \
-	&& wget -P /etc/apk/keys/ https://nginx.org/keys/nginx_signing.rsa.pub \
+	&& apk add --no-cache sudo ca-certificates curl \
+	&& update-ca-certificates \
+	&& curl -fL -o /etc/apk/keys/nginx_signing.rsa.pub https://nginx.org/keys/nginx_signing.rsa.pub \
 	&& printf "%s%s%s%s\n" "@nginx " "http://nginx.org/packages/alpine/v" `egrep -o '^[0-9]+\.[0-9]+' /etc/alpine-release` "/main" | tee -a /etc/apk/repositories \
 	&& apk update \
 	&& apk add --no-cache nginx@nginx \
+	&& apk del curl \
 	&& rm -rf /usr/share/nginx/html/* /var/cache/apk/*
 # 添加Nginx配置和前端网页资源
 ADD nginx.conf /etc/nginx/conf.d/default.conf

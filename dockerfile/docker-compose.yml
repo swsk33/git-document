@@ -7,15 +7,17 @@ services:
       - 80:80
       - 443:443
     environment:
+      # 数据库配置（通常不用动）
       - GITDOC_DB_HOST=postgre
       - GITDOC_REDIS_HOST=redis
+      - GITDOC_REDIS_PASSWORD=123456
       # 邮箱配置（需要自己填一下）
       - GITDOC_MAIL_SMTP_HOST=smtp.163.com
       - GITDOC_MAIL_USER=你的邮箱
       - GITDOC_MAIL_PASSKEY=授权码
       # SSH广播端口（映射的宿主机的SSH端口）
       - GITDOC_ADVERTISED_SSH_PORT=2333
-      # 设定延迟启动时长（秒）以等待数据库和消息队列启动完成后再启动
+      # 设定延迟启动时长（秒）以等待数据库启动完成后再启动
       - DELAY_START=3
     volumes:
       - nginx-config:/etc/nginx
@@ -32,11 +34,12 @@ services:
     image: redis:alpine
     volumes:
       - redis-data:/data
+    command: ["--requirepass", "123456", "--dir", "/data"]
   # PostgreSQL
   postgre:
     image: postgres:alpine
     volumes:
-      - postgre-data:/var/lib/postgresql/data
+      - postgre-data:/var/lib/postgresql
     environment:
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=123456
