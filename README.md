@@ -11,27 +11,43 @@
 
 GitDocument是一个轻量的团队文档管理和查看工具，部署之后，完全使用Git来管理团队的文档，并在线浏览，文档全部为Markdown文件形式。
 
-**登录界面**
+### (1) 界面展示
 
-![image-20230722233254043](https://swsk33-note.oss-cn-shanghai.aliyuncs.com/undefinedimage-20230722233254043.png)
+<details>
+	<summary>
+		<bold>登录界面</bold>
+	</summary>
+	<img src="https://swsk33-note.oss-cn-shanghai.aliyuncs.com/undefinedimage-20230722233254043.png" alt="image-20230722233254043" />
+</details>
+<details>
+	<summary>
+		<bold>主界面</bold>
+	</summary>
+	<img src="https://swsk33-note.oss-cn-shanghai.aliyuncs.com/undefinedimage-20230722233320954.png" alt="image-20230722233320954" />
+</details>
 
-**主界面**
+<details>
+	<summary>
+		<bold>在线文档目录</bold>
+	</summary>
+	<img src="https://swsk33-note.oss-cn-shanghai.aliyuncs.com/undefinedimage-20230722233424397.png" alt="image-20230722233424397" />
+</details>
 
-![image-20230722233320954](https://swsk33-note.oss-cn-shanghai.aliyuncs.com/undefinedimage-20230722233320954.png)
+<details>
+	<summary>
+		<bold>文档浏览界面（白天主题）</bold>
+	</summary>
+	<img src="https://swsk33-note.oss-cn-shanghai.aliyuncs.com/undefinedimage-20230722233520467.png" alt="image-20230722233520467" />
+</details>
 
-**在线文档目录**
+<details>
+	<summary>
+		<bold>文档浏览界面（夜晚主题）</bold>
+	</summary>
+	<img src="https://swsk33-note.oss-cn-shanghai.aliyuncs.com/undefinedimage-20230722233531742.png" alt="image-20230722233531742" />
+</details>
 
-![image-20230722233424397](https://swsk33-note.oss-cn-shanghai.aliyuncs.com/undefinedimage-20230722233424397.png)
-
-**文档浏览界面（白天主题）**
-
-![image-20230722233520467](https://swsk33-note.oss-cn-shanghai.aliyuncs.com/undefinedimage-20230722233520467.png)
-
-**文档浏览界面（夜晚主题）**
-
-![image-20230722233531742](https://swsk33-note.oss-cn-shanghai.aliyuncs.com/undefinedimage-20230722233531742.png)
-
-### (1) 主要功能
+### (2) 主要功能
 
 - 基于Git和Markdown的文档管理
 	- 创建Git仓库作为在线文集
@@ -41,13 +57,6 @@ GitDocument是一个轻量的团队文档管理和查看工具，部署之后，
 	- 文集收藏功能（`star`）
 - 用户登录及其基本管理功能
 - 基本系统设置及其简单自定义
-
-### (2) 待开发的功能
-
-- 在线多版本和分支查看
-- 手机端适配
-- 文章评论
-- ...
 
 ### (3) 软件架构
 
@@ -63,7 +72,7 @@ GitDocument是一个轻量的团队文档管理和查看工具，部署之后，
 - [Vue-Router](https://router.vuejs.org/zh/) 单页路由
 - [Pinia](https://pinia.vuejs.org/zh/) 状态管理
 
-后端是使用Spring Boot进行搭建，使用PostgreSQL作为数据库，可以理解为是SSM架构，除了Spring Boot的一些Starter之外，还用到了以下开源外部库或者是中间件：
+后端是使用Spring Boot进行搭建，采用Maven多模块结构，使用PostgreSQL作为数据库，可以理解为是SSM架构，除了Spring Boot的一些Starter之外，还用到了以下开源外部库或者是中间件：
 
 - [Sa-Token](https://sa-token.dev33.cn/) 认证和鉴权框架
 - [JGit](https://www.eclipse.org/jgit/) 用于使用Java来操作Git仓库
